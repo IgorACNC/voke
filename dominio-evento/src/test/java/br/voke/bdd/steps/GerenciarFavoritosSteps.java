@@ -13,12 +13,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class GerenciarFavoritosSteps {
     private final ContextoEvento contexto;
@@ -33,21 +36,32 @@ public class GerenciarFavoritosSteps {
     }
 
     private FavoritoRepositorio criarRepo() {
-        return new FavoritoRepositorio() {
-            @Override public void salvar(Favorito favorito) { banco.put(favorito.getId(), favorito); }
-            @Override public Optional<Favorito> buscarPorId(FavoritoId id) { return Optional.ofNullable(banco.get(id)); }
-            @Override public List<Favorito> buscarPorParticipanteId(UUID participanteId) {
-                return banco.values().stream()
-                        .filter(favorito -> favorito.getParticipanteId().equals(participanteId))
-                        .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
-            }
-            @Override public void remover(FavoritoId id) { banco.remove(id); }
-            @Override public boolean existePorParticipanteEEvento(UUID participanteId, UUID eventoId) {
-                return banco.values().stream()
-                        .anyMatch(favorito -> favorito.getParticipanteId().equals(participanteId)
-                                && favorito.getEventoId().equals(eventoId));
-            }
-        };
+        FavoritoRepositorio mockRepositorio = mock(FavoritoRepositorio.class);
+        doAnswer(invocation -> {
+            Favorito favoritoSalvo = invocation.getArgument(0);
+            banco.put(favoritoSalvo.getId(), favoritoSalvo);
+            return null;
+        }).when(mockRepositorio).salvar(any(Favorito.class));
+        doAnswer(invocation -> java.util.Optional.ofNullable(banco.get(invocation.getArgument(0))))
+                .when(mockRepositorio).buscarPorId(any(FavoritoId.class));
+        doAnswer(invocation -> {
+            UUID participanteId = invocation.getArgument(0);
+            return banco.values().stream()
+                    .filter(favorito -> favorito.getParticipanteId().equals(participanteId))
+                    .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+        }).when(mockRepositorio).buscarPorParticipanteId(any(UUID.class));
+        doAnswer(invocation -> {
+            banco.remove(invocation.getArgument(0));
+            return null;
+        }).when(mockRepositorio).remover(any(FavoritoId.class));
+        doAnswer(invocation -> {
+            UUID participanteId = invocation.getArgument(0);
+            UUID eventoId = invocation.getArgument(1);
+            return banco.values().stream()
+                    .anyMatch(favorito -> favorito.getParticipanteId().equals(participanteId)
+                            && favorito.getEventoId().equals(eventoId));
+        }).when(mockRepositorio).existePorParticipanteEEvento(any(UUID.class), any(UUID.class));
+        return mockRepositorio;
     }
 
     @Dado("que o participante está autenticado")
@@ -79,6 +93,7 @@ public class GerenciarFavoritosSteps {
         assertNull(contexto.excecao);
         assertNotNull(favorito);
         assertFalse(repositorio.buscarPorParticipanteId(favorito.getParticipanteId()).isEmpty());
+        verify(repositorio).salvar(favorito);
     }
 
     @E("o evento possui status diferente de {string} ou {string} \\(ex.: Cancelado, Encerrado)")
@@ -137,5 +152,6 @@ public class GerenciarFavoritosSteps {
     public void oEventoDeixaDeAparecer() {
         assertNull(contexto.excecao);
         assertFalse(repositorio.buscarPorId(favorito.getId()).isPresent());
+        verify(repositorio).remover(favorito.getId());
     }
 }
