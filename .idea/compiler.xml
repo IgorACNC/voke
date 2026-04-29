@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="voke-dominio-compartilhado" />
+        <module name="voke-dominio-evento" />
+        <module name="voke-dominio-inscricao" />
+        <module name="voke-aplicacao" />
+        <module name="voke-infraestrutura" />
+        <module name="voke-apresentacao-backend" />
+        <module name="voke-dominio-pessoa" />
+        <module name="voke-apresentacao-frontend" />
+        <module name="voke-dominio-fidelidade" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="voke-aplicacao" options="-parameters" />
+      <module name="voke-apresentacao-backend" options="-parameters" />
+      <module name="voke-apresentacao-frontend" options="-parameters" />
+      <module name="voke-dominio-compartilhado" options="-parameters" />
+      <module name="voke-dominio-evento" options="-parameters" />
+      <module name="voke-dominio-fidelidade" options="-parameters" />
+      <module name="voke-dominio-inscricao" options="-parameters" />
+      <module name="voke-dominio-pessoa" options="-parameters" />
+      <module name="voke-infraestrutura" options="-parameters" />
+    </option>
+  </component>
+</project>

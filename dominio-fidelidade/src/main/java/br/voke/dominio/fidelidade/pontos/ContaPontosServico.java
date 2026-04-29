@@ -1,0 +1,55 @@
+package br.voke.dominio.fidelidade.pontos;
+
+import java.util.Objects;
+import java.util.UUID;
+
+public class ContaPontosServico {
+
+    private final ContaPontosRepositorio repositorio;
+
+    public ContaPontosServico(ContaPontosRepositorio repositorio) {
+        Objects.requireNonNull(repositorio, "Repositório é obrigatório");
+        this.repositorio = repositorio;
+    }
+
+    public ContaPontos obterOuCriar(UUID participanteId) {
+        Objects.requireNonNull(participanteId, "Participante é obrigatório");
+        return repositorio.buscarPorParticipanteId(participanteId)
+                .orElseGet(() -> {
+                    ContaPontos nova = new ContaPontos(ContaPontosId.novo(), participanteId);
+                    repositorio.salvar(nova);
+                    return nova;
+                });
+    }
+
+    public void creditarPorPresenca(UUID participanteId, int pontos,
+                                    boolean eventoEncerrado, boolean checkInRealizado) {
+        if (!eventoEncerrado || !checkInRealizado) {
+            throw new IllegalStateException(
+                    "Pontos só podem ser creditados após check-in em evento encerrado");
+        }
+        ContaPontos conta = obterOuCriar(participanteId);
+        conta.creditarPorPresenca(pontos);
+        repositorio.salvar(conta);
+    }
+
+    public void debitar(UUID participanteId, int pontos) {
+        ContaPontos conta = repositorio.buscarPorParticipanteId(participanteId)
+                .orElseThrow(() -> new IllegalArgumentException("Conta de pontos não encontrada"));
+        conta.debitar(pontos);
+        repositorio.salvar(conta);
+    }
+
+    public void expirarPontos(UUID participanteId, int pontosExpirados) {
+        ContaPontos conta = repositorio.buscarPorParticipanteId(participanteId)
+                .orElseThrow(() -> new IllegalArgumentException("Conta de pontos não encontrada"));
+        conta.expirarPontos(pontosExpirados);
+        repositorio.salvar(conta);
+    }
+
+    public int consultarSaldo(UUID participanteId) {
+        return repositorio.buscarPorParticipanteId(participanteId)
+                .orElseThrow(() -> new IllegalArgumentException("Conta de pontos não encontrada"))
+                .getSaldo();
+    }
+}
