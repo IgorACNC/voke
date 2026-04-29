@@ -6,10 +6,16 @@ import java.util.UUID;
 public class ContaPontosServico {
 
     private final ContaPontosRepositorio repositorio;
+    private final ExpiracaoPontosNotificador notificador;
 
     public ContaPontosServico(ContaPontosRepositorio repositorio) {
+        this(repositorio, (participanteId, pontosExpirados) -> { });
+    }
+
+    public ContaPontosServico(ContaPontosRepositorio repositorio, ExpiracaoPontosNotificador notificador) {
         Objects.requireNonNull(repositorio, "Repositório é obrigatório");
         this.repositorio = repositorio;
+        this.notificador = Objects.requireNonNull(notificador, "Notificador e obrigatorio");
     }
 
     public ContaPontos obterOuCriar(UUID participanteId) {
@@ -45,6 +51,9 @@ public class ContaPontosServico {
                 .orElseThrow(() -> new IllegalArgumentException("Conta de pontos não encontrada"));
         conta.expirarPontos(pontosExpirados);
         repositorio.salvar(conta);
+        if (pontosExpirados > 0) {
+            notificador.notificarExpiracao(participanteId, pontosExpirados);
+        }
     }
 
     public int consultarSaldo(UUID participanteId) {

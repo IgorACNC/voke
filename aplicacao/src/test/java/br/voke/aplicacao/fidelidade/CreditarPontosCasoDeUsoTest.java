@@ -7,65 +7,53 @@ import br.voke.dominio.fidelidade.pontos.ContaPontosServico;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class CreditarPontosCasoDeUsoTest {
 
-    private InMemoryContaPontosRepositorio repositorio;
+    private ContaPontosRepositorio repositorio;
     private CreditarPontosCasoDeUso casoDeUso;
 
     @BeforeEach
     void setUp() {
-        repositorio = new InMemoryContaPontosRepositorio();
+        repositorio = mock(ContaPontosRepositorio.class);
         casoDeUso = new CreditarPontosCasoDeUso(new ContaPontosServico(repositorio));
     }
 
     @Test
     void creditaPontosSomenteQuandoEventoEncerradoECheckInFoiRealizado() {
         UUID participanteId = UUID.randomUUID();
-        repositorio.salvar(new ContaPontos(ContaPontosId.novo(), participanteId));
+        ContaPontos conta = new ContaPontos(ContaPontosId.novo(), participanteId);
+        when(repositorio.buscarPorParticipanteId(participanteId)).thenReturn(Optional.of(conta));
 
         casoDeUso.executar(participanteId, 50, true, true);
 
-        assertEquals(50, repositorio.buscarPorParticipanteId(participanteId).orElseThrow().getSaldo());
+        assertEquals(50, conta.getSaldo());
+        verify(repositorio).salvar(conta);
     }
 
     @Test
     void rejeitaCreditoQuandoEventoAindaNaoFoiEncerrado() {
         assertThrows(IllegalStateException.class,
                 () -> casoDeUso.executar(UUID.randomUUID(), 50, false, true));
+
+        verify(repositorio, never()).salvar(any());
     }
 
     @Test
     void rejeitaCreditoQuandoCheckInNaoFoiRealizado() {
         assertThrows(IllegalStateException.class,
                 () -> casoDeUso.executar(UUID.randomUUID(), 50, true, false));
-    }
 
-    static final class InMemoryContaPontosRepositorio implements ContaPontosRepositorio {
-        private final Map<ContaPontosId, ContaPontos> contas = new HashMap<>();
-
-        @Override
-        public void salvar(ContaPontos conta) {
-            contas.put(conta.getId(), conta);
-        }
-
-        @Override
-        public Optional<ContaPontos> buscarPorId(ContaPontosId id) {
-            return Optional.ofNullable(contas.get(id));
-        }
-
-        @Override
-        public Optional<ContaPontos> buscarPorParticipanteId(UUID participanteId) {
-            return contas.values().stream()
-                    .filter(conta -> conta.getParticipanteId().equals(participanteId))
-                    .findFirst();
-        }
+        verify(repositorio, never()).salvar(any());
     }
 }

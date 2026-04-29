@@ -36,3 +36,15 @@ Funcionalidade: Gerenciar Carteira Virtual
     Quando ele tenta remover saldo
     Então o sistema rejeita a operação
     E exibe a mensagem "Saldo insuficiente"
+
+  Cenário: Compra debita saldo acima do limite de remoção sem rejeição
+    Dado que o participante possui saldo suficiente na carteira
+    Quando o sistema processa o pagamento de uma compra cujo valor excede o limite individual de remoção
+    Então o saldo é debitado com sucesso
+    E nenhum erro de limite de remoção é lançado
+
+  Cenário: Limite diário de inserção é zerado no início do dia seguinte
+    Dado que o participante atingiu o limite diário de inserção de saldo
+    Quando o sistema processa a virada do dia
+    Então o contador de inserção diária é reiniciado
+    E o participante pode voltar a adicionar saldo normalmente
