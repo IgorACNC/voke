@@ -11,13 +11,18 @@ import io.cucumber.java.pt.Quando;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class GerenciarAvaliacaoSteps {
 
@@ -34,20 +39,37 @@ public class GerenciarAvaliacaoSteps {
     }
 
     private AvaliacaoRepositorio criarRepositorioEmMemoria() {
-        return new AvaliacaoRepositorio() {
-            @Override public void salvar(Avaliacao avaliacao) { banco.put(avaliacao.getId(), avaliacao); }
-            @Override public Optional<Avaliacao> buscarPorId(AvaliacaoId id) { return Optional.ofNullable(banco.get(id)); }
-            @Override public Optional<Avaliacao> buscarPorParticipanteEEvento(UUID participanteId, UUID eventoId) {
-                return banco.values().stream()
-                        .filter(avaliacao -> avaliacao.getParticipanteId().equals(participanteId)
-                                && avaliacao.getEventoId().equals(eventoId))
-                        .findFirst();
-            }
-            @Override public void remover(AvaliacaoId id) { banco.remove(id); }
-            @Override public boolean existePorParticipanteEEvento(UUID participanteId, UUID eventoId) {
-                return buscarPorParticipanteEEvento(participanteId, eventoId).isPresent();
-            }
-        };
+        AvaliacaoRepositorio mockRepositorio = mock(AvaliacaoRepositorio.class);
+        doAnswer(invocation -> {
+            Avaliacao avaliacaoSalva = invocation.getArgument(0);
+            banco.put(avaliacaoSalva.getId(), avaliacaoSalva);
+            return null;
+        }).when(mockRepositorio).salvar(any(Avaliacao.class));
+        doAnswer(invocation -> {
+            AvaliacaoId id = invocation.getArgument(0);
+            return java.util.Optional.ofNullable(banco.get(id));
+        }).when(mockRepositorio).buscarPorId(any(AvaliacaoId.class));
+        doAnswer(invocation -> {
+            UUID participanteId = invocation.getArgument(0);
+            UUID eventoId = invocation.getArgument(1);
+            return banco.values().stream()
+                    .filter(avaliacao -> avaliacao.getParticipanteId().equals(participanteId)
+                            && avaliacao.getEventoId().equals(eventoId))
+                    .findFirst();
+        }).when(mockRepositorio).buscarPorParticipanteEEvento(any(UUID.class), any(UUID.class));
+        doAnswer(invocation -> {
+            AvaliacaoId id = invocation.getArgument(0);
+            banco.remove(id);
+            return null;
+        }).when(mockRepositorio).remover(any(AvaliacaoId.class));
+        doAnswer(invocation -> {
+            UUID participanteId = invocation.getArgument(0);
+            UUID eventoId = invocation.getArgument(1);
+            return banco.values().stream()
+                    .anyMatch(avaliacao -> avaliacao.getParticipanteId().equals(participanteId)
+                            && avaliacao.getEventoId().equals(eventoId));
+        }).when(mockRepositorio).existePorParticipanteEEvento(any(UUID.class), any(UUID.class));
+        return mockRepositorio;
     }
 
     @Dado("que o participante possui inscrição confirmada")
@@ -80,6 +102,7 @@ public class GerenciarAvaliacaoSteps {
     public void aAvaliacaoERegistrada() {
         assertNull(contexto.excecao);
         assertNotNull(avaliacao);
+        verify(repositorio, atLeastOnce()).salvar(avaliacao);
     }
 
     @E("o evento ainda está em andamento ou ativo")
@@ -161,6 +184,7 @@ public class GerenciarAvaliacaoSteps {
     public void aAvaliacaoEAtualizada() {
         assertNull(contexto.excecao);
         assertEquals(5, avaliacao.getNota());
+        verify(repositorio, atLeastOnce()).salvar(avaliacao);
     }
 
     @Quando("ele solicita a exclusão da avaliação")
@@ -176,5 +200,6 @@ public class GerenciarAvaliacaoSteps {
     public void aAvaliacaoERemovidaDoSistema() {
         assertNull(contexto.excecao);
         assertFalse(repositorio.buscarPorId(avaliacao.getId()).isPresent());
+        verify(repositorio).remover(avaliacao.getId());
     }
 }

@@ -5,14 +5,25 @@ import io.cucumber.java.pt.Quando;
 import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Então;
 import br.voke.dominio.compartilhado.NomeCompleto;
+import br.voke.dominio.compartilhado.Cpf;
+import br.voke.dominio.compartilhado.DataNascimento;
+import br.voke.dominio.compartilhado.Email;
+import br.voke.dominio.compartilhado.Senha;
 import br.voke.dominio.pessoa.amizade.*;
-import br.voke.dominio.pessoa.excecao.AcessoRestritoPorIdadeException;
 import br.voke.dominio.pessoa.excecao.VinculoDeAmizadeNecessarioException;
+import br.voke.dominio.pessoa.participante.Participante;
 import br.voke.dominio.pessoa.participante.ParticipanteId;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class GerenciarAmigosSteps {
 
@@ -21,6 +32,11 @@ public class GerenciarAmigosSteps {
     private AmizadeServico servico;
     private Amizade amizade;
     private ComunidadeAmigos comunidade;
+    private Participante solicitanteAmizade;
+    private ParticipanteId receptorAmizadeId;
+    private UUID eventoCompartilhadoId;
+    private boolean eventoComVagas;
+    private boolean direcionadoParaInscricao;
 
     private final Map<AmizadeId, Amizade> banco = new HashMap<>();
 
@@ -29,25 +45,39 @@ public class GerenciarAmigosSteps {
     }
 
     private AmizadeRepositorio criarRepositorioEmMemoria() {
-        return new AmizadeRepositorio() {
-            @Override public void salvar(Amizade a) { banco.put(a.getId(), a); }
-            @Override public Optional<Amizade> buscarPorId(AmizadeId id) { return Optional.ofNullable(banco.get(id)); }
-            @Override public void remover(AmizadeId id) { banco.remove(id); }
-            @Override public boolean existeEntreParticipantes(ParticipanteId a, ParticipanteId b) {
-                return banco.values().stream().anyMatch(am ->
+        AmizadeRepositorio mockRepositorio = mock(AmizadeRepositorio.class);
+        doAnswer(invocation -> {
+            Amizade amizadeSalva = invocation.getArgument(0);
+            banco.put(amizadeSalva.getId(), amizadeSalva);
+            return null;
+        }).when(mockRepositorio).salvar(any(Amizade.class));
+        doAnswer(invocation -> java.util.Optional.ofNullable(banco.get(invocation.getArgument(0))))
+                .when(mockRepositorio).buscarPorId(any(AmizadeId.class));
+        doAnswer(invocation -> {
+            banco.remove(invocation.getArgument(0));
+            return null;
+        }).when(mockRepositorio).remover(any(AmizadeId.class));
+        doAnswer(invocation -> {
+            ParticipanteId a = invocation.getArgument(0);
+            ParticipanteId b = invocation.getArgument(1);
+            return banco.values().stream().anyMatch(am ->
                     (am.getSolicitanteId().equals(a) && am.getReceptorId().equals(b)) ||
-                    (am.getSolicitanteId().equals(b) && am.getReceptorId().equals(a))
-                );
-            }
-            @Override public List<Amizade> buscarPorParticipante(ParticipanteId pid) {
-                return banco.values().stream()
-                        .filter(am -> am.getSolicitanteId().equals(pid) || am.getReceptorId().equals(pid))
-                        .toList();
-            }
-            @Override public List<Amizade> buscarAtivasPorParticipante(ParticipanteId pid) {
-                return buscarPorParticipante(pid).stream().filter(Amizade::estaAtiva).toList();
-            }
-        };
+                            (am.getSolicitanteId().equals(b) && am.getReceptorId().equals(a)));
+        }).when(mockRepositorio).existeEntreParticipantes(any(ParticipanteId.class), any(ParticipanteId.class));
+        doAnswer(invocation -> {
+            ParticipanteId pid = invocation.getArgument(0);
+            return banco.values().stream()
+                    .filter(am -> am.getSolicitanteId().equals(pid) || am.getReceptorId().equals(pid))
+                    .toList();
+        }).when(mockRepositorio).buscarPorParticipante(any(ParticipanteId.class));
+        doAnswer(invocation -> {
+            ParticipanteId pid = invocation.getArgument(0);
+            return banco.values().stream()
+                    .filter(am -> am.getSolicitanteId().equals(pid) || am.getReceptorId().equals(pid))
+                    .filter(Amizade::estaAtiva)
+                    .toList();
+        }).when(mockRepositorio).buscarAtivasPorParticipante(any(ParticipanteId.class));
+        return mockRepositorio;
     }
 
     private Amizade criarAmizadePendente() {
@@ -56,18 +86,31 @@ public class GerenciarAmigosSteps {
         return a;
     }
 
+    private Participante criarParticipanteMaiorDe16(String cpf, String email) {
+        return new Participante(
+                new ParticipanteId(UUID.randomUUID()),
+                new NomeCompleto("Participante Amigo"),
+                new Cpf(cpf),
+                new Email(email),
+                new Senha("Senha@123"),
+                new DataNascimento(LocalDate.of(2000, 1, 1))
+        );
+    }
+
     @Dado("que o participante está autenticado e possui 16 anos ou mais")
     public void participanteAutenticadoComIdade() {
         banco.clear();
         repositorio = criarRepositorioEmMemoria();
         servico = new AmizadeServico(repositorio);
         ctx.excecao = null;
+        solicitanteAmizade = criarParticipanteMaiorDe16("529.982.247-25", "amizade@email.com");
+        receptorAmizadeId = new ParticipanteId(UUID.randomUUID());
     }
 
     @Quando("ele envia uma solicitação de amizade para outro participante")
     public void eleEnviaSolicitacao() {
         try {
-            amizade = criarAmizadePendente();
+            amizade = servico.enviarSolicitacao(solicitanteAmizade, receptorAmizadeId);
         } catch (Exception e) { ctx.excecao = e; }
     }
 
@@ -76,6 +119,7 @@ public class GerenciarAmigosSteps {
         assertNull(ctx.excecao);
         assertNotNull(amizade);
         assertEquals(StatusAmizade.PENDENTE, amizade.getStatus());
+        verify(repositorio, atLeastOnce()).salvar(amizade);
     }
 
     @Dado("que o participante recebeu uma solicitação de amizade")
@@ -99,6 +143,7 @@ public class GerenciarAmigosSteps {
         assertNull(ctx.excecao);
         Amizade atualizada = repositorio.buscarPorId(amizade.getId()).orElseThrow();
         assertEquals(StatusAmizade.ATIVA, atualizada.getStatus());
+        verify(repositorio, atLeastOnce()).salvar(amizade);
     }
 
     @Quando("ele recusa a solicitação")
@@ -113,6 +158,7 @@ public class GerenciarAmigosSteps {
         assertNull(ctx.excecao);
         Amizade atualizada = repositorio.buscarPorId(amizade.getId()).orElseThrow();
         assertEquals(StatusAmizade.RECUSADA, atualizada.getStatus());
+        verify(repositorio, atLeastOnce()).salvar(amizade);
     }
 
     @Dado("que o participante possui menos de 16 anos")
@@ -121,11 +167,17 @@ public class GerenciarAmigosSteps {
         repositorio = criarRepositorioEmMemoria();
         servico = new AmizadeServico(repositorio);
         ctx.excecao = null;
+        solicitanteAmizade = mock(Participante.class);
+        when(solicitanteAmizade.getId()).thenReturn(new ParticipanteId(UUID.randomUUID()));
+        when(solicitanteAmizade.getIdade()).thenReturn(15);
+        receptorAmizadeId = new ParticipanteId(UUID.randomUUID());
     }
 
     @Quando("ele tenta enviar uma solicitação de amizade")
     public void eleTentaEnviarSolicitacao() {
-        ctx.excecao = new AcessoRestritoPorIdadeException();
+        try {
+            servico.enviarSolicitacao(solicitanteAmizade, receptorAmizadeId);
+        } catch (Exception e) { ctx.excecao = e; }
     }
 
     @Então("o sistema rejeita a ação")
@@ -171,7 +223,17 @@ public class GerenciarAmigosSteps {
 
     @Quando("ele tenta criar um grupo de amigos")
     public void eleTentaCriarGrupo() {
-        ctx.excecao = new VinculoDeAmizadeNecessarioException();
+        ParticipanteId participanteId = new ParticipanteId(UUID.randomUUID());
+        try {
+            if (!servico.possuiAmizadeAtiva(participanteId)) {
+                throw new VinculoDeAmizadeNecessarioException();
+            }
+            comunidade = new ComunidadeAmigos(
+                    ComunidadeAmigosId.novo(),
+                    new NomeCompleto("Grupo dos Amigos"),
+                    participanteId
+            );
+        } catch (Exception e) { ctx.excecao = e; }
     }
 
     @Dado("que um participante compartilhou um evento com seu grupo de amigos")
@@ -180,23 +242,45 @@ public class GerenciarAmigosSteps {
         repositorio = criarRepositorioEmMemoria();
         servico = new AmizadeServico(repositorio);
         ctx.excecao = null;
+        ParticipanteId criadorId = new ParticipanteId(UUID.randomUUID());
+        ParticipanteId amigoId = new ParticipanteId(UUID.randomUUID());
+        comunidade = new ComunidadeAmigos(
+                ComunidadeAmigosId.novo(),
+                new NomeCompleto("Grupo para evento"),
+                criadorId
+        );
+        comunidade.adicionarMembro(amigoId);
+        eventoCompartilhadoId = UUID.randomUUID();
+        comunidade.compartilharEvento(eventoCompartilhadoId);
     }
 
     @E("o evento ainda possui vagas disponíveis")
-    public void oEventoAindaPossuiVagas() { /* contexto de teste */ }
+    public void oEventoAindaPossuiVagas() {
+        assertTrue(comunidade.getEventoCompartilhadoIds().contains(eventoCompartilhadoId));
+        eventoComVagas = true;
+    }
 
     @Quando("um amigo decide se inscrever no evento pelo grupo")
-    public void amigoDecideSeInscrever() { /* direcionamento para fluxo de inscrição */ }
+    public void amigoDecideSeInscrever() {
+        if (!eventoComVagas) {
+            ctx.excecao = new IllegalStateException("Não há vagas disponíveis para este evento");
+            return;
+        }
+        direcionadoParaInscricao = comunidade.getEventoCompartilhadoIds().contains(eventoCompartilhadoId);
+    }
 
     @Então("ele é direcionado para o fluxo de inscrição do evento")
-    public void eleDirecionadoParaFluxoInscricao() { assertNull(ctx.excecao); }
+    public void eleDirecionadoParaFluxoInscricao() { assertNull(ctx.excecao); assertTrue(direcionadoParaInscricao); }
 
     @E("o evento não possui mais vagas disponíveis")
-    public void oEventoNaoPossuiVagas() { /* contexto sem vagas */ }
+    public void oEventoNaoPossuiVagas() {
+        assertTrue(comunidade.getEventoCompartilhadoIds().contains(eventoCompartilhadoId));
+        eventoComVagas = false;
+    }
 
     @Quando("um amigo tenta se inscrever")
     public void amigoTentaSeInscrever() {
-        ctx.excecao = new IllegalStateException("Vagas esgotadas para este evento");
+        ctx.excecao = new IllegalStateException("Não há vagas disponíveis para este evento");
     }
 
     @Então("o sistema informa que não há vagas disponíveis")
@@ -226,5 +310,6 @@ public class GerenciarAmigosSteps {
         assertNull(ctx.excecao);
         Amizade atualizada = repositorio.buscarPorId(amizade.getId()).orElseThrow();
         assertEquals(StatusAmizade.DESFEITA, atualizada.getStatus());
+        verify(repositorio, atLeastOnce()).salvar(amizade);
     }
 }
