@@ -7,10 +7,16 @@ import java.util.UUID;
 public class CarrinhoServico {
 
     private final CarrinhoRepositorio repositorio;
+    private final CupomConsulta cupomConsulta;
 
     public CarrinhoServico(CarrinhoRepositorio repositorio) {
+        this(repositorio, null);
+    }
+
+    public CarrinhoServico(CarrinhoRepositorio repositorio, CupomConsulta cupomConsulta) {
         Objects.requireNonNull(repositorio, "Repositório é obrigatório");
         this.repositorio = repositorio;
+        this.cupomConsulta = cupomConsulta;
     }
 
     public Carrinho obterOuCriar(UUID participanteId) {
@@ -42,6 +48,14 @@ public class CarrinhoServico {
         carrinho.aplicarCupom(codigoCupom, desconto);
         repositorio.salvar(carrinho);
         return carrinho;
+    }
+
+    public Carrinho aplicarCupom(UUID participanteId, String codigoCupom) {
+        if (cupomConsulta == null) {
+            throw new IllegalStateException("Consulta de cupom nao configurada");
+        }
+        BigDecimal desconto = cupomConsulta.validar(codigoCupom);
+        return aplicarCupom(participanteId, codigoCupom, desconto);
     }
 
     public BigDecimal calcularTotal(UUID participanteId, MetodoPagamento metodo) {

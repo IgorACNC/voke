@@ -4,6 +4,7 @@ import br.voke.dominio.inscricao.carrinho.Carrinho;
 import br.voke.dominio.inscricao.carrinho.CarrinhoId;
 import br.voke.dominio.inscricao.carrinho.CarrinhoRepositorio;
 import br.voke.dominio.inscricao.carrinho.CarrinhoServico;
+import br.voke.dominio.inscricao.carrinho.CupomConsulta;
 import br.voke.dominio.inscricao.carrinho.ItemCarrinho;
 import br.voke.dominio.inscricao.carrinho.MetodoPagamento;
 import io.cucumber.java.Before;
@@ -31,6 +32,7 @@ public class GerenciarCarrinhoSteps {
     private final ContextoInscricao contexto;
     private final Map<CarrinhoId, Carrinho> banco = new HashMap<>();
     private CarrinhoRepositorio repositorio;
+    private CupomConsulta cupomConsulta;
     private CarrinhoServico servico;
     private Carrinho carrinho;
     private BigDecimal valorFinal;
@@ -45,7 +47,8 @@ public class GerenciarCarrinhoSteps {
         banco.clear();
         participanteId = UUID.randomUUID();
         repositorio = criarRepo();
-        servico = new CarrinhoServico(repositorio);
+        cupomConsulta = mock(CupomConsulta.class);
+        servico = new CarrinhoServico(repositorio, cupomConsulta);
         carrinho = new Carrinho(CarrinhoId.novo(), participanteId);
         valorFinal = null;
         contexto.excecao = null;
@@ -195,7 +198,14 @@ public class GerenciarCarrinhoSteps {
 
     @Quando("ele tenta aplicar um cupom expirado ou inexistente")
     public void eleTentaAplicarCupomInvalido() {
-        contexto.excecao = new IllegalArgumentException("Cupom inválido ou expirado");
+        doAnswer(invocation -> {
+            throw new IllegalArgumentException("Cupom inválido ou expirado");
+        }).when(cupomConsulta).validar(any(String.class));
+        try {
+            carrinho = servico.aplicarCupom(participanteId, "EXPIRADO");
+        } catch (Exception e) {
+            contexto.excecao = e;
+        }
     }
 
     @Então("o sistema rejeita o cupom")
