@@ -38,6 +38,12 @@ Funcionalidade: Gerenciar Organizador
     Então o sistema bloqueia a alteração
     E exibe a mensagem "Data de nascimento não pode ser alterada"
 
+  Cenário: Criar conta de organizador com CPF já cadastrado
+    Dado que um usuário deseja se cadastrar como organizador
+    Quando ele informa um CPF que já está vinculado a outra conta no sistema
+    Então o sistema rejeita o cadastro
+    E exibe a mensagem "CPF já cadastrado"
+
   Cenário: Remover conta de organizador
     Dado que o organizador está autenticado no sistema
     Quando ele solicita a remoção da sua conta

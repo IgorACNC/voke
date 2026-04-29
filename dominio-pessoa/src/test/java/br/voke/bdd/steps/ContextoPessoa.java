@@ -18,4 +18,5 @@ public class ContextoPessoa {
     public ParticipanteServico servicoParticipante;
     public OrganizadorServico servicoOrganizador;
     public Exception excecao;
+    public String mensagemSistema;
 }
