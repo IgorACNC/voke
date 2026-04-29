@@ -1,0 +1,565 @@
+Domain Voke {
+
+    Subdomain Pessoa
+
+    Subdomain Evento
+
+    Subdomain Inscricao
+
+    Subdomain Fidelidade
+
+}
+
+ContextMap {
+
+    contains Pessoa
+
+    contains Evento
+
+    contains Inscricao
+
+    contains Fidelidade
+
+    Pessoa Shared-Kernel Evento
+
+    Pessoa Shared-Kernel Inscricao
+
+    Pessoa Shared-Kernel Fidelidade
+
+    Evento Shared-Kernel Inscricao
+
+    Evento Shared-Kernel Fidelidade
+
+    Inscricao Shared-Kernel Fidelidade
+
+}
+
+BoundedContext Pessoa implements Pessoa {
+
+    Aggregate Participante {
+
+        Entity Participante {
+
+            aggregateRoot
+
+            -ParticipanteId id
+
+            -NomeCompleto nome
+
+            -Cpf cpf
+
+            -Email email
+
+            -Senha senha
+
+            -DataNascimento dataNascimento
+
+        }
+
+        ValueObject ParticipanteId {
+
+            String valor
+
+        }
+
+        ValueObject NomeCompleto {
+
+            String valor
+
+        }
+
+        ValueObject Cpf {
+
+            String valor
+
+        }
+
+        ValueObject Email {
+
+            String valor
+
+        }
+
+        ValueObject Senha {
+
+            String valor
+
+        }
+
+        ValueObject DataNascimento {
+
+            Date valor
+
+        }
+
+    }
+
+    Aggregate Organizador {
+
+        Entity Organizador {
+
+            aggregateRoot
+
+            -OrganizadorId id
+
+            -NomeCompleto nome
+
+            -Cpf cpf
+
+            -Email email
+
+            -Senha senha
+
+            -DataNascimento dataNascimento
+
+        }
+
+        ValueObject OrganizadorId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate Parceiro {
+
+        Entity Parceiro {
+
+            aggregateRoot
+
+            -ParceiroId id
+
+            -ParticipanteId participanteId
+
+            -OrganizadorId organizadorId
+
+            -List<AtividadeParceiro> atividades
+
+        }
+
+        ValueObject ParceiroId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate Amizade {
+
+        Entity Amizade {
+
+            aggregateRoot
+
+            -AmizadeId id
+
+            -ParticipanteId solicitanteId
+
+            -ParticipanteId receptorId
+
+            String status
+
+        }
+
+        ValueObject AmizadeId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate ComunidadeAmigos {
+
+        Entity ComunidadeAmigos {
+
+            aggregateRoot
+
+            -ComunidadeAmigosId id
+
+            -NomeCompleto nome
+
+            -ParticipanteId criadorId
+
+            -List<ParticipanteId> membros
+
+            -List<EventoId> eventosCompartilhados
+
+        }
+
+        ValueObject ComunidadeAmigosId {
+
+            String valor
+
+        }
+
+    }
+
+}
+
+BoundedContext Evento implements Evento {
+
+    Aggregate Evento {
+
+        Entity Evento {
+
+            aggregateRoot
+
+            -EventoId id
+
+            String nome
+
+            String descricao
+
+            String local
+
+            Date dataHoraInicio
+
+            Date dataHoraFim
+
+            int capacidadeMaxima
+
+            -OrganizadorId organizadorId
+
+            -Lote loteAtual
+
+            String status
+
+            int idadeMinima
+
+        }
+
+        Entity Lote {
+
+            int numero
+
+            Double preco
+
+            int quantidadeTotal
+
+            int quantidadeVendida
+
+            boolean ativo
+
+        }
+
+        ValueObject EventoId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate GrupoEvento {
+
+        Entity GrupoEvento {
+
+            aggregateRoot
+
+            -GrupoEventoId id
+
+            String nome
+
+            String regras
+
+            -EventoId eventoId
+
+            -OrganizadorId organizadorId
+
+            -List<ParticipanteId> membros
+
+        }
+
+        ValueObject GrupoEventoId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate Avaliacao {
+
+        Entity Avaliacao {
+
+            aggregateRoot
+
+            -AvaliacaoId id
+
+            -ParticipanteId participanteId
+
+            -EventoId eventoId
+
+            int nota
+
+            String comentario
+
+        }
+
+        ValueObject AvaliacaoId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate Notificacao {
+
+        Entity Notificacao {
+
+            aggregateRoot
+
+            -NotificacaoId id
+
+            -EventoId eventoId
+
+            String conteudo
+
+            Date dataEnvio
+
+            boolean editada
+
+        }
+
+        ValueObject NotificacaoId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate Favorito {
+
+        Entity Favorito {
+
+            aggregateRoot
+
+            -FavoritoId id
+
+            -ParticipanteId participanteId
+
+            -EventoId eventoId
+
+        }
+
+        ValueObject FavoritoId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate Cupom {
+
+        Entity Cupom {
+
+            aggregateRoot
+
+            -CupomId id
+
+            String codigo
+
+            Double desconto
+
+            -OrganizadorId organizadorId
+
+            -EventoId eventoId nullable
+
+            int quantidadeMaxima
+
+            -List<Cpf> cpfsUtilizados
+
+        }
+
+        ValueObject CupomId {
+
+            String valor
+
+        }
+
+    }
+
+}
+
+BoundedContext Inscricao implements Inscricao {
+
+    Aggregate Inscricao {
+
+        Entity Inscricao {
+
+            aggregateRoot
+
+            -InscricaoId id
+
+            -ParticipanteId participanteId
+
+            -EventoId eventoId
+
+            Double valorPago
+
+            Date dataInscricao
+
+            String status
+
+        }
+
+        ValueObject InscricaoId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate Carrinho {
+
+        Entity Carrinho {
+
+            aggregateRoot
+
+            -CarrinhoId id
+
+            -ParticipanteId participanteId
+
+            -List<ItemCarrinho> itens
+
+            String cupomAplicado nullable
+
+            Double descontoCupom
+
+        }
+
+        ValueObject CarrinhoId {
+
+            String valor
+
+        }
+
+        ValueObject ItemCarrinho {
+
+            -EventoId eventoId
+
+            String nomeEvento
+
+            int quantidade
+
+            Double precoUnitario
+
+        }
+
+    }
+
+}
+
+BoundedContext Fidelidade implements Fidelidade {
+
+    Aggregate CarteiraVirtual {
+
+        Entity CarteiraVirtual {
+
+            aggregateRoot
+
+            -CarteiraVirtualId id
+
+            -ParticipanteId participanteId
+
+            Double saldo
+
+            Double totalInseridoHoje
+
+        }
+
+        ValueObject CarteiraVirtualId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate ContaPontos {
+
+        Entity ContaPontos {
+
+            aggregateRoot
+
+            -ContaPontosId id
+
+            -ParticipanteId participanteId
+
+            int saldo
+
+        }
+
+        ValueObject ContaPontosId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate Recompensa {
+
+        Entity Recompensa {
+
+            aggregateRoot
+
+            -RecompensaId id
+
+            String nome
+
+            String descricao
+
+            int custoEmPontos
+
+            int estoqueTotal
+
+            int estoqueResgatado
+
+            -OrganizadorId organizadorId
+
+            Date ultimaAlteracaoValor
+
+            boolean ativa
+
+        }
+
+        ValueObject RecompensaId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate Sugestao {
+
+        Entity Sugestao {
+
+            aggregateRoot
+
+            -SugestaoId id
+
+            -ParticipanteId participanteId
+
+            -EventoId eventoId
+
+            String status
+
+        }
+
+        ValueObject SugestaoId {
+
+            String valor
+
+        }
+
+    }
+
+}
