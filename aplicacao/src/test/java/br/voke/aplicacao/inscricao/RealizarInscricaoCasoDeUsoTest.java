@@ -5,30 +5,33 @@ import br.voke.dominio.inscricao.excecao.IdadeMinimaEventoException;
 import br.voke.dominio.inscricao.excecao.LimiteIngressosCpfException;
 import br.voke.dominio.inscricao.excecao.VagasEsgotadasException;
 import br.voke.dominio.inscricao.inscricao.Inscricao;
-import br.voke.dominio.inscricao.inscricao.InscricaoId;
 import br.voke.dominio.inscricao.inscricao.InscricaoRepositorio;
 import br.voke.dominio.inscricao.inscricao.InscricaoServico;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class RealizarInscricaoCasoDeUsoTest {
 
-    private InMemoryInscricaoRepositorio repositorio;
+    private InscricaoRepositorio repositorio;
     private RealizarInscricaoCasoDeUso casoDeUso;
 
     @BeforeEach
     void setUp() {
-        repositorio = new InMemoryInscricaoRepositorio();
+        repositorio = mock(InscricaoRepositorio.class);
         casoDeUso = new RealizarInscricaoCasoDeUso(new InscricaoServico(repositorio));
     }
 
@@ -40,74 +43,52 @@ class RealizarInscricaoCasoDeUsoTest {
         casoDeUso.executar(participanteId, eventoId, BigDecimal.valueOf(120),
                 18, 16, true, true, amanha(19), amanha(21), 2);
 
-        assertEquals(1, repositorio.inscricoes.size());
+        ArgumentCaptor<Inscricao> inscricaoSalva = ArgumentCaptor.forClass(Inscricao.class);
+        verify(repositorio).existeConflitoDeHorario(eq(participanteId), any(LocalDateTime.class), any(LocalDateTime.class));
+        verify(repositorio).contarPorParticipanteEEvento(participanteId, eventoId);
+        verify(repositorio).salvar(inscricaoSalva.capture());
+        assertEquals(participanteId, inscricaoSalva.getValue().getParticipanteId());
+        assertEquals(eventoId, inscricaoSalva.getValue().getEventoId());
     }
 
     @Test
     void rejeitaInscricaoQuandoParticipanteNaoTemIdadeMinima() {
         assertThrows(IdadeMinimaEventoException.class, () -> casoDeUso.executar(UUID.randomUUID(), UUID.randomUUID(),
                 BigDecimal.valueOf(120), 15, 16, true, true, amanha(19), amanha(21), 2));
+
+        verify(repositorio, never()).salvar(any());
     }
 
     @Test
     void rejeitaInscricaoQuandoEventoNaoPossuiVagas() {
         assertThrows(VagasEsgotadasException.class, () -> casoDeUso.executar(UUID.randomUUID(), UUID.randomUUID(),
                 BigDecimal.valueOf(120), 18, 16, true, false, amanha(19), amanha(21), 2));
+
+        verify(repositorio, never()).salvar(any());
     }
 
     @Test
     void rejeitaInscricaoComConflitoDeAgenda() {
-        repositorio.conflitoDeHorario = true;
+        when(repositorio.existeConflitoDeHorario(any(UUID.class), any(LocalDateTime.class), any(LocalDateTime.class)))
+                .thenReturn(true);
 
         assertThrows(ConflitoDeAgendaException.class, () -> casoDeUso.executar(UUID.randomUUID(), UUID.randomUUID(),
                 BigDecimal.valueOf(120), 18, 16, true, true, amanha(19), amanha(21), 2));
+
+        verify(repositorio, never()).salvar(any());
     }
 
     @Test
     void rejeitaInscricaoQuandoLimitePorCpfFoiAtingido() {
-        repositorio.inscricoesExistentes = 2;
+        when(repositorio.contarPorParticipanteEEvento(any(UUID.class), any(UUID.class))).thenReturn(2);
 
         assertThrows(LimiteIngressosCpfException.class, () -> casoDeUso.executar(UUID.randomUUID(), UUID.randomUUID(),
                 BigDecimal.valueOf(120), 18, 16, true, true, amanha(19), amanha(21), 2));
+
+        verify(repositorio, never()).salvar(any());
     }
 
     private LocalDateTime amanha(int hora) {
         return LocalDateTime.now().plusDays(1).withHour(hora).withMinute(0).withSecond(0).withNano(0);
-    }
-
-    private static final class InMemoryInscricaoRepositorio implements InscricaoRepositorio {
-        private final List<Inscricao> inscricoes = new ArrayList<>();
-        private boolean conflitoDeHorario;
-        private int inscricoesExistentes;
-
-        @Override
-        public void salvar(Inscricao inscricao) {
-            inscricoes.add(inscricao);
-        }
-
-        @Override
-        public Optional<Inscricao> buscarPorId(InscricaoId id) {
-            return inscricoes.stream().filter(inscricao -> inscricao.getId().equals(id)).findFirst();
-        }
-
-        @Override
-        public List<Inscricao> buscarPorParticipanteId(UUID participanteId) {
-            return inscricoes.stream().filter(inscricao -> inscricao.getParticipanteId().equals(participanteId)).toList();
-        }
-
-        @Override
-        public void remover(InscricaoId id) {
-            inscricoes.removeIf(inscricao -> inscricao.getId().equals(id));
-        }
-
-        @Override
-        public int contarPorParticipanteEEvento(UUID participanteId, UUID eventoId) {
-            return inscricoesExistentes;
-        }
-
-        @Override
-        public boolean existeConflitoDeHorario(UUID participanteId, LocalDateTime inicio, LocalDateTime fim) {
-            return conflitoDeHorario;
-        }
     }
 }

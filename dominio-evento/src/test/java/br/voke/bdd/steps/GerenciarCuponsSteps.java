@@ -13,12 +13,16 @@ import io.cucumber.java.pt.Quando;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class GerenciarCuponsSteps {
     private final ContextoEvento contexto;
@@ -41,14 +45,23 @@ public class GerenciarCuponsSteps {
     }
 
     private CupomRepositorio criarRepo() {
-        return new CupomRepositorio() {
-            @Override public void salvar(Cupom cupom) { banco.put(cupom.getId(), cupom); }
-            @Override public Optional<Cupom> buscarPorId(CupomId id) { return Optional.ofNullable(banco.get(id)); }
-            @Override public Optional<Cupom> buscarPorCodigo(String codigo) {
-                return banco.values().stream().filter(cupom -> cupom.getCodigo().equals(codigo)).findFirst();
-            }
-            @Override public void remover(CupomId id) { banco.remove(id); }
-        };
+        CupomRepositorio mockRepositorio = mock(CupomRepositorio.class);
+        doAnswer(invocation -> {
+            Cupom cupomSalvo = invocation.getArgument(0);
+            banco.put(cupomSalvo.getId(), cupomSalvo);
+            return null;
+        }).when(mockRepositorio).salvar(any(Cupom.class));
+        doAnswer(invocation -> java.util.Optional.ofNullable(banco.get(invocation.getArgument(0))))
+                .when(mockRepositorio).buscarPorId(any(CupomId.class));
+        doAnswer(invocation -> {
+            String codigo = invocation.getArgument(0);
+            return banco.values().stream().filter(cupom -> cupom.getCodigo().equals(codigo)).findFirst();
+        }).when(mockRepositorio).buscarPorCodigo(any(String.class));
+        doAnswer(invocation -> {
+            banco.remove(invocation.getArgument(0));
+            return null;
+        }).when(mockRepositorio).remover(any(CupomId.class));
+        return mockRepositorio;
     }
 
     @Quando("ele cria um cupom global com código, desconto e quantidade máxima de usos")
@@ -65,6 +78,7 @@ public class GerenciarCuponsSteps {
         assertNull(contexto.excecao);
         assertNotNull(cupom);
         assertNull(cupom.getEventoId());
+        verify(repositorio, atLeastOnce()).salvar(cupom);
     }
 
     @Quando("ele cria um cupom vinculado especificamente ao evento com código, desconto e quantidade máxima")
@@ -81,6 +95,7 @@ public class GerenciarCuponsSteps {
     public void oCupomFicaDisponivelParaEvento() {
         assertNull(contexto.excecao);
         assertNotNull(cupom.getEventoId());
+        verify(repositorio, atLeastOnce()).salvar(cupom);
     }
 
     @Dado("que o participante está no fluxo de compra")
@@ -111,6 +126,7 @@ public class GerenciarCuponsSteps {
     @Então("o desconto é aplicado com sucesso")
     public void oDescontoEAplicado() {
         assertNull(contexto.excecao);
+        verify(repositorio, atLeastOnce()).salvar(cupom);
     }
 
     @Dado("que o participante já utilizou o cupom anteriormente")
@@ -155,6 +171,15 @@ public class GerenciarCuponsSteps {
         cupom = servico.criar("EDITAR10", new BigDecimal("10.00"), UUID.randomUUID(), null, 100);
     }
 
+    @E("o cupom já foi utilizado por ao menos um participante")
+    public void oCupomJaFoiUtilizadoPorParticipante() {
+        if (cupom == null) {
+            cupom = servico.criar("UTILIZADO10", new BigDecimal("10.00"), UUID.randomUUID(), null, 100);
+        }
+        cupom.utilizar("444.444.444-44");
+        repositorio.salvar(cupom);
+    }
+
     @Quando("ele edita o desconto ou a quantidade máxima de usos")
     public void eleEditaDesconto() {
         try {
@@ -163,6 +188,20 @@ public class GerenciarCuponsSteps {
         } catch (Exception e) {
             contexto.excecao = e;
         }
+    }
+
+    @Quando("ele tenta alterar o desconto do cupom")
+    public void eleTentaAlterarDescontoDoCupom() {
+        try {
+            servico.editar(cupom.getId(), new BigDecimal("25.00"), cupom.getQuantidadeMaxima());
+        } catch (Exception e) {
+            contexto.excecao = e;
+        }
+    }
+
+    @Então("o sistema rejeita a alteração")
+    public void oSistemaRejeitaAlteracao() {
+        assertNotNull(contexto.excecao);
     }
 
     @Quando("ele exclui o cupom")
@@ -178,5 +217,6 @@ public class GerenciarCuponsSteps {
     public void oCupomERemovidoENaoPodeMaisSerUtilizado() {
         assertNull(contexto.excecao);
         assertFalse(repositorio.buscarPorId(cupom.getId()).isPresent());
+        verify(repositorio).remover(cupom.getId());
     }
 }

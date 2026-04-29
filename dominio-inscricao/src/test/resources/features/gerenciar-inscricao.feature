@@ -58,3 +58,10 @@ Funcionalidade: Gerenciar Inscrição
     Quando ele cancela a inscrição
     Então a inscrição é cancelada
     E nenhum valor é devolvido ao participante
+
+  Cenário: Realizar check-in da inscrição com sucesso
+    Dado que o participante possui inscrição confirmada no evento
+    E o evento está em andamento
+    Quando ele realiza o check-in no evento
+    Então o status da inscrição é atualizado para check-in realizado
+    E a presença do participante fica registrada para fins de pontuação

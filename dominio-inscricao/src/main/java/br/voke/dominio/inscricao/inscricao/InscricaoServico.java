@@ -50,4 +50,16 @@ public class InscricaoServico {
         repositorio.salvar(inscricao);
         return devolucao;
     }
+    public void realizarCheckIn(InscricaoId id, boolean eventoEmAndamento) {
+        Inscricao inscricao = repositorio.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Inscricao nao encontrada"));
+        if (!eventoEmAndamento) {
+            throw new IllegalStateException("Check-in so pode ser realizado com o evento em andamento");
+        }
+        if (!inscricao.estaConfirmada()) {
+            throw new IllegalStateException("Check-in exige inscricao confirmada");
+        }
+        inscricao.realizarCheckIn();
+        repositorio.salvar(inscricao);
+    }
 }
