@@ -1,20 +1,21 @@
 package br.voke.aplicacao.fidelidade;
 
-import br.voke.dominio.fidelidade.pontos.ContaPontosServico;
+import br.voke.dominio.fidelidade.sugestao.SugestaoId;
+import br.voke.dominio.fidelidade.sugestao.SugestaoServico;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public class ExpirarPontosCasoDeUso {
+public class ExpirarSugestaoCasoDeUso {
 
-    private final ContaPontosServico servico;
+    private final SugestaoServico servico;
 
-    public ExpirarPontosCasoDeUso(ContaPontosServico servico) {
+    public ExpirarSugestaoCasoDeUso(SugestaoServico servico) {
         Objects.requireNonNull(servico);
         this.servico = servico;
     }
 
-    public void executar(UUID participanteId, int pontosExpirados) {
-        servico.expirarPontos(participanteId, pontosExpirados);
+    public void executar(UUID sugestaoId) {
+        servico.expirar(new SugestaoId(sugestaoId));
     }
 }

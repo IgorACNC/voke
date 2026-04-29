@@ -46,3 +46,33 @@ Funcionalidade: Gerenciar Participante
     Quando ele solicita a remoção da sua conta
     Então a conta é removida do sistema
     E o participante não consegue mais fazer login
+
+  Esquema do Cenário: Criar conta com senha inválida
+    Dado que um usuário não possui conta no sistema
+    Quando ele preenche os dados com a senha "<senha>"
+    Então o sistema rejeita o cadastro
+    E exibe a mensagem "<mensagem>"
+
+    Exemplos:
+      | senha    | mensagem                                       |
+      | abc1     | Senha deve ter no mínimo 8 caracteres          |
+      | abcdefgh | Senha deve conter pelo menos um número         |
+      | 12345678 | Senha deve conter pelo menos uma letra         |
+
+  Cenário: Criar conta com nome muito curto
+    Dado que um usuário não possui conta no sistema
+    Quando ele preenche os dados com um nome de menos de 3 caracteres
+    Então o sistema rejeita o cadastro
+    E exibe a mensagem "Nome deve ter pelo menos 3 caracteres"
+
+  Cenário: Criar conta com e-mail em formato inválido
+    Dado que um usuário não possui conta no sistema
+    Quando ele preenche os dados com um e-mail sem o símbolo "@" ou sem domínio
+    Então o sistema rejeita o cadastro
+    E exibe a mensagem "E-mail inválido"
+
+  Cenário: Criar conta com data de nascimento no futuro
+    Dado que um usuário não possui conta no sistema
+    Quando ele preenche os dados com uma data de nascimento no futuro
+    Então o sistema rejeita o cadastro
+    E exibe a mensagem "Data de nascimento não pode ser no futuro"

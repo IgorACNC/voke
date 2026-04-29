@@ -35,3 +35,9 @@ Funcionalidade: Gerenciar Sugestões do Sistema
     Dado que uma sugestão foi enviada ao usuário e ainda está pendente de avaliação
     Quando o administrador remove a sugestão
     Então a sugestão é excluída e não aparece mais para o usuário
+
+  Cenário: Sugestão expira automaticamente após o prazo
+    Dado que uma sugestão foi enviada ao usuário e não foi avaliada dentro do prazo
+    Quando o sistema processa a expiração das sugestões pendentes
+    Então o status da sugestão é atualizado para expirada
+    E a sugestão não é mais apresentada ao usuário
