@@ -104,5 +104,6 @@ public class SharedPessoaSteps {
     @E("o sistema exibe a mensagem {string}")
     public void oSistemaExibeMensagem(String mensagem) {
         assertNull(ctx.excecao);
+        assertEquals(mensagem, ctx.mensagemSistema);
     }
 }
