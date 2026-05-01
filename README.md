@@ -63,3 +63,7 @@ mvn test
 - Casos de uso ficam em `aplicacao`.
 - Repositorios sao interfaces no dominio e implementacoes JPA na infraestrutura.
 - Value Objects devem ser imutaveis e validar seus dados no construtor.
+
+ ## Links do Projeto
+
+**Mapa das Histórias de Usuários (Miro):** https://miro.com/app/board/uXjVG1wbDB4=/?share_link_id=839589694420
