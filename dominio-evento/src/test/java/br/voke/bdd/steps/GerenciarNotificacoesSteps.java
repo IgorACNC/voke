@@ -42,6 +42,9 @@ public class GerenciarNotificacoesSteps {
                         .filter(notificacao -> notificacao.getEventoId().equals(eventoId))
                         .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
             }
+            @Override public List<Notificacao> buscarPorParticipanteId(UUID participanteId) {
+                return List.of();
+            }
             @Override public void remover(NotificacaoId id) { banco.remove(id); }
         };
     }

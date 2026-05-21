@@ -30,6 +30,10 @@ public class NotificacaoRepositorioJpa implements NotificacaoRepositorio {
         return repository.findByEventoId(eventoId).stream().map(NotificacaoJpaMapper::paraDominio).toList();
     }
 
+    public List<Notificacao> buscarPorParticipanteId(UUID participanteId) {
+        return repository.findByParticipanteId(participanteId).stream().map(NotificacaoJpaMapper::paraDominio).toList();
+    }
+
     public void remover(NotificacaoId id) {
         repository.deleteById(id.getValor());
     }

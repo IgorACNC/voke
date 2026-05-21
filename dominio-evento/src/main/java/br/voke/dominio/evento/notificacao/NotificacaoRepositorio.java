@@ -8,8 +8,6 @@ public interface NotificacaoRepositorio {
     void salvar(Notificacao notificacao);
     Optional<Notificacao> buscarPorId(NotificacaoId id);
     List<Notificacao> buscarPorEventoId(UUID eventoId);
-    default List<Notificacao> buscarPorParticipanteId(UUID participanteId) {
-        return List.of();
-    }
+    List<Notificacao> buscarPorParticipanteId(UUID participanteId);
     void remover(NotificacaoId id);
 }

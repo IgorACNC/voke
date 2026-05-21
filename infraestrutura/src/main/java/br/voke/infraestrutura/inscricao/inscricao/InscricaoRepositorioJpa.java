@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import br.voke.dominio.inscricao.inscricao.Inscricao;
 import br.voke.dominio.inscricao.inscricao.InscricaoId;
 import br.voke.dominio.inscricao.inscricao.InscricaoRepositorio;
+import br.voke.dominio.inscricao.inscricao.StatusInscricao;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +41,6 @@ public class InscricaoRepositorioJpa implements InscricaoRepositorio {
     }
 
     public boolean existeConflitoDeHorario(UUID participanteId, LocalDateTime inicio, LocalDateTime fim) {
-        return false;
+        return repository.countConflitoDeHorario(participanteId, inicio, fim, StatusInscricao.CANCELADA) > 0;
     }
 }
