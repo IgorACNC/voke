@@ -1,7 +1,6 @@
 package br.voke.dominio.fidelidade.carteira;
 
 import br.voke.dominio.compartilhado.EntidadeBase;
-import br.voke.dominio.fidelidade.excecao.LimiteDiarioInsercaoException;
 import br.voke.dominio.fidelidade.excecao.LimiteRemocaoException;
 import br.voke.dominio.fidelidade.excecao.SaldoInsuficienteException;
 
@@ -11,7 +10,6 @@ import java.util.UUID;
 
 public class CarteiraVirtual extends EntidadeBase<CarteiraVirtualId> {
 
-    private static final BigDecimal LIMITE_DIARIO_INSERCAO = new BigDecimal("5000.00");
     private static final BigDecimal LIMITE_REMOCAO = new BigDecimal("500.00");
 
     private final UUID participanteId;
@@ -27,13 +25,16 @@ public class CarteiraVirtual extends EntidadeBase<CarteiraVirtualId> {
     }
 
     public void adicionarSaldo(BigDecimal valor) {
+        adicionarSaldo(valor, new InsercaoSaldoPadrao());
+    }
+
+    public void adicionarSaldo(BigDecimal valor, EstrategiaInsercaoSaldo estrategia) {
         Objects.requireNonNull(valor, "Valor é obrigatório");
+        Objects.requireNonNull(estrategia, "Estratégia de inserção é obrigatória");
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Valor deve ser positivo");
         }
-        if (totalInseridoHoje.add(valor).compareTo(LIMITE_DIARIO_INSERCAO) > 0) {
-            throw new LimiteDiarioInsercaoException();
-        }
+        estrategia.validar(totalInseridoHoje, valor);
         this.saldo = this.saldo.add(valor);
         this.totalInseridoHoje = this.totalInseridoHoje.add(valor);
     }

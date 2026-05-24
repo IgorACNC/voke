@@ -28,14 +28,23 @@ public class ContaPontosServico {
                 });
     }
 
-    public void creditarPorPresenca(UUID participanteId, int pontos,
+    public void creditarPorPresenca(UUID participanteId, int pontosBase,
                                     boolean eventoEncerrado, boolean checkInRealizado) {
+        creditarPorPresenca(participanteId, pontosBase, eventoEncerrado, checkInRealizado,
+                new GanhoPontosRegular());
+    }
+
+    public void creditarPorPresenca(UUID participanteId, int pontosBase,
+                                    boolean eventoEncerrado, boolean checkInRealizado,
+                                    EstrategiaGanhoPontos estrategia) {
+        Objects.requireNonNull(estrategia, "Estratégia de ganho de pontos é obrigatória");
         if (!eventoEncerrado || !checkInRealizado) {
             throw new IllegalStateException(
                     "Pontos só podem ser creditados após check-in em evento encerrado");
         }
+        int pontosCalculados = estrategia.calcular(pontosBase);
         ContaPontos conta = obterOuCriar(participanteId);
-        conta.creditarPorPresenca(pontos);
+        conta.creditarPorPresenca(pontosCalculados);
         repositorio.salvar(conta);
     }
 

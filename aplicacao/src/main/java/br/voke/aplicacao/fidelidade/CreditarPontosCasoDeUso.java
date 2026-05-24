@@ -1,6 +1,7 @@
 package br.voke.aplicacao.fidelidade;
 
 import br.voke.dominio.fidelidade.pontos.ContaPontosServico;
+import br.voke.dominio.fidelidade.pontos.EstrategiaGanhoPontos;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -14,8 +15,10 @@ public class CreditarPontosCasoDeUso {
         this.servico = servico;
     }
 
-    public void executar(UUID participanteId, int pontos,
-                         boolean eventoEncerrado, boolean checkInRealizado) {
-        servico.creditarPorPresenca(participanteId, pontos, eventoEncerrado, checkInRealizado);
+    public void executar(UUID participanteId, int pontosBase,
+                         boolean eventoEncerrado, boolean checkInRealizado,
+                         EstrategiaGanhoPontos estrategia) {
+        servico.creditarPorPresenca(participanteId, pontosBase, eventoEncerrado,
+                checkInRealizado, estrategia);
     }
 }

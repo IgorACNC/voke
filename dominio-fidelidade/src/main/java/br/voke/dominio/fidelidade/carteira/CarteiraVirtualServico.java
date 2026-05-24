@@ -24,9 +24,14 @@ public class CarteiraVirtualServico {
     }
 
     public void adicionarSaldo(UUID participanteId, BigDecimal valor) {
+        adicionarSaldo(participanteId, valor, new InsercaoSaldoPadrao());
+    }
+
+    public void adicionarSaldo(UUID participanteId, BigDecimal valor, EstrategiaInsercaoSaldo estrategia) {
+        Objects.requireNonNull(estrategia, "Estratégia de inserção é obrigatória");
         CarteiraVirtual carteira = repositorio.buscarPorParticipanteId(participanteId)
                 .orElseThrow(() -> new IllegalArgumentException("Carteira não encontrada"));
-        carteira.adicionarSaldo(valor);
+        carteira.adicionarSaldo(valor, estrategia);
         repositorio.salvar(carteira);
     }
 
