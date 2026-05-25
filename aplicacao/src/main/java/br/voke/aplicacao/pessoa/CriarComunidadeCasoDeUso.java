@@ -2,7 +2,7 @@ package br.voke.aplicacao.pessoa;
 
 import br.voke.dominio.compartilhado.NomeCompleto;
 import br.voke.dominio.pessoa.amizade.ComunidadeAmigos;
-import br.voke.dominio.pessoa.amizade.ComunidadeAmigosServico;
+import br.voke.dominio.pessoa.amizade.ComunidadeAmigosOperacoes;
 import br.voke.dominio.pessoa.participante.ParticipanteId;
 
 import java.util.Objects;
@@ -10,9 +10,9 @@ import java.util.UUID;
 
 public class CriarComunidadeCasoDeUso {
 
-    private final ComunidadeAmigosServico servico;
+    private final ComunidadeAmigosOperacoes servico;
 
-    public CriarComunidadeCasoDeUso(ComunidadeAmigosServico servico) {
+    public CriarComunidadeCasoDeUso(ComunidadeAmigosOperacoes servico) {
         Objects.requireNonNull(servico);
         this.servico = servico;
     }
