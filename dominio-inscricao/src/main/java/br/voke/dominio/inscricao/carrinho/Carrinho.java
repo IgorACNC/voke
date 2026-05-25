@@ -5,7 +5,6 @@ import br.voke.dominio.inscricao.excecao.CupomDuplicadoCarrinhoException;
 import br.voke.dominio.inscricao.excecao.LimiteEventosCarrinhoException;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,12 +14,11 @@ import java.util.UUID;
 public class Carrinho extends EntidadeBase<CarrinhoId> {
 
     public static final int MAX_EVENTOS = 2;
-    private static final BigDecimal TAXA_CARTAO = new BigDecimal("0.05"); // 5%
 
     private final UUID participanteId;
     private final List<ItemCarrinho> itens;
     private String cupomAplicado;
-    private BigDecimal descontoCupom;
+    private EstrategiaDesconto estrategiaDesconto;
 
     public Carrinho(CarrinhoId id, UUID participanteId) {
         super(id);
@@ -28,7 +26,7 @@ public class Carrinho extends EntidadeBase<CarrinhoId> {
         this.participanteId = participanteId;
         this.itens = new ArrayList<>();
         this.cupomAplicado = null;
-        this.descontoCupom = BigDecimal.ZERO;
+        this.estrategiaDesconto = null;
     }
 
     public void adicionarItem(ItemCarrinho item) {
@@ -49,35 +47,44 @@ public class Carrinho extends EntidadeBase<CarrinhoId> {
         itens.removeIf(i -> i.getEventoId().equals(eventoId));
     }
 
-    public void aplicarCupom(String codigoCupom, BigDecimal desconto) {
+    public void aplicarCupom(String codigoCupom, EstrategiaDesconto estrategia) {
         Objects.requireNonNull(codigoCupom, "Código do cupom é obrigatório");
+        Objects.requireNonNull(estrategia, "Estratégia de desconto é obrigatória");
         if (this.cupomAplicado != null) {
             throw new CupomDuplicadoCarrinhoException();
         }
         this.cupomAplicado = codigoCupom;
-        this.descontoCupom = desconto;
+        this.estrategiaDesconto = estrategia;
     }
 
-    public BigDecimal calcularTotal(MetodoPagamento metodo) {
-        BigDecimal subtotal = itens.stream()
-                .map(ItemCarrinho::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal totalComDesconto = subtotal.subtract(descontoCupom).max(BigDecimal.ZERO);
-        if (metodo == MetodoPagamento.CARTAO_CREDITO) {
-            BigDecimal taxa = totalComDesconto.multiply(TAXA_CARTAO).setScale(2, RoundingMode.HALF_UP);
-            return totalComDesconto.add(taxa);
-        }
-        return totalComDesconto;
+    public BigDecimal calcularTotal(EstrategiaTaxa estrategiaTaxa) {
+        Objects.requireNonNull(estrategiaTaxa, "Estratégia de taxa é obrigatória");
+        BigDecimal subtotal = calcularSubtotal();
+        BigDecimal desconto = estrategiaDesconto != null
+                ? estrategiaDesconto.calcular(subtotal)
+                : BigDecimal.ZERO;
+        BigDecimal totalComDesconto = subtotal.subtract(desconto).max(BigDecimal.ZERO);
+        return estrategiaTaxa.aplicar(totalComDesconto);
     }
 
     public void limpar() {
         itens.clear();
         cupomAplicado = null;
-        descontoCupom = BigDecimal.ZERO;
+        estrategiaDesconto = null;
+    }
+
+    private BigDecimal calcularSubtotal() {
+        return itens.stream()
+                .map(ItemCarrinho::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public UUID getParticipanteId() { return participanteId; }
     public List<ItemCarrinho> getItens() { return Collections.unmodifiableList(itens); }
     public String getCupomAplicado() { return cupomAplicado; }
-    public BigDecimal getDescontoCupom() { return descontoCupom; }
+
+    public BigDecimal getDescontoCupom() {
+        if (estrategiaDesconto == null) return BigDecimal.ZERO;
+        return estrategiaDesconto.calcular(calcularSubtotal());
+    }
 }

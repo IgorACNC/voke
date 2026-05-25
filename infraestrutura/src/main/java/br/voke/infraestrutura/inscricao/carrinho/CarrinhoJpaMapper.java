@@ -2,6 +2,7 @@ package br.voke.infraestrutura.inscricao.carrinho;
 
 import br.voke.dominio.inscricao.carrinho.Carrinho;
 import br.voke.dominio.inscricao.carrinho.CarrinhoId;
+import br.voke.dominio.inscricao.carrinho.DescontoFixo;
 import br.voke.dominio.inscricao.carrinho.ItemCarrinho;
 
 public final class CarrinhoJpaMapper {
@@ -19,7 +20,7 @@ public final class CarrinhoJpaMapper {
         Carrinho carrinho = new Carrinho(new CarrinhoId(jpa.getId()), jpa.getParticipanteId());
         jpa.getItens().stream().map(CarrinhoJpaMapper::paraDominio).forEach(carrinho::adicionarItem);
         if (jpa.getCupomAplicado() != null) {
-            carrinho.aplicarCupom(jpa.getCupomAplicado(), jpa.getDescontoCupom());
+            carrinho.aplicarCupom(jpa.getCupomAplicado(), new DescontoFixo(jpa.getDescontoCupom()));
         }
         return carrinho;
     }
