@@ -7,10 +7,12 @@ import java.util.UUID;
 public class CupomServico {
 
     private final CupomRepositorio repositorio;
+    private final UtilizacaoCupomTemplate utilizacaoCupom;
 
     public CupomServico(CupomRepositorio repositorio) {
         Objects.requireNonNull(repositorio, "Repositório é obrigatório");
         this.repositorio = repositorio;
+        this.utilizacaoCupom = new UtilizacaoCupomPadrao(repositorio);
     }
 
     public Cupom criar(String codigo, BigDecimal desconto, UUID organizadorId,
@@ -29,11 +31,7 @@ public class CupomServico {
     }
 
     public BigDecimal validarEUtilizar(String codigo, String cpf) {
-        Cupom cupom = repositorio.buscarPorCodigo(codigo)
-                .orElseThrow(() -> new IllegalArgumentException("Cupom inválido ou expirado"));
-        cupom.utilizar(cpf);
-        repositorio.salvar(cupom);
-        return cupom.getDesconto();
+        return utilizacaoCupom.validarEUtilizar(codigo, cpf);
     }
 
     public void remover(CupomId id) {
