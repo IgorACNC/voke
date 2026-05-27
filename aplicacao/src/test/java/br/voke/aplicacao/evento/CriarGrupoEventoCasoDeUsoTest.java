@@ -21,6 +21,7 @@ class CriarGrupoEventoCasoDeUsoTest {
     @BeforeEach
     void setUp() {
         repositorio = mock(GrupoEventoRepositorio.class);
+        // GrupoEventoServico implementa GrupoEventoServicoInterface, compatível com o caso de uso
         casoDeUso = new CriarGrupoEventoCasoDeUso(new GrupoEventoServico(repositorio));
     }
 

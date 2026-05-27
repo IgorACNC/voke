@@ -4,6 +4,10 @@ import br.voke.dominio.evento.grupo.GrupoEvento;
 import br.voke.dominio.evento.grupo.GrupoEventoId;
 import br.voke.dominio.evento.grupo.GrupoEventoRepositorio;
 import br.voke.dominio.evento.grupo.GrupoEventoServico;
+import br.voke.dominio.evento.grupo.GrupoEventoServicoInterface;
+import br.voke.dominio.evento.grupo.PrivilegioOrganizadorGrupoDecorator;
+import br.voke.dominio.evento.grupo.RestricaoEtariaGrupoDecorator;
+import br.voke.dominio.evento.grupo.VerificacaoInscritoGrupoDecorator;
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Então;
@@ -23,7 +27,7 @@ public class GerenciarGruposEventoSteps {
     private final ContextoEvento contexto;
     private final Map<GrupoEventoId, GrupoEvento> banco = new HashMap<>();
     private GrupoEventoRepositorio repositorio;
-    private GrupoEventoServico servico;
+    private GrupoEventoServicoInterface servico;
     private GrupoEvento grupo;
 
     public GerenciarGruposEventoSteps(ContextoEvento contexto) {
@@ -41,11 +45,25 @@ public class GerenciarGruposEventoSteps {
         };
     }
 
+    /**
+     * Compõe a cadeia de decorators em torno do serviço base.
+     * Ordem: RestricaoEtaria → VerificacaoInscrito → PrivilegioOrganizador → ServicoBase
+     */
+    private GrupoEventoServicoInterface criarServicoDecorado() {
+        return new RestricaoEtariaGrupoDecorator(
+                new VerificacaoInscritoGrupoDecorator(
+                        new PrivilegioOrganizadorGrupoDecorator(
+                                new GrupoEventoServico(repositorio), repositorio
+                        )
+                )
+        );
+    }
+
     @E("o evento está ativo")
     public void oEventoEstaAtivo() {
         banco.clear();
         repositorio = criarRepo();
-        servico = new GrupoEventoServico(repositorio);
+        servico = criarServicoDecorado();
         contexto.excecao = null;
         grupo = null;
     }
@@ -74,7 +92,7 @@ public class GerenciarGruposEventoSteps {
     public void participanteInscritoNoEvento() {
         banco.clear();
         repositorio = criarRepo();
-        servico = new GrupoEventoServico(repositorio);
+        servico = criarServicoDecorado();
         contexto.excecao = null;
         grupo = servico.criar("Grupo Test", "Regras", UUID.randomUUID(), UUID.randomUUID());
     }
@@ -122,7 +140,7 @@ public class GerenciarGruposEventoSteps {
     public void participanteMenor() {
         banco.clear();
         repositorio = criarRepo();
-        servico = new GrupoEventoServico(repositorio);
+        servico = criarServicoDecorado();
         contexto.excecao = null;
         grupo = servico.criar("Grupo Adulto", "18+", UUID.randomUUID(), UUID.randomUUID());
     }
@@ -140,7 +158,7 @@ public class GerenciarGruposEventoSteps {
     public void oGrupoDoEventoExiste() {
         banco.clear();
         repositorio = criarRepo();
-        servico = new GrupoEventoServico(repositorio);
+        servico = criarServicoDecorado();
         contexto.excecao = null;
         grupo = servico.criar("Grupo Editar", "Regras originais", UUID.randomUUID(), UUID.randomUUID());
     }
@@ -148,7 +166,7 @@ public class GerenciarGruposEventoSteps {
     @Quando("ele edita as regras do grupo")
     public void eleEditaRegras() {
         try {
-            servico.editarRegras(grupo.getId(), "Novas regras");
+            servico.editarRegras(grupo.getId(), "Novas regras", grupo.getOrganizadorId());
             grupo = repositorio.buscarPorId(grupo.getId()).orElseThrow();
         } catch (Exception e) {
             contexto.excecao = e;
@@ -165,7 +183,7 @@ public class GerenciarGruposEventoSteps {
     public void oEventoFoiEncerrado() {
         banco.clear();
         repositorio = criarRepo();
-        servico = new GrupoEventoServico(repositorio);
+        servico = criarServicoDecorado();
         contexto.excecao = null;
         grupo = servico.criar("Grupo Encerrado", "Regras", UUID.randomUUID(), UUID.randomUUID());
     }
@@ -173,7 +191,7 @@ public class GerenciarGruposEventoSteps {
     @Quando("o sistema processa o encerramento do evento")
     public void oSistemaProcessaEncerramento() {
         try {
-            servico.remover(grupo.getId());
+            servico.remover(grupo.getId(), grupo.getOrganizadorId());
         } catch (Exception e) {
             contexto.excecao = e;
         }
@@ -188,7 +206,7 @@ public class GerenciarGruposEventoSteps {
     @Quando("ele exclui o grupo")
     public void eleExcluiOGrupo() {
         try {
-            servico.remover(grupo.getId());
+            servico.remover(grupo.getId(), grupo.getOrganizadorId());
         } catch (Exception e) {
             contexto.excecao = e;
         }
@@ -204,7 +222,7 @@ public class GerenciarGruposEventoSteps {
         if (servico == null) {
             banco.clear();
             repositorio = criarRepo();
-            servico = new GrupoEventoServico(repositorio);
+            servico = criarServicoDecorado();
         }
         if (grupo == null) {
             grupo = servico.criar("Grupo Test", "Regras", UUID.randomUUID(), UUID.randomUUID());

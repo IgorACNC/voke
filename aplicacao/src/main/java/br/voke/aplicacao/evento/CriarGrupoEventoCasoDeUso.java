@@ -1,16 +1,16 @@
 package br.voke.aplicacao.evento;
 
 import br.voke.dominio.evento.grupo.GrupoEvento;
-import br.voke.dominio.evento.grupo.GrupoEventoServico;
+import br.voke.dominio.evento.grupo.GrupoEventoServicoInterface;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public class CriarGrupoEventoCasoDeUso {
 
-    private final GrupoEventoServico servico;
+    private final GrupoEventoServicoInterface servico;
 
-    public CriarGrupoEventoCasoDeUso(GrupoEventoServico servico) {
+    public CriarGrupoEventoCasoDeUso(GrupoEventoServicoInterface servico) {
         Objects.requireNonNull(servico);
         this.servico = servico;
     }
