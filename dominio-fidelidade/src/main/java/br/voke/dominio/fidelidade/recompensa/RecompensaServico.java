@@ -3,6 +3,8 @@ package br.voke.dominio.fidelidade.recompensa;
 import br.voke.dominio.fidelidade.pontos.ContaPontos;
 import br.voke.dominio.fidelidade.pontos.ContaPontosRepositorio;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,6 +13,7 @@ public class RecompensaServico {
 
     private final RecompensaRepositorio repositorio;
     private final ContaPontosRepositorio contaPontosRepositorio;
+    private final List<RecompensaObserver> observers;
 
     public RecompensaServico(RecompensaRepositorio repositorio,
                              ContaPontosRepositorio contaPontosRepositorio) {
@@ -18,6 +21,20 @@ public class RecompensaServico {
         Objects.requireNonNull(contaPontosRepositorio, "Repositório de conta de pontos é obrigatório");
         this.repositorio = repositorio;
         this.contaPontosRepositorio = contaPontosRepositorio;
+        this.observers = new ArrayList<>();
+    }
+
+    public void adicionarObserver(RecompensaObserver observer) {
+        Objects.requireNonNull(observer, "Observer não pode ser nulo");
+        this.observers.add(observer);
+    }
+
+    public void removerObserver(RecompensaObserver observer) {
+        this.observers.remove(observer);
+    }
+
+    public List<RecompensaObserver> getObservers() {
+        return Collections.unmodifiableList(observers);
     }
 
     public Recompensa cadastrar(String nome, String descricao, int custoEmPontos,
@@ -47,10 +64,18 @@ public class RecompensaServico {
                 .orElseThrow(() -> new IllegalArgumentException("Conta de pontos não encontrada"));
         Recompensa recompensa = repositorio.buscarPorId(recompensaId)
                 .orElseThrow(() -> new IllegalArgumentException("Recompensa não encontrada"));
+
         conta.debitar(recompensa.getCustoEmPontos());
         recompensa.resgatar();
+
         contaPontosRepositorio.salvar(conta);
         repositorio.salvar(recompensa);
+
+        notificarResgatada(recompensa, participanteId);
+
+        if (!recompensa.estaDisponivel()) {
+            notificarEsgotada(recompensa);
+        }
     }
 
     public void inativar(RecompensaId id) {
@@ -68,5 +93,17 @@ public class RecompensaServico {
 
     public List<Recompensa> listarPorOrganizador(UUID organizadorId) {
         return repositorio.buscarPorOrganizadorId(organizadorId);
+    }
+
+    private void notificarResgatada(Recompensa recompensa, UUID participanteId) {
+        for (RecompensaObserver observer : observers) {
+            observer.onRecompensaResgatada(recompensa, participanteId);
+        }
+    }
+
+    private void notificarEsgotada(Recompensa recompensa) {
+        for (RecompensaObserver observer : observers) {
+            observer.onRecompensaEsgotada(recompensa);
+        }
     }
 }
