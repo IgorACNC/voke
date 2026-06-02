@@ -3,9 +3,7 @@ package br.voke.aplicacao.pessoa;
 import br.voke.dominio.pessoa.amizade.AmizadeRepositorio;
 import br.voke.dominio.pessoa.amizade.AmizadeServico;
 import br.voke.dominio.pessoa.amizade.ComunidadeAmigos;
-import br.voke.dominio.pessoa.amizade.ComunidadeAmigosProtecaoProxy;
 import br.voke.dominio.pessoa.amizade.ComunidadeAmigosRepositorio;
-import br.voke.dominio.pessoa.amizade.ComunidadeAmigosServico;
 import br.voke.dominio.pessoa.excecao.VinculoDeAmizadeNecessarioException;
 import br.voke.dominio.pessoa.participante.ParticipanteId;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,12 +31,7 @@ class CriarComunidadeCasoDeUsoTest {
     void setUp() {
         comunidadeRepositorio = mock(ComunidadeAmigosRepositorio.class);
         amizadeRepositorio = mock(AmizadeRepositorio.class);
-
-        ComunidadeAmigosServico servicoReal = new ComunidadeAmigosServico(comunidadeRepositorio);
-        AmizadeServico amizadeServico = new AmizadeServico(amizadeRepositorio);
-        ComunidadeAmigosProtecaoProxy proxy = new ComunidadeAmigosProtecaoProxy(servicoReal, amizadeServico);
-
-        casoDeUso = new CriarComunidadeCasoDeUso(proxy);
+        casoDeUso = new CriarComunidadeCasoDeUso(comunidadeRepositorio, new AmizadeServico(amizadeRepositorio));
     }
 
     @Test

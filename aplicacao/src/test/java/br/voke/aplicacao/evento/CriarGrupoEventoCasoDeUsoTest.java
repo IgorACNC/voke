@@ -2,7 +2,6 @@ package br.voke.aplicacao.evento;
 
 import br.voke.dominio.evento.grupo.GrupoEvento;
 import br.voke.dominio.evento.grupo.GrupoEventoRepositorio;
-import br.voke.dominio.evento.grupo.GrupoEventoServico;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -21,8 +20,7 @@ class CriarGrupoEventoCasoDeUsoTest {
     @BeforeEach
     void setUp() {
         repositorio = mock(GrupoEventoRepositorio.class);
-        // GrupoEventoServico implementa GrupoEventoServicoInterface, compatível com o caso de uso
-        casoDeUso = new CriarGrupoEventoCasoDeUso(new GrupoEventoServico(repositorio));
+        casoDeUso = new CriarGrupoEventoCasoDeUso(repositorio);
     }
 
     @Test

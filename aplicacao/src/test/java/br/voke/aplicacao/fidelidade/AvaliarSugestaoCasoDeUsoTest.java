@@ -1,6 +1,5 @@
 package br.voke.aplicacao.fidelidade;
 
-import br.voke.dominio.fidelidade.sugestao.NotificarParticipanteObserver;
 import br.voke.dominio.fidelidade.sugestao.StatusSugestao;
 import br.voke.dominio.fidelidade.sugestao.Sugestao;
 import br.voke.dominio.fidelidade.sugestao.SugestaoId;
@@ -28,7 +27,6 @@ class AvaliarSugestaoCasoDeUsoTest {
     void setUp() {
         repositorio = mock(SugestaoRepositorio.class);
         servico = new SugestaoServico(repositorio);
-        servico.registrarObserver(new NotificarParticipanteObserver());
         casoDeUso = new AvaliarSugestaoCasoDeUso(servico);
     }
 

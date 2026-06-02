@@ -1,5 +1,6 @@
 package br.voke.aplicacao.fidelidade;
 
+import br.voke.dominio.fidelidade.sugestao.NotificarParticipanteObserver;
 import br.voke.dominio.fidelidade.sugestao.SugestaoId;
 import br.voke.dominio.fidelidade.sugestao.SugestaoServico;
 
@@ -13,6 +14,7 @@ public class AvaliarSugestaoCasoDeUso {
     public AvaliarSugestaoCasoDeUso(SugestaoServico servico) {
         Objects.requireNonNull(servico);
         this.servico = servico;
+        this.servico.registrarObserver(new NotificarParticipanteObserver());
     }
 
     public void executar(UUID sugestaoId, boolean aprovada) {

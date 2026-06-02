@@ -4,7 +4,6 @@ import br.voke.dominio.fidelidade.excecao.PontosInsuficientesException;
 import br.voke.dominio.fidelidade.pontos.ContaPontos;
 import br.voke.dominio.fidelidade.pontos.ContaPontosId;
 import br.voke.dominio.fidelidade.pontos.ContaPontosRepositorio;
-import br.voke.dominio.fidelidade.recompensa.LogRecompensaObserver;
 import br.voke.dominio.fidelidade.recompensa.Recompensa;
 import br.voke.dominio.fidelidade.recompensa.RecompensaId;
 import br.voke.dominio.fidelidade.recompensa.RecompensaObserver;
@@ -36,7 +35,6 @@ class ResgatarRecompensaCasoDeUsoTest {
         contaRepositorio = mock(ContaPontosRepositorio.class);
         recompensaRepositorio = mock(RecompensaRepositorio.class);
         recompensaServico = new RecompensaServico(recompensaRepositorio, contaRepositorio);
-        recompensaServico.adicionarObserver(new LogRecompensaObserver());
         casoDeUso = new ResgatarRecompensaCasoDeUso(recompensaServico);
     }
 
