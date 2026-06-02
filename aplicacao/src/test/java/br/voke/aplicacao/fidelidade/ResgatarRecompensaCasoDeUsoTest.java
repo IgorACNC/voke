@@ -4,8 +4,10 @@ import br.voke.dominio.fidelidade.excecao.PontosInsuficientesException;
 import br.voke.dominio.fidelidade.pontos.ContaPontos;
 import br.voke.dominio.fidelidade.pontos.ContaPontosId;
 import br.voke.dominio.fidelidade.pontos.ContaPontosRepositorio;
+import br.voke.dominio.fidelidade.recompensa.LogRecompensaObserver;
 import br.voke.dominio.fidelidade.recompensa.Recompensa;
 import br.voke.dominio.fidelidade.recompensa.RecompensaId;
+import br.voke.dominio.fidelidade.recompensa.RecompensaObserver;
 import br.voke.dominio.fidelidade.recompensa.RecompensaRepositorio;
 import br.voke.dominio.fidelidade.recompensa.RecompensaServico;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,14 +28,16 @@ class ResgatarRecompensaCasoDeUsoTest {
 
     private ContaPontosRepositorio contaRepositorio;
     private RecompensaRepositorio recompensaRepositorio;
+    private RecompensaServico recompensaServico;
     private ResgatarRecompensaCasoDeUso casoDeUso;
 
     @BeforeEach
     void setUp() {
         contaRepositorio = mock(ContaPontosRepositorio.class);
         recompensaRepositorio = mock(RecompensaRepositorio.class);
-        casoDeUso = new ResgatarRecompensaCasoDeUso(
-                new RecompensaServico(recompensaRepositorio, contaRepositorio));
+        recompensaServico = new RecompensaServico(recompensaRepositorio, contaRepositorio);
+        recompensaServico.adicionarObserver(new LogRecompensaObserver());
+        casoDeUso = new ResgatarRecompensaCasoDeUso(recompensaServico);
     }
 
     @Test
@@ -67,6 +71,23 @@ class ResgatarRecompensaCasoDeUsoTest {
 
         verify(contaRepositorio, never()).salvar(any());
         verify(recompensaRepositorio, never()).salvar(any());
+    }
+
+    @Test
+    void notificaObserverAposResgate() {
+        UUID participanteId = UUID.randomUUID();
+        ContaPontos conta = new ContaPontos(ContaPontosId.novo(), participanteId);
+        conta.creditarPorPresenca(100);
+        Recompensa recompensa = recompensa(70);
+        when(contaRepositorio.buscarPorParticipanteId(participanteId)).thenReturn(Optional.of(conta));
+        when(recompensaRepositorio.buscarPorId(recompensa.getId())).thenReturn(Optional.of(recompensa));
+
+        RecompensaObserver observerMock = mock(RecompensaObserver.class);
+        recompensaServico.adicionarObserver(observerMock);
+
+        casoDeUso.executar(participanteId, recompensa.getId().getValor());
+
+        verify(observerMock).onRecompensaResgatada(recompensa, participanteId);
     }
 
     private Recompensa recompensa(int custo) {
