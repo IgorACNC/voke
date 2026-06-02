@@ -1,9 +1,10 @@
 package br.voke.infraestrutura.inscricao.carrinho;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -17,11 +18,20 @@ import java.util.UUID;
 public class CarrinhoJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false)
     private UUID participanteId;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "carrinho_id", nullable = false)
     private List<ItemCarrinhoJpa> itens = new ArrayList<>();
+
+    @Column(length = 50)
     private String cupomAplicado;
+
+    @Column(precision = 10, scale = 2)
     private BigDecimal descontoCupom;
 
     protected CarrinhoJpa() {

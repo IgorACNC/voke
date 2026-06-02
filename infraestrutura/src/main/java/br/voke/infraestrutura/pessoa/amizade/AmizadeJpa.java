@@ -1,5 +1,6 @@
 package br.voke.infraestrutura.pessoa.amizade;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,10 +15,17 @@ import java.util.UUID;
 public class AmizadeJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false)
     private UUID solicitanteId;
+
+    @Column(nullable = false)
     private UUID receptorId;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private StatusAmizade status;
 
     protected AmizadeJpa() {

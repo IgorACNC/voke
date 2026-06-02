@@ -1,10 +1,14 @@
 package br.voke.infraestrutura.pessoa.parceiro;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import br.voke.dominio.pessoa.parceiro.AtividadeParceiro;
 
@@ -17,10 +21,19 @@ import java.util.UUID;
 public class ParceiroJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false)
     private UUID participanteId;
+
+    @Column(nullable = false)
     private UUID organizadorId;
-    @ElementCollection
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "parceiro_atividades",
+            joinColumns = @JoinColumn(name = "parceiro_id", nullable = false))
+    @Column(name = "atividade", nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
     private Set<AtividadeParceiro> atividades = new HashSet<>();
 

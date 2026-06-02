@@ -1,5 +1,6 @@
 package br.voke.infraestrutura.fidelidade.recompensa;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -12,14 +13,31 @@ import java.util.UUID;
 public class RecompensaJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false, length = 255)
     private String nome;
+
+    @Column(columnDefinition = "TEXT")
     private String descricao;
+
+    @Column(nullable = false)
     private int custoEmPontos;
+
+    @Column(nullable = false)
     private int estoqueTotal;
+
+    @Column(nullable = false)
     private int estoqueResgatado;
+
+    @Column(nullable = false)
     private UUID organizadorId;
+
+    @Column(nullable = false)
     private LocalDateTime ultimaAlteracaoValor;
+
+    @Column(nullable = false)
     private boolean ativa;
 
     protected RecompensaJpa() {

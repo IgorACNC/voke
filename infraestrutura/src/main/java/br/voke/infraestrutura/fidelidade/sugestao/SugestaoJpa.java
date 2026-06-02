@@ -1,5 +1,6 @@
 package br.voke.infraestrutura.fidelidade.sugestao;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,11 +16,20 @@ import java.util.UUID;
 public class SugestaoJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false)
     private UUID participanteId;
+
+    @Column(nullable = false)
     private UUID eventoId;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private StatusSugestao status;
+
+    @Column(nullable = false)
     private LocalDateTime criadaEm;
 
     protected SugestaoJpa() {

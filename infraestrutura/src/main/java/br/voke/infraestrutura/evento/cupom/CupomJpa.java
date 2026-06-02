@@ -1,8 +1,12 @@
 package br.voke.infraestrutura.evento.cupom;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
@@ -15,13 +19,28 @@ import java.util.UUID;
 public class CupomJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false, unique = true, length = 50)
     private String codigo;
+
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal desconto;
+
+    @Column(nullable = false)
     private UUID organizadorId;
+
+    @Column(nullable = false)
     private UUID eventoId;
+
+    @Column(nullable = false)
     private int quantidadeMaxima;
-    @ElementCollection
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "cupom_cpfs_utilizados",
+            joinColumns = @JoinColumn(name = "cupom_id", nullable = false))
+    @Column(name = "cpf", nullable = false, length = 14)
     private Set<String> cpfsUtilizados = new HashSet<>();
 
     protected CupomJpa() {

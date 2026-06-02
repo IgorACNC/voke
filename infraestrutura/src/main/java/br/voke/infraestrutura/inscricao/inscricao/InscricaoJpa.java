@@ -1,5 +1,6 @@
 package br.voke.infraestrutura.inscricao.inscricao;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,12 +17,23 @@ import java.util.UUID;
 public class InscricaoJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false)
     private UUID participanteId;
+
+    @Column(nullable = false)
     private UUID eventoId;
+
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valorPago;
+
+    @Column(nullable = false)
     private LocalDateTime dataInscricao;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private StatusInscricao status;
 
     protected InscricaoJpa() {

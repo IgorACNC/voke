@@ -1,5 +1,6 @@
 package br.voke.infraestrutura.pessoa.organizador;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -12,11 +13,22 @@ import java.util.UUID;
 public class OrganizadorJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false, length = 255)
     private String nome;
+
+    @Column(nullable = false, unique = true, length = 14)
     private String cpf;
+
+    @Column(nullable = false, unique = true, length = 255)
     private String email;
+
+    @Column(nullable = false, length = 255)
     private String senha;
+
+    @Column(nullable = false)
     private LocalDate dataNascimento;
 
     protected OrganizadorJpa() {

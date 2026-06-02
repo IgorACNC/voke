@@ -1,5 +1,6 @@
 package br.voke.infraestrutura.evento.evento;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,17 +17,37 @@ import java.util.UUID;
 public class EventoJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false, length = 255)
     private String nome;
+
+    @Column(columnDefinition = "TEXT")
     private String descricao;
+
+    @Column(nullable = false, length = 255)
     private String local;
+
+    @Column(nullable = false)
     private LocalDateTime dataHoraInicio;
+
+    @Column(nullable = false)
     private LocalDateTime dataHoraFim;
+
+    @Column(nullable = false)
     private int capacidadeMaxima;
+
+    @Column(nullable = false)
     private UUID organizadorId;
+
+    @Column(nullable = false)
     private int idadeMinima;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private StatusEvento status;
+
     @Embedded
     private LoteJpa loteAtual;
 

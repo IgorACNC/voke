@@ -1,5 +1,6 @@
 package br.voke.infraestrutura.evento.notificacao;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -12,10 +13,19 @@ import java.util.UUID;
 public class NotificacaoJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false)
     private UUID eventoId;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String conteudo;
+
+    @Column(nullable = false)
     private LocalDateTime dataEnvio;
+
+    @Column(nullable = false)
     private boolean editada;
 
     protected NotificacaoJpa() {

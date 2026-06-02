@@ -1,5 +1,6 @@
 package br.voke.infraestrutura.fidelidade.pontos;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -11,8 +12,13 @@ import java.util.UUID;
 public class ContaPontosJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false, unique = true)
     private UUID participanteId;
+
+    @Column(nullable = false)
     private int saldo;
 
     protected ContaPontosJpa() {
