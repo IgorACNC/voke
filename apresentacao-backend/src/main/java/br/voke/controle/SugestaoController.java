@@ -46,11 +46,12 @@ public class SugestaoController {
     record SugestaoResp(UUID id, UUID eventoId, String status) {}
     record ErroResp(String mensagem) {}
 
-    record TemPreferenciasResp(boolean configurado) {}
+    record TemPreferenciasResp(boolean configurado, Set<UUID> categoriaIds) {}
 
     @GetMapping("/preferencias/{participanteId}")
     public ResponseEntity<TemPreferenciasResp> temPreferencias(@PathVariable UUID participanteId) {
-        return ResponseEntity.ok(new TemPreferenciasResp(servico.participanteTemPreferencias(participanteId)));
+        Set<UUID> categorias = servico.buscarCategoriasDoParticipante(participanteId);
+        return ResponseEntity.ok(new TemPreferenciasResp(!categorias.isEmpty(), categorias));
     }
 
     @PostMapping("/preferencias")

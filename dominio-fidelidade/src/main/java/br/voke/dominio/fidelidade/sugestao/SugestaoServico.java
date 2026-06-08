@@ -134,6 +134,12 @@ public class SugestaoServico {
                 .orElse(false);
     }
 
+    public java.util.Set<UUID> buscarCategoriasDoParticipante(UUID participanteId) {
+        return preferenciaRepositorio.buscarPorParticipanteId(participanteId)
+                .map(PreferenciaParticipante::getCategoriaIds)
+                .orElse(java.util.Set.of());
+    }
+
     public PreferenciaParticipante configurarPreferencias(UUID participanteId, java.util.Set<UUID> categoriaIds) {
         Objects.requireNonNull(participanteId, "Participante é obrigatório");
         Objects.requireNonNull(categoriaIds, "Categorias são obrigatórias");

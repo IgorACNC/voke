@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { listarCategorias } from '../services/categoriaService'
 import type { Categoria } from '../services/categoriaService'
-import { salvarPreferencias } from '../services/sugestaoService'
+import { buscarPreferencias, salvarPreferencias } from '../services/sugestaoService'
 import './Onboarding.css'
 
 export default function Onboarding() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { usuario } = useAuth()
+
+  const editando = (location.state as { editando?: boolean } | null)?.editando === true
 
   const [categorias, setCategorias] = useState<Categoria[]>([])
   const [selecionadas, setSelecionadas] = useState<Set<string>>(new Set())
@@ -18,9 +21,15 @@ export default function Onboarding() {
   useEffect(() => { carregar() }, [])
 
   async function carregar() {
+    if (!usuario) return
     setCarregando(true)
     try {
-      setCategorias(await listarCategorias())
+      const [listaCategorias, atuais] = await Promise.all([
+        listarCategorias(),
+        editando ? buscarPreferencias(usuario.id) : Promise.resolve([] as string[]),
+      ])
+      setCategorias(listaCategorias)
+      if (atuais.length > 0) setSelecionadas(new Set(atuais))
     } catch {
       setErro('Erro ao carregar categorias. Tente novamente.')
     } finally {
@@ -47,7 +56,7 @@ export default function Onboarding() {
     setCarregando(true)
     try {
       await salvarPreferencias(usuario.id, Array.from(selecionadas))
-      navigate('/dashboard')
+      navigate(editando ? '/meu-perfil' : '/dashboard')
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { mensagem?: string } } })?.response?.data?.mensagem
         ?? 'Não foi possível salvar suas preferências.'
@@ -56,18 +65,22 @@ export default function Onboarding() {
     }
   }
 
+  const titulo = editando
+    ? 'Editar interesses'
+    : `Bem-vindo(a), ${usuario?.nome?.split(' ')[0] ?? ''}!`
+  const subtitulo = editando
+    ? <>Atualize as <strong>categorias que você curte</strong> para receber sugestões mais relevantes.</>
+    : <>Conta pra gente: <strong>quais tipos de eventos você curte?</strong><br />Vamos usar suas escolhas para sugerir experiências relevantes.</>
+  const textoBotao = editando ? 'Salvar' : 'Continuar →'
+
   return (
     <div className="onb-bg">
       <div className="onb-card">
         <div className="onb-logo">
           <span className="onb-logo-text">Voke</span>
         </div>
-        <h1 className="onb-titulo">Bem-vindo(a), {usuario?.nome?.split(' ')[0]}!</h1>
-        <p className="onb-sub">
-          Conta pra gente: <strong>quais tipos de eventos você curte?</strong>
-          <br />
-          Vamos usar suas escolhas para sugerir experiências relevantes.
-        </p>
+        <h1 className="onb-titulo">{titulo}</h1>
+        <p className="onb-sub">{subtitulo}</p>
 
         {erro && <p className="onb-erro">{erro}</p>}
 
@@ -91,9 +104,21 @@ export default function Onboarding() {
 
         <div className="onb-rodape">
           <span className="onb-contagem">{selecionadas.size} selecionada(s)</span>
-          <button className="onb-btn" onClick={continuar} disabled={carregando || selecionadas.size === 0}>
-            {carregando ? 'Salvando...' : 'Continuar →'}
-          </button>
+          <div className="onb-rodape-acoes">
+            {editando && (
+              <button
+                type="button"
+                className="onb-btn-secundario"
+                onClick={() => navigate('/meu-perfil')}
+                disabled={carregando}
+              >
+                Cancelar
+              </button>
+            )}
+            <button className="onb-btn" onClick={continuar} disabled={carregando || selecionadas.size === 0}>
+              {carregando ? 'Salvando...' : textoBotao}
+            </button>
+          </div>
         </div>
       </div>
     </div>

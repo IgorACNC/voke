@@ -157,6 +157,12 @@ export default function MeuPerfil() {
                 </button>
               </div>
               <div className="perfil-acoes">
+                <button
+                  className="perfil-btn-secundario"
+                  onClick={() => navigate('/onboarding', { state: { editando: true } })}
+                >
+                  Editar interesses
+                </button>
                 <button className="perfil-btn-perigo" onClick={() => setConfirmarExclusao(true)}>
                   Excluir conta
                 </button>
