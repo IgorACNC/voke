@@ -6,6 +6,7 @@ import br.voke.aplicacao.fidelidade.GerarSugestoesSemanaisCasoDeUso;
 import br.voke.aplicacao.fidelidade.ListarSugestoesParticipanteCasoDeUso;
 import br.voke.aplicacao.fidelidade.RemoverSugestaoCasoDeUso;
 import br.voke.dominio.fidelidade.sugestao.Sugestao;
+import br.voke.dominio.fidelidade.sugestao.SugestaoServico;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,28 +25,38 @@ public class SugestaoController {
     private final AvaliarSugestaoCasoDeUso avaliarSugestao;
     private final RemoverSugestaoCasoDeUso removerSugestao;
     private final GerarSugestoesSemanaisCasoDeUso gerarSugestoes;
+    private final SugestaoServico servico;
 
     public SugestaoController(ConfigurarPreferenciasCasoDeUso configurarPreferencias,
                               ListarSugestoesParticipanteCasoDeUso listarSugestoes,
                               AvaliarSugestaoCasoDeUso avaliarSugestao,
                               RemoverSugestaoCasoDeUso removerSugestao,
-                              GerarSugestoesSemanaisCasoDeUso gerarSugestoes) {
+                              GerarSugestoesSemanaisCasoDeUso gerarSugestoes,
+                              SugestaoServico servico) {
         this.configurarPreferencias = configurarPreferencias;
         this.listarSugestoes = listarSugestoes;
         this.avaliarSugestao = avaliarSugestao;
         this.removerSugestao = removerSugestao;
         this.gerarSugestoes = gerarSugestoes;
+        this.servico = servico;
     }
 
-    record PreferenciasReq(UUID participanteId, Set<String> categorias) {}
+    record PreferenciasReq(UUID participanteId, Set<UUID> categoriaIds) {}
     record AvaliarReq(boolean aprovada) {}
     record SugestaoResp(UUID id, UUID eventoId, String status) {}
     record ErroResp(String mensagem) {}
 
+    record TemPreferenciasResp(boolean configurado) {}
+
+    @GetMapping("/preferencias/{participanteId}")
+    public ResponseEntity<TemPreferenciasResp> temPreferencias(@PathVariable UUID participanteId) {
+        return ResponseEntity.ok(new TemPreferenciasResp(servico.participanteTemPreferencias(participanteId)));
+    }
+
     @PostMapping("/preferencias")
     public ResponseEntity<?> configurarPreferencias(@RequestBody PreferenciasReq req) {
         try {
-            configurarPreferencias.executar(req.participanteId(), req.categorias());
+            configurarPreferencias.executar(req.participanteId(), req.categoriaIds());
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));

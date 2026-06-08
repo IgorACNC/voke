@@ -1,10 +1,20 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { temPreferencias } from '../services/sugestaoService'
 import './Dashboard.css'
 
 export default function Dashboard() {
   const { usuario, sair } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (usuario?.papel === 'PARTICIPANTE') {
+      temPreferencias(usuario.id)
+        .then((configurado) => { if (!configurado) navigate('/onboarding', { replace: true }) })
+        .catch(() => { /* ignora erro silenciosamente */ })
+    }
+  }, [usuario, navigate])
 
   function handleSair() { sair(); navigate('/login') }
 

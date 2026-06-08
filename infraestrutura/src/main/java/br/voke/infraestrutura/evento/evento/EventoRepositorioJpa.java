@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Repository
 public class EventoRepositorioJpa implements EventoRepositorio {
@@ -39,9 +39,9 @@ public class EventoRepositorioJpa implements EventoRepositorio {
                 .toList();
     }
 
-    public List<Evento> buscarPorTags(Set<String> tags) {
-        Set<String> tagsLower = tags.stream().map(String::toLowerCase).collect(Collectors.toSet());
-        return repository.findByTagsIn(tagsLower).stream()
+    public List<Evento> buscarPorCategorias(Set<UUID> categoriaIds) {
+        if (categoriaIds == null || categoriaIds.isEmpty()) return List.of();
+        return repository.findByCategoriaIdsIn(categoriaIds).stream()
                 .map(EventoJpaMapper::paraDominio)
                 .toList();
     }

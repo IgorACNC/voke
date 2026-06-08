@@ -84,10 +84,10 @@ public class SugestaoServico {
         Optional<PreferenciaParticipante> optPref =
                 preferenciaRepositorio.buscarPorParticipanteId(sugestao.getParticipanteId());
         if (optPref.isEmpty()) return;
-        var tagsEvento = eventoGateway.buscarTagsDoEvento(sugestao.getEventoId());
-        if (tagsEvento.isEmpty()) return;
+        var categoriasEvento = eventoGateway.buscarCategoriasDoEvento(sugestao.getEventoId());
+        if (categoriasEvento.isEmpty()) return;
         PreferenciaParticipante pref = optPref.get();
-        pref.registrarFeedbackNegativo(tagsEvento);
+        pref.registrarFeedbackNegativo(categoriasEvento);
         preferenciaRepositorio.salvar(pref);
     }
 
@@ -128,13 +128,19 @@ public class SugestaoServico {
         return repositorio.buscarPorParticipanteId(participanteId);
     }
 
-    public PreferenciaParticipante configurarPreferencias(UUID participanteId, java.util.Set<String> categorias) {
+    public boolean participanteTemPreferencias(UUID participanteId) {
+        return preferenciaRepositorio.buscarPorParticipanteId(participanteId)
+                .map(p -> !p.getCategoriaIds().isEmpty())
+                .orElse(false);
+    }
+
+    public PreferenciaParticipante configurarPreferencias(UUID participanteId, java.util.Set<UUID> categoriaIds) {
         Objects.requireNonNull(participanteId, "Participante é obrigatório");
-        Objects.requireNonNull(categorias, "Categorias são obrigatórias");
+        Objects.requireNonNull(categoriaIds, "Categorias são obrigatórias");
         PreferenciaParticipante pref = preferenciaRepositorio.buscarPorParticipanteId(participanteId)
                 .orElseGet(() -> new PreferenciaParticipante(
                         PreferenciaParticipanteId.novo(), participanteId));
-        pref.definirCategorias(categorias);
+        pref.definirCategorias(categoriaIds);
         preferenciaRepositorio.salvar(pref);
         return pref;
     }

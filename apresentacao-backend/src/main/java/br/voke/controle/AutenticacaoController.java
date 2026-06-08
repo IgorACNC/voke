@@ -6,6 +6,8 @@ import br.voke.aplicacao.pessoa.RedefinirSenhaCasoDeUso;
 import br.voke.aplicacao.pessoa.SolicitarRecuperacaoSenhaCasoDeUso;
 import br.voke.dominio.compartilhado.Email;
 import br.voke.dominio.compartilhado.Senha;
+import br.voke.dominio.pessoa.admin.Administrador;
+import br.voke.dominio.pessoa.admin.AdministradorRepositorio;
 import br.voke.dominio.pessoa.organizador.Organizador;
 import br.voke.dominio.pessoa.organizador.OrganizadorRepositorio;
 import br.voke.dominio.pessoa.participante.Participante;
@@ -27,6 +29,7 @@ public class AutenticacaoController {
     private final RedefinirSenhaCasoDeUso redefinirSenha;
     private final ParticipanteRepositorio participanteRepositorio;
     private final OrganizadorRepositorio organizadorRepositorio;
+    private final AdministradorRepositorio administradorRepositorio;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
@@ -37,6 +40,7 @@ public class AutenticacaoController {
             RedefinirSenhaCasoDeUso redefinirSenha,
             ParticipanteRepositorio participanteRepositorio,
             OrganizadorRepositorio organizadorRepositorio,
+            AdministradorRepositorio administradorRepositorio,
             JwtUtil jwtUtil,
             PasswordEncoder passwordEncoder) {
         this.cadastrarParticipante = cadastrarParticipante;
@@ -45,6 +49,7 @@ public class AutenticacaoController {
         this.redefinirSenha = redefinirSenha;
         this.participanteRepositorio = participanteRepositorio;
         this.organizadorRepositorio = organizadorRepositorio;
+        this.administradorRepositorio = administradorRepositorio;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
     }
@@ -79,6 +84,20 @@ public class AutenticacaoController {
                     o.getId().getValor().toString());
             return ResponseEntity.ok(new LoginResposta(token, "ORGANIZADOR",
                     o.getId().getValor().toString(), o.getNome().getValor(), o.getEmail().getValor()));
+        }
+
+        // Tenta como administrador
+        var optAdmin = administradorRepositorio.buscarPorEmail(email);
+        if (optAdmin.isPresent()) {
+            Administrador a = optAdmin.get();
+            if (!passwordEncoder.matches(req.senha(), a.getSenha().getValor())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ErroResposta("Credenciais inválidas"));
+            }
+            String token = jwtUtil.gerar(a.getEmail().getValor(), "ADMIN",
+                    a.getId().getValor().toString());
+            return ResponseEntity.ok(new LoginResposta(token, "ADMIN",
+                    a.getId().getValor().toString(), a.getNome().getValor(), a.getEmail().getValor()));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

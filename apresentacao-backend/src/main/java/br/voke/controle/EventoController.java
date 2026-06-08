@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -36,7 +37,8 @@ public class EventoController {
     record CriarEventoReq(String nome, String descricao, String local,
                           LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
                           int capacidadeMaxima, UUID organizadorId,
-                          BigDecimal precoLote, int quantidadeLote, int idadeMinima) {}
+                          BigDecimal precoLote, int quantidadeLote, int idadeMinima,
+                          Set<UUID> categoriaIds) {}
 
     record EditarEventoReq(String nome, String local,
                            LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
@@ -48,7 +50,8 @@ public class EventoController {
         try {
             Evento evento = criarEvento.executar(req.nome(), req.descricao(), req.local(),
                     req.dataHoraInicio(), req.dataHoraFim(), req.capacidadeMaxima(),
-                    req.organizadorId(), req.precoLote(), req.quantidadeLote(), req.idadeMinima());
+                    req.organizadorId(), req.precoLote(), req.quantidadeLote(), req.idadeMinima(),
+                    req.categoriaIds());
             return ResponseEntity.status(HttpStatus.CREATED).body(toResposta(evento));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));

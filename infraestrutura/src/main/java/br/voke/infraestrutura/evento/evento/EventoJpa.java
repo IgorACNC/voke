@@ -58,16 +58,16 @@ public class EventoJpa {
     private LoteJpa loteAtual;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "evento_tags", joinColumns = @JoinColumn(name = "evento_id"))
-    @Column(name = "tag", length = 50)
-    private Set<String> tags = new HashSet<>();
+    @CollectionTable(name = "evento_categorias", joinColumns = @JoinColumn(name = "evento_id"))
+    @Column(name = "categoria_id")
+    private Set<UUID> categoriaIds = new HashSet<>();
 
     protected EventoJpa() {
     }
 
     public EventoJpa(UUID id, String nome, String descricao, String local, LocalDateTime dataHoraInicio,
                      LocalDateTime dataHoraFim, int capacidadeMaxima, UUID organizadorId,
-                     int idadeMinima, StatusEvento status, LoteJpa loteAtual, Set<String> tags) {
+                     int idadeMinima, StatusEvento status, LoteJpa loteAtual, Set<UUID> categoriaIds) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
@@ -79,7 +79,7 @@ public class EventoJpa {
         this.idadeMinima = idadeMinima;
         this.status = status;
         this.loteAtual = loteAtual;
-        this.tags = tags != null ? new HashSet<>(tags) : new HashSet<>();
+        this.categoriaIds = categoriaIds != null ? new HashSet<>(categoriaIds) : new HashSet<>();
     }
 
     public UUID getId() { return id; }
@@ -93,5 +93,5 @@ public class EventoJpa {
     public int getIdadeMinima() { return idadeMinima; }
     public StatusEvento getStatus() { return status; }
     public LoteJpa getLoteAtual() { return loteAtual; }
-    public Set<String> getTags() { return tags; }
+    public Set<UUID> getCategoriaIds() { return categoriaIds; }
 }

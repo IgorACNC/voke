@@ -13,6 +13,6 @@ public interface SpringEventoRepository extends JpaRepository<EventoJpa, UUID> {
     List<EventoJpa> findByLocalIgnoreCase(String local);
 
     @org.springframework.data.jpa.repository.Query(
-            "SELECT DISTINCT e FROM EventoJpa e JOIN e.tags t WHERE LOWER(t) IN :tags")
-    List<EventoJpa> findByTagsIn(@org.springframework.data.repository.query.Param("tags") Set<String> tags);
+            "SELECT DISTINCT e FROM EventoJpa e JOIN e.categoriaIds c WHERE c IN :categoriaIds")
+    List<EventoJpa> findByCategoriaIdsIn(@org.springframework.data.repository.query.Param("categoriaIds") Set<UUID> categoriaIds);
 }

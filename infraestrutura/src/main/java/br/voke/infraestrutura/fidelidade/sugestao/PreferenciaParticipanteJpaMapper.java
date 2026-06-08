@@ -12,7 +12,7 @@ public final class PreferenciaParticipanteJpaMapper {
         return new PreferenciaParticipanteJpa(
                 preferencia.getId().getValor(),
                 preferencia.getParticipanteId(),
-                preferencia.getCategoriasPreferidas(),
+                preferencia.getCategoriaIds(),
                 preferencia.getPesosNegativos());
     }
 
@@ -20,7 +20,7 @@ public final class PreferenciaParticipanteJpaMapper {
         return new PreferenciaParticipante(
                 new PreferenciaParticipanteId(jpa.getId()),
                 jpa.getParticipanteId(),
-                jpa.getCategoriasPreferidas(),
+                jpa.getCategoriaIds(),
                 jpa.getPesosNegativos());
     }
 }

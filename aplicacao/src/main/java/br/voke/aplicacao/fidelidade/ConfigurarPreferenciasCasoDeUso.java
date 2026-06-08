@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+
 public class ConfigurarPreferenciasCasoDeUso {
 
     private final SugestaoServico servico;
@@ -16,7 +17,7 @@ public class ConfigurarPreferenciasCasoDeUso {
         this.servico = servico;
     }
 
-    public PreferenciaParticipante executar(UUID participanteId, Set<String> categorias) {
-        return servico.configurarPreferencias(participanteId, categorias);
+    public PreferenciaParticipante executar(UUID participanteId, Set<UUID> categoriaIds) {
+        return servico.configurarPreferencias(participanteId, categoriaIds);
     }
 }

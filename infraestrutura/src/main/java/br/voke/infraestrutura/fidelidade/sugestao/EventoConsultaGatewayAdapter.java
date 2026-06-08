@@ -20,9 +20,9 @@ public class EventoConsultaGatewayAdapter implements EventoConsultaGateway {
     }
 
     @Override
-    public Set<String> buscarTagsDoEvento(UUID eventoId) {
+    public Set<UUID> buscarCategoriasDoEvento(UUID eventoId) {
         return eventoRepositorio.buscarPorId(new EventoId(eventoId))
-                .map(Evento::getTags)
+                .map(Evento::getCategoriaIds)
                 .orElse(Set.of());
     }
 
@@ -34,10 +34,10 @@ public class EventoConsultaGatewayAdapter implements EventoConsultaGateway {
     }
 
     @Override
-    public List<EventoCandidato> buscarEventosCandidatosPorTags(Set<String> tags) {
-        return eventoRepositorio.buscarPorTags(tags).stream()
+    public List<EventoCandidato> buscarEventosCandidatosPorCategorias(Set<UUID> categoriaIds) {
+        return eventoRepositorio.buscarPorCategorias(categoriaIds).stream()
                 .filter(Evento::estaAtivo)
-                .map(e -> new EventoCandidato(e.getId().getValor(), e.getTags()))
+                .map(e -> new EventoCandidato(e.getId().getValor(), e.getCategoriaIds()))
                 .toList();
     }
 }

@@ -9,6 +9,8 @@ import Avaliacoes from './pages/Avaliacoes'
 import ChatPrivado from './pages/ChatPrivado'
 import EsqueciSenha from './pages/EsqueciSenha'
 import RedefinirSenha from './pages/RedefinirSenha'
+import Admin from './pages/Admin'
+import Onboarding from './pages/Onboarding'
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
           <Route path="/esqueci-senha" element={<EsqueciSenha />} />
           <Route path="/redefinir-senha" element={<RedefinirSenha />} />
           <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/admin" element={<PrivateRoute papelRequerido="ADMIN"><Admin /></PrivateRoute>} />
+          <Route path="/onboarding" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Onboarding /></PrivateRoute>} />
           <Route path="/meu-perfil" element={<PrivateRoute papelRequerido="PARTICIPANTE"><MeuPerfil /></PrivateRoute>} />
           <Route path="/amigos-comunidades" element={<PrivateRoute papelRequerido="PARTICIPANTE"><AmigosComunidades /></PrivateRoute>} />
           <Route path="/avaliacoes" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Avaliacoes /></PrivateRoute>} />

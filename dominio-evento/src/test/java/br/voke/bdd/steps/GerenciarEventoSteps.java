@@ -49,6 +49,7 @@ public class GerenciarEventoSteps {
                         .filter(evento -> evento.colideComHorario(local, inicio, fim))
                         .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
             }
+            @Override public List<Evento> buscarPorCategorias(java.util.Set<java.util.UUID> categoriaIds) { return List.of(); }
             @Override public void remover(EventoId id) { banco.remove(id); }
             @Override public boolean existePorNome(String nome) {
                 return banco.values().stream().anyMatch(evento -> evento.getNome().equals(nome));

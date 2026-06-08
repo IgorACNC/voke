@@ -8,6 +8,8 @@ import br.voke.dominio.evento.cupom.CupomRepositorio;
 import br.voke.dominio.evento.cupom.CupomServico;
 import br.voke.dominio.evento.avaliacao.AvaliacaoRepositorio;
 import br.voke.dominio.evento.avaliacao.AvaliacaoServico;
+import br.voke.dominio.evento.categoria.CategoriaRepositorio;
+import br.voke.dominio.evento.categoria.CategoriaServico;
 import br.voke.dominio.evento.evento.EventoRepositorio;
 import br.voke.dominio.evento.evento.EventoServico;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualRepositorio;
@@ -170,8 +172,8 @@ public class BeanConfig {
     }
 
     @Bean
-    public CriarEventoCasoDeUso criarEvento(EventoServico s) {
-        return new CriarEventoCasoDeUso(s);
+    public CriarEventoCasoDeUso criarEvento(EventoServico s, CategoriaRepositorio cr) {
+        return new CriarEventoCasoDeUso(s, cr);
     }
 
     @Bean
@@ -375,5 +377,30 @@ public class BeanConfig {
     @Bean
     public ConfigurarPreferenciasCasoDeUso configurarPreferencias(SugestaoServico s) {
         return new ConfigurarPreferenciasCasoDeUso(s);
+    }
+
+    @Bean
+    public CategoriaServico categoriaServico(CategoriaRepositorio r) {
+        return new CategoriaServico(r);
+    }
+
+    @Bean
+    public CadastrarCategoriaCasoDeUso cadastrarCategoria(CategoriaServico s) {
+        return new CadastrarCategoriaCasoDeUso(s);
+    }
+
+    @Bean
+    public EditarCategoriaCasoDeUso editarCategoria(CategoriaServico s) {
+        return new EditarCategoriaCasoDeUso(s);
+    }
+
+    @Bean
+    public RemoverCategoriaCasoDeUso removerCategoria(CategoriaServico s) {
+        return new RemoverCategoriaCasoDeUso(s);
+    }
+
+    @Bean
+    public ListarCategoriasCasoDeUso listarCategorias(CategoriaServico s) {
+        return new ListarCategoriasCasoDeUso(s);
     }
 }

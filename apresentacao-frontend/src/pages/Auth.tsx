@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { login, cadastrar } from '../services/authService'
+import { temPreferencias } from '../services/sugestaoService'
 import type { Papel } from '../types/auth'
 import './Auth.css'
 
@@ -52,7 +53,14 @@ export default function Auth() {
         ? await login({ email: form.email, senha: form.senha })
         : await cadastrar({ nome: form.nome, cpf: form.cpf, email: form.email, senha: form.senha, dataNascimento: form.dataNascimento }, papel)
       salvarSessao(resposta)
-      navigate('/dashboard')
+      if (resposta.papel === 'ADMIN') {
+        navigate('/admin')
+      } else if (resposta.papel === 'PARTICIPANTE') {
+        const configurado = await temPreferencias(resposta.id).catch(() => true)
+        navigate(configurado ? '/dashboard' : '/onboarding')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { mensagem?: string } } })?.response?.data?.mensagem
         ?? 'Ocorreu um erro. Tente novamente.'

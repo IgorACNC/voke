@@ -19,20 +19,20 @@ public class MotorSugestoes {
 
     public List<UUID> recomendar(PreferenciaParticipante preferencia, int limite) {
         Objects.requireNonNull(preferencia, "Preferência é obrigatória");
-        if (preferencia.getCategoriasPreferidas().isEmpty()) {
+        if (preferencia.getCategoriaIds().isEmpty()) {
             return List.of();
         }
         UUID participanteId = preferencia.getParticipanteId();
 
         List<EventoConsultaGateway.EventoCandidato> candidatos =
-                eventoGateway.buscarEventosCandidatosPorTags(preferencia.getCategoriasPreferidas());
+                eventoGateway.buscarEventosCandidatosPorCategorias(preferencia.getCategoriaIds());
 
         return candidatos.stream()
                 .filter(c -> eventoGateway.eventoEstaDisponivel(c.eventoId()))
                 .filter(c -> !inscricaoGateway.participanteJaInscritoOuAguardando(participanteId, c.eventoId()))
-                .filter(c -> !preferencia.deveDescartar(c.tags()))
+                .filter(c -> !preferencia.deveDescartar(c.categoriaIds()))
                 .sorted(Comparator.comparingInt(
-                        (EventoConsultaGateway.EventoCandidato c) -> preferencia.calcularScore(c.tags())).reversed())
+                        (EventoConsultaGateway.EventoCandidato c) -> preferencia.calcularScore(c.categoriaIds())).reversed())
                 .limit(limite)
                 .map(EventoConsultaGateway.EventoCandidato::eventoId)
                 .toList();

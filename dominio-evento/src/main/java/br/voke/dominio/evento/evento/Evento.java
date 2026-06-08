@@ -23,7 +23,7 @@ public class Evento extends EntidadeBase<EventoId> {
     private Lote loteAtual;
     private StatusEvento status;
     private int idadeMinima;
-    private Set<String> tags = new HashSet<>();
+    private Set<UUID> categoriaIds = new HashSet<>();
 
     public Evento(EventoId id, String nome, String descricao, String local,
                   LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
@@ -126,20 +126,19 @@ public class Evento extends EntidadeBase<EventoId> {
     public Lote getLoteAtual() { return loteAtual; }
     public StatusEvento getStatus() { return status; }
     public int getIdadeMinima() { return idadeMinima; }
-    public Set<String> getTags() { return Set.copyOf(tags); }
+    public Set<UUID> getCategoriaIds() { return Set.copyOf(categoriaIds); }
 
-    public void adicionarTag(String tag) {
-        Objects.requireNonNull(tag, "Tag é obrigatória");
-        this.tags.add(tag.trim().toLowerCase());
+    public void adicionarCategoria(UUID categoriaId) {
+        Objects.requireNonNull(categoriaId, "Categoria é obrigatória");
+        this.categoriaIds.add(categoriaId);
     }
 
-    public void removerTag(String tag) {
-        this.tags.remove(tag.trim().toLowerCase());
+    public void removerCategoria(UUID categoriaId) {
+        this.categoriaIds.remove(categoriaId);
     }
 
-    public void definirTags(Set<String> novasTags) {
-        Objects.requireNonNull(novasTags, "Tags são obrigatórias");
-        this.tags = new HashSet<>();
-        novasTags.forEach(this::adicionarTag);
+    public void definirCategorias(Set<UUID> novasCategorias) {
+        Objects.requireNonNull(novasCategorias, "Categorias são obrigatórias");
+        this.categoriaIds = new HashSet<>(novasCategorias);
     }
 }

@@ -30,30 +30,30 @@ public class PreferenciaParticipanteJpa {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "preferencia_categorias",
             joinColumns = @JoinColumn(name = "preferencia_id"))
-    @Column(name = "categoria", length = 50)
-    private Set<String> categoriasPreferidas = new HashSet<>();
+    @Column(name = "categoria_id")
+    private Set<UUID> categoriaIds = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "preferencia_pesos_negativos",
             joinColumns = @JoinColumn(name = "preferencia_id"))
-    @MapKeyColumn(name = "tag", length = 50)
+    @MapKeyColumn(name = "categoria_id")
     @Column(name = "peso")
-    private Map<String, Integer> pesosNegativos = new HashMap<>();
+    private Map<UUID, Integer> pesosNegativos = new HashMap<>();
 
     protected PreferenciaParticipanteJpa() {
     }
 
     public PreferenciaParticipanteJpa(UUID id, UUID participanteId,
-                                      Set<String> categoriasPreferidas,
-                                      Map<String, Integer> pesosNegativos) {
+                                      Set<UUID> categoriaIds,
+                                      Map<UUID, Integer> pesosNegativos) {
         this.id = id;
         this.participanteId = participanteId;
-        this.categoriasPreferidas = categoriasPreferidas != null ? new HashSet<>(categoriasPreferidas) : new HashSet<>();
+        this.categoriaIds = categoriaIds != null ? new HashSet<>(categoriaIds) : new HashSet<>();
         this.pesosNegativos = pesosNegativos != null ? new HashMap<>(pesosNegativos) : new HashMap<>();
     }
 
     public UUID getId() { return id; }
     public UUID getParticipanteId() { return participanteId; }
-    public Set<String> getCategoriasPreferidas() { return categoriasPreferidas; }
-    public Map<String, Integer> getPesosNegativos() { return pesosNegativos; }
+    public Set<UUID> getCategoriaIds() { return categoriaIds; }
+    public Map<UUID, Integer> getPesosNegativos() { return pesosNegativos; }
 }
