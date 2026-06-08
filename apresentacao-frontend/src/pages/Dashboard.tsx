@@ -24,6 +24,9 @@ export default function Dashboard() {
     { icon: '⭐', label: 'Favoritos' },
     { icon: '🏆', label: 'Meus Pontos' },
     { icon: '👛', label: 'Carteira Virtual' },
+    { icon: '★', label: 'Avaliacoes', rota: '/avaliacoes' },
+    { icon: '👥', label: 'Amigos e Comunidades', rota: '/amigos-comunidades' },
+    { icon: '💬', label: 'Chat Privado', rota: '/chat-privado' },
     { icon: '👤', label: 'Minha Conta', rota: '/meu-perfil' },
   ]
 

@@ -6,6 +6,8 @@ import br.voke.aplicacao.inscricao.*;
 import br.voke.aplicacao.pessoa.*;
 import br.voke.dominio.evento.cupom.CupomRepositorio;
 import br.voke.dominio.evento.cupom.CupomServico;
+import br.voke.dominio.evento.avaliacao.AvaliacaoRepositorio;
+import br.voke.dominio.evento.avaliacao.AvaliacaoServico;
 import br.voke.dominio.evento.evento.EventoRepositorio;
 import br.voke.dominio.evento.evento.EventoServico;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualRepositorio;
@@ -27,6 +29,10 @@ import br.voke.dominio.inscricao.inscricao.InscricaoRepositorio;
 import br.voke.dominio.inscricao.inscricao.InscricaoServico;
 import br.voke.dominio.pessoa.organizador.OrganizadorRepositorio;
 import br.voke.dominio.pessoa.organizador.OrganizadorServico;
+import br.voke.dominio.pessoa.amizade.AmizadeRepositorio;
+import br.voke.dominio.pessoa.amizade.AmizadeServico;
+import br.voke.dominio.pessoa.chat.ChatPrivadoServico;
+import br.voke.dominio.pessoa.chat.MensagemPrivadaRepositorio;
 import br.voke.dominio.pessoa.participante.ParticipanteRepositorio;
 import br.voke.dominio.pessoa.participante.ParticipanteServico;
 import br.voke.dominio.pessoa.participante.TokenRecuperacaoSenhaRepositorio;
@@ -47,6 +53,16 @@ public class BeanConfig {
     @Bean
     public ParticipanteServico participanteServico(ParticipanteRepositorio r) {
         return new ParticipanteServico(r);
+    }
+
+    @Bean
+    public AmizadeServico amizadeServico(AmizadeRepositorio r) {
+        return new AmizadeServico(r);
+    }
+
+    @Bean
+    public ChatPrivadoServico chatPrivadoServico(MensagemPrivadaRepositorio mr, AmizadeRepositorio ar) {
+        return new ChatPrivadoServico(mr, ar);
     }
 
     @Bean
@@ -101,6 +117,42 @@ public class BeanConfig {
         return new RemoverOrganizadorCasoDeUso(s);
     }
 
+    @Bean
+    public SolicitarAmizadeCasoDeUso solicitarAmizade(AmizadeServico s, ParticipanteRepositorio pr) {
+        return new SolicitarAmizadeCasoDeUso(s, pr);
+    }
+
+    @Bean
+    public AceitarAmizadeCasoDeUso aceitarAmizade(AmizadeServico s) {
+        return new AceitarAmizadeCasoDeUso(s);
+    }
+
+    @Bean
+    public RecusarAmizadeCasoDeUso recusarAmizade(AmizadeServico s) {
+        return new RecusarAmizadeCasoDeUso(s);
+    }
+
+    @Bean
+    public DesfazerAmizadeCasoDeUso desfazerAmizade(AmizadeServico s) {
+        return new DesfazerAmizadeCasoDeUso(s);
+    }
+
+    @Bean
+    public CriarComunidadeCasoDeUso criarComunidade(
+            br.voke.dominio.pessoa.amizade.ComunidadeAmigosRepositorio cr, AmizadeServico as) {
+        return new CriarComunidadeCasoDeUso(cr, as);
+    }
+
+    @Bean
+    public EnviarMensagemPrivadaCasoDeUso enviarMensagemPrivada(ChatPrivadoServico s) {
+        return new EnviarMensagemPrivadaCasoDeUso(s);
+    }
+
+    @Bean
+    public ListarMensagensPrivadasCasoDeUso listarMensagensPrivadas(ChatPrivadoServico s) {
+        return new ListarMensagensPrivadasCasoDeUso(s);
+    }
+
 
     @Bean
     public EventoServico eventoServico(EventoRepositorio r) {
@@ -110,6 +162,11 @@ public class BeanConfig {
     @Bean
     public CupomServico cupomServico(CupomRepositorio r) {
         return new CupomServico(r);
+    }
+
+    @Bean
+    public AvaliacaoServico avaliacaoServico(AvaliacaoRepositorio r) {
+        return new AvaliacaoServico(r);
     }
 
     @Bean
@@ -125,6 +182,11 @@ public class BeanConfig {
     @Bean
     public CancelarEventoCasoDeUso cancelarEvento(EventoServico s) {
         return new CancelarEventoCasoDeUso(s);
+    }
+
+    @Bean
+    public AvaliarEventoCasoDeUso avaliarEvento(AvaliacaoServico s, EventoRepositorio er, InscricaoRepositorio ir) {
+        return new AvaliarEventoCasoDeUso(s, er, ir);
     }
 
     @Bean
