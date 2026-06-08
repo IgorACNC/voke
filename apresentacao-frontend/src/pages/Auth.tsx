@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { login, cadastrar } from '../services/authService'
 import type { Papel } from '../types/auth'
@@ -122,6 +122,14 @@ export default function Auth() {
           <button type="submit" className="auth-btn-submit" disabled={carregando}>
             {carregando ? 'Aguarde...' : modo === 'login' ? 'Entrar' : papel === 'PARTICIPANTE' ? 'Criar conta de Participante' : 'Criar conta de Organizador'}
           </button>
+
+          {modo === 'login' && (
+            <p className="auth-hint" style={{ textAlign: 'center', marginTop: '0.5rem' }}>
+              <Link to="/esqueci-senha" style={{ color: '#9333ea', textDecoration: 'none', fontWeight: 500 }}>
+                Esqueci minha senha
+              </Link>
+            </p>
+          )}
         </form>
 
         <p className="auth-hint">

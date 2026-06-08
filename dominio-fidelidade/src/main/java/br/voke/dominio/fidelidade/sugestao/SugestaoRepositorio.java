@@ -10,4 +10,5 @@ public interface SugestaoRepositorio {
     List<Sugestao> buscarPorParticipanteId(UUID participanteId);
     void remover(SugestaoId id);
     int contarSugestoesSemanalPorParticipante(UUID participanteId);
+    List<Sugestao> buscarPendentesCriadasAntesDe(int dias);
 }

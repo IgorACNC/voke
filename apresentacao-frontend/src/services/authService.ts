@@ -24,3 +24,11 @@ export async function cadastrar(payload: CadastroPayload, papel: Papel): Promise
   const { data } = await api.post<LoginResposta>(`/auth/cadastrar/${rota}`, payload)
   return data
 }
+
+export async function esqueciSenha(email: string): Promise<void> {
+  await api.post('/auth/esqueci-senha', { email })
+}
+
+export async function redefinirSenha(token: string, novaSenha: string): Promise<void> {
+  await api.post('/auth/redefinir-senha', { token, novaSenha })
+}

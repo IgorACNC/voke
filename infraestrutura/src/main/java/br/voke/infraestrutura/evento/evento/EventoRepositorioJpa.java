@@ -8,6 +8,8 @@ import br.voke.dominio.evento.evento.EventoRepositorio;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class EventoRepositorioJpa implements EventoRepositorio {
@@ -33,6 +35,13 @@ public class EventoRepositorioJpa implements EventoRepositorio {
     public List<Evento> buscarPorLocalEPeriodo(String local, LocalDateTime inicio, LocalDateTime fim) {
         return repository.findByLocalIgnoreCase(local).stream()
                 .filter(e -> e.getDataHoraInicio().isBefore(fim) && inicio.isBefore(e.getDataHoraFim()))
+                .map(EventoJpaMapper::paraDominio)
+                .toList();
+    }
+
+    public List<Evento> buscarPorTags(Set<String> tags) {
+        Set<String> tagsLower = tags.stream().map(String::toLowerCase).collect(Collectors.toSet());
+        return repository.findByTagsIn(tagsLower).stream()
                 .map(EventoJpaMapper::paraDominio)
                 .toList();
     }

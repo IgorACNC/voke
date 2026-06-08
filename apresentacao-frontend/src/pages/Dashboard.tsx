@@ -24,6 +24,7 @@ export default function Dashboard() {
     { icon: '⭐', label: 'Favoritos' },
     { icon: '🏆', label: 'Meus Pontos' },
     { icon: '👛', label: 'Carteira Virtual' },
+    { icon: '👤', label: 'Minha Conta', rota: '/meu-perfil' },
   ]
 
   const cards = usuario?.papel === 'ORGANIZADOR' ? cardsOrganizador : cardsParticipante
@@ -46,7 +47,11 @@ export default function Dashboard() {
         </div>
         <div className="dash-cards">
           {cards.map((c) => (
-            <div key={c.label} className="dash-card">
+            <div
+              key={c.label}
+              className="dash-card"
+              onClick={() => 'rota' in c && c.rota && navigate(c.rota)}
+            >
               <span className="dash-card-icon">{c.icon}</span>
               <span className="dash-card-label">{c.label}</span>
             </div>

@@ -14,6 +14,13 @@ import br.voke.dominio.fidelidade.pontos.ContaPontosRepositorio;
 import br.voke.dominio.fidelidade.pontos.ContaPontosServico;
 import br.voke.dominio.fidelidade.recompensa.RecompensaRepositorio;
 import br.voke.dominio.fidelidade.recompensa.RecompensaServico;
+import br.voke.dominio.fidelidade.sugestao.EventoConsultaGateway;
+import br.voke.dominio.fidelidade.sugestao.InscricaoConsultaGateway;
+import br.voke.dominio.fidelidade.sugestao.MotorSugestoes;
+import br.voke.dominio.fidelidade.sugestao.NotificarParticipanteObserver;
+import br.voke.dominio.fidelidade.sugestao.PreferenciaParticipanteRepositorio;
+import br.voke.dominio.fidelidade.sugestao.SugestaoRepositorio;
+import br.voke.dominio.fidelidade.sugestao.SugestaoServico;
 import br.voke.dominio.inscricao.carrinho.CarrinhoRepositorio;
 import br.voke.dominio.inscricao.carrinho.CarrinhoServico;
 import br.voke.dominio.inscricao.inscricao.InscricaoRepositorio;
@@ -22,6 +29,7 @@ import br.voke.dominio.pessoa.organizador.OrganizadorRepositorio;
 import br.voke.dominio.pessoa.organizador.OrganizadorServico;
 import br.voke.dominio.pessoa.participante.ParticipanteRepositorio;
 import br.voke.dominio.pessoa.participante.ParticipanteServico;
+import br.voke.dominio.pessoa.participante.TokenRecuperacaoSenhaRepositorio;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -64,6 +72,23 @@ public class BeanConfig {
     @Bean
     public RemoverParticipanteCasoDeUso removerParticipante(ParticipanteServico s) {
         return new RemoverParticipanteCasoDeUso(s);
+    }
+
+    @Bean
+    public AlterarSenhaCasoDeUso alterarSenha(ParticipanteRepositorio r) {
+        return new AlterarSenhaCasoDeUso(r);
+    }
+
+    @Bean
+    public SolicitarRecuperacaoSenhaCasoDeUso solicitarRecuperacaoSenha(
+            ParticipanteRepositorio pr, TokenRecuperacaoSenhaRepositorio tr) {
+        return new SolicitarRecuperacaoSenhaCasoDeUso(pr, tr);
+    }
+
+    @Bean
+    public RedefinirSenhaCasoDeUso redefinirSenha(
+            ParticipanteRepositorio pr, TokenRecuperacaoSenhaRepositorio tr) {
+        return new RedefinirSenhaCasoDeUso(pr, tr);
     }
 
     @Bean
@@ -228,5 +253,65 @@ public class BeanConfig {
     @Bean
     public RemoverSaldoCasoDeUso removerSaldo(CarteiraVirtualServico s) {
         return new RemoverSaldoCasoDeUso(s);
+    }
+
+    @Bean
+    public MotorSugestoes motorSugestoes(EventoConsultaGateway eg, InscricaoConsultaGateway ig) {
+        return new MotorSugestoes(eg, ig);
+    }
+
+    @Bean
+    public SugestaoServico sugestaoServico(SugestaoRepositorio sr,
+                                            PreferenciaParticipanteRepositorio pr,
+                                            MotorSugestoes motor,
+                                            EventoConsultaGateway eg) {
+        SugestaoServico servico = new SugestaoServico(sr, pr, motor, eg);
+        servico.registrarObserver(new NotificarParticipanteObserver());
+        return servico;
+    }
+
+    @Bean
+    public CadastrarSugestaoCasoDeUso cadastrarSugestao(SugestaoServico s) {
+        return new CadastrarSugestaoCasoDeUso(s);
+    }
+
+    @Bean
+    public EditarSugestaoCasoDeUso editarSugestao(SugestaoServico s) {
+        return new EditarSugestaoCasoDeUso(s);
+    }
+
+    @Bean
+    public AvaliarSugestaoCasoDeUso avaliarSugestao(SugestaoServico s) {
+        return new AvaliarSugestaoCasoDeUso(s);
+    }
+
+    @Bean
+    public RemoverSugestaoCasoDeUso removerSugestao(SugestaoServico s) {
+        return new RemoverSugestaoCasoDeUso(s);
+    }
+
+    @Bean
+    public ListarSugestoesParticipanteCasoDeUso listarSugestoes(SugestaoServico s) {
+        return new ListarSugestoesParticipanteCasoDeUso(s);
+    }
+
+    @Bean
+    public GerarSugestoesSemanaisCasoDeUso gerarSugestoes(SugestaoServico s) {
+        return new GerarSugestoesSemanaisCasoDeUso(s);
+    }
+
+    @Bean
+    public ExpirarSugestaoCasoDeUso expirarSugestao(SugestaoServico s) {
+        return new ExpirarSugestaoCasoDeUso(s);
+    }
+
+    @Bean
+    public ExpirarSugestoesAntigasCasoDeUso expirarSugestoesAntigas(SugestaoServico s) {
+        return new ExpirarSugestoesAntigasCasoDeUso(s);
+    }
+
+    @Bean
+    public ConfigurarPreferenciasCasoDeUso configurarPreferencias(SugestaoServico s) {
+        return new ConfigurarPreferenciasCasoDeUso(s);
     }
 }

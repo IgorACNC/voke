@@ -1,5 +1,6 @@
 package br.voke.infraestrutura.fidelidade.sugestao;
 
+import br.voke.dominio.fidelidade.sugestao.StatusSugestao;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -9,4 +10,5 @@ import java.util.UUID;
 public interface SpringSugestaoRepository extends JpaRepository<SugestaoJpa, UUID> {
     List<SugestaoJpa> findByParticipanteId(UUID participanteId);
     int countByParticipanteIdAndCriadaEmAfter(UUID participanteId, LocalDateTime inicioSemana);
+    List<SugestaoJpa> findByStatusAndCriadaEmBefore(StatusSugestao status, LocalDateTime limite);
 }

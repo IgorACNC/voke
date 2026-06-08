@@ -23,7 +23,8 @@ public final class EventoJpaMapper {
                 evento.getOrganizadorId(),
                 evento.getIdadeMinima(),
                 evento.getStatus(),
-                paraJpa(evento.getLoteAtual()));
+                paraJpa(evento.getLoteAtual()),
+                evento.getTags());
     }
 
     public static Evento paraDominio(EventoJpa jpa) {
@@ -40,6 +41,9 @@ public final class EventoJpaMapper {
                 jpa.getIdadeMinima());
         if (jpa.getStatus() != StatusEvento.ATIVO) {
             DominioReflection.definirCampo(evento, "status", jpa.getStatus());
+        }
+        if (jpa.getTags() != null && !jpa.getTags().isEmpty()) {
+            evento.definirTags(jpa.getTags());
         }
         return evento;
     }

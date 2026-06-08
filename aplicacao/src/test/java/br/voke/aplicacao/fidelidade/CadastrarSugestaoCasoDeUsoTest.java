@@ -1,5 +1,9 @@
 package br.voke.aplicacao.fidelidade;
 
+import br.voke.dominio.fidelidade.sugestao.EventoConsultaGateway;
+import br.voke.dominio.fidelidade.sugestao.InscricaoConsultaGateway;
+import br.voke.dominio.fidelidade.sugestao.MotorSugestoes;
+import br.voke.dominio.fidelidade.sugestao.PreferenciaParticipanteRepositorio;
 import br.voke.dominio.fidelidade.sugestao.Sugestao;
 import br.voke.dominio.fidelidade.sugestao.SugestaoRepositorio;
 import br.voke.dominio.fidelidade.sugestao.SugestaoServico;
@@ -21,7 +25,12 @@ class CadastrarSugestaoCasoDeUsoTest {
     @BeforeEach
     void setUp() {
         repositorio = mock(SugestaoRepositorio.class);
-        casoDeUso = new CadastrarSugestaoCasoDeUso(new SugestaoServico(repositorio));
+        PreferenciaParticipanteRepositorio prefRepo = mock(PreferenciaParticipanteRepositorio.class);
+        EventoConsultaGateway eventoGateway = mock(EventoConsultaGateway.class);
+        InscricaoConsultaGateway inscricaoGateway = mock(InscricaoConsultaGateway.class);
+        MotorSugestoes motor = new MotorSugestoes(eventoGateway, inscricaoGateway);
+        casoDeUso = new CadastrarSugestaoCasoDeUso(
+                new SugestaoServico(repositorio, prefRepo, motor, eventoGateway));
     }
 
     @Test

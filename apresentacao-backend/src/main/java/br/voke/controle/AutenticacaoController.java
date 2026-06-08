@@ -2,7 +2,10 @@ package br.voke.controle;
 
 import br.voke.aplicacao.pessoa.CadastrarOrganizadorCasoDeUso;
 import br.voke.aplicacao.pessoa.CadastrarParticipanteCasoDeUso;
+import br.voke.aplicacao.pessoa.RedefinirSenhaCasoDeUso;
+import br.voke.aplicacao.pessoa.SolicitarRecuperacaoSenhaCasoDeUso;
 import br.voke.dominio.compartilhado.Email;
+import br.voke.dominio.compartilhado.Senha;
 import br.voke.dominio.pessoa.organizador.Organizador;
 import br.voke.dominio.pessoa.organizador.OrganizadorRepositorio;
 import br.voke.dominio.pessoa.participante.Participante;
@@ -20,6 +23,8 @@ public class AutenticacaoController {
 
     private final CadastrarParticipanteCasoDeUso cadastrarParticipante;
     private final CadastrarOrganizadorCasoDeUso cadastrarOrganizador;
+    private final SolicitarRecuperacaoSenhaCasoDeUso solicitarRecuperacaoSenha;
+    private final RedefinirSenhaCasoDeUso redefinirSenha;
     private final ParticipanteRepositorio participanteRepositorio;
     private final OrganizadorRepositorio organizadorRepositorio;
     private final JwtUtil jwtUtil;
@@ -28,12 +33,16 @@ public class AutenticacaoController {
     public AutenticacaoController(
             CadastrarParticipanteCasoDeUso cadastrarParticipante,
             CadastrarOrganizadorCasoDeUso cadastrarOrganizador,
+            SolicitarRecuperacaoSenhaCasoDeUso solicitarRecuperacaoSenha,
+            RedefinirSenhaCasoDeUso redefinirSenha,
             ParticipanteRepositorio participanteRepositorio,
             OrganizadorRepositorio organizadorRepositorio,
             JwtUtil jwtUtil,
             PasswordEncoder passwordEncoder) {
         this.cadastrarParticipante = cadastrarParticipante;
         this.cadastrarOrganizador = cadastrarOrganizador;
+        this.solicitarRecuperacaoSenha = solicitarRecuperacaoSenha;
+        this.redefinirSenha = redefinirSenha;
         this.participanteRepositorio = participanteRepositorio;
         this.organizadorRepositorio = organizadorRepositorio;
         this.jwtUtil = jwtUtil;
@@ -103,6 +112,31 @@ public class AutenticacaoController {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(new LoginResposta(token, "ORGANIZADOR",
                             o.getId().getValor().toString(), o.getNome().getValor(), o.getEmail().getValor()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErroResposta(e.getMessage()));
+        }
+    }
+
+    record EsqueciSenhaReq(String email) {}
+    record RedefinirSenhaReq(String token, String novaSenha) {}
+
+    @PostMapping("/esqueci-senha")
+    public ResponseEntity<?> esqueciSenha(@RequestBody EsqueciSenhaReq req) {
+        try {
+            solicitarRecuperacaoSenha.executar(req.email());
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErroResposta(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/redefinir-senha")
+    public ResponseEntity<?> redefinirSenha(@RequestBody RedefinirSenhaReq req) {
+        try {
+            new Senha(req.novaSenha());
+            String hash = passwordEncoder.encode(req.novaSenha());
+            redefinirSenha.executar(req.token(), hash);
+            return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErroResposta(e.getMessage()));
         }

@@ -88,6 +88,11 @@ class CriarEventoCasoDeUsoTest {
         }
 
         @Override
+        public List<Evento> buscarPorTags(java.util.Set<String> tags) {
+            return List.of();
+        }
+
+        @Override
         public void remover(EventoId id) {
             eventos.removeIf(evento -> evento.getId().equals(id));
         }

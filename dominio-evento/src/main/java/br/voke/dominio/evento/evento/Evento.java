@@ -6,7 +6,9 @@ import br.voke.dominio.evento.excecao.EventoCanceladoException;
 import br.voke.dominio.evento.excecao.LoteAtivoExistenteException;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 public class Evento extends EntidadeBase<EventoId> {
@@ -21,6 +23,7 @@ public class Evento extends EntidadeBase<EventoId> {
     private Lote loteAtual;
     private StatusEvento status;
     private int idadeMinima;
+    private Set<String> tags = new HashSet<>();
 
     public Evento(EventoId id, String nome, String descricao, String local,
                   LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
@@ -123,4 +126,20 @@ public class Evento extends EntidadeBase<EventoId> {
     public Lote getLoteAtual() { return loteAtual; }
     public StatusEvento getStatus() { return status; }
     public int getIdadeMinima() { return idadeMinima; }
+    public Set<String> getTags() { return Set.copyOf(tags); }
+
+    public void adicionarTag(String tag) {
+        Objects.requireNonNull(tag, "Tag é obrigatória");
+        this.tags.add(tag.trim().toLowerCase());
+    }
+
+    public void removerTag(String tag) {
+        this.tags.remove(tag.trim().toLowerCase());
+    }
+
+    public void definirTags(Set<String> novasTags) {
+        Objects.requireNonNull(novasTags, "Tags são obrigatórias");
+        this.tags = new HashSet<>();
+        novasTags.forEach(this::adicionarTag);
+    }
 }
