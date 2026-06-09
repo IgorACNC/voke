@@ -1,0 +1,204 @@
+.exp-bg {
+  min-height: 100vh;
+  background: #f4f6fb;
+  font-family: 'Inter', sans-serif;
+}
+
+.exp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #1a1a2e;
+  padding: 1rem 2rem;
+  color: #fff;
+}
+
+.exp-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #7c6af7;
+  cursor: pointer;
+}
+
+.exp-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.exp-papel {
+  background: #7c6af7;
+  color: #fff;
+  border-radius: 12px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.exp-nome {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.exp-sair {
+  background: transparent;
+  border: 1px solid #555;
+  color: #ccc;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.exp-sair:hover { border-color: #7c6af7; color: #7c6af7; }
+
+.exp-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.exp-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.exp-titulo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.exp-sub {
+  color: #666;
+  margin: 0.3rem 0 0;
+  font-size: 0.95rem;
+}
+
+.exp-busca {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  outline: none;
+  margin-bottom: 1.5rem;
+  box-sizing: border-box;
+}
+
+.exp-busca:focus { border-color: #7c6af7; }
+
+.exp-erro {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.exp-info {
+  color: #888;
+  text-align: center;
+  padding: 2rem;
+}
+
+.exp-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.2rem;
+}
+
+.exp-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.exp-card-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.exp-card-nome {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.exp-card-local {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.15rem 0 0;
+}
+
+.exp-badge-idade {
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 0.15rem 0.5rem;
+  white-space: nowrap;
+}
+
+.exp-card-desc {
+  font-size: 0.88rem;
+  color: #555;
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.exp-card-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.exp-preco {
+  font-weight: 700;
+  color: #7c6af7;
+  font-size: 0.95rem;
+}
+
+.exp-vagas {
+  font-size: 0.8rem;
+  color: #059669;
+  margin: 0;
+  font-weight: 500;
+}
+
+.exp-card-acoes {
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.exp-btn-grupo {
+  width: 100%;
+  padding: 0.55rem;
+  background: #7c6af7;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.exp-btn-grupo:hover { background: #6250e0; }

@@ -11,6 +11,8 @@ public interface SpringEventoRepository extends JpaRepository<EventoJpa, UUID> {
     Optional<EventoJpa> findByNome(String nome);
     boolean existsByNome(String nome);
     List<EventoJpa> findByLocalIgnoreCase(String local);
+    List<EventoJpa> findByOrganizadorId(UUID organizadorId);
+    List<EventoJpa> findByStatus(br.voke.dominio.evento.evento.StatusEvento status);
 
     @org.springframework.data.jpa.repository.Query(
             "SELECT DISTINCT e FROM EventoJpa e JOIN e.categoriaIds c WHERE c IN :categoriaIds")

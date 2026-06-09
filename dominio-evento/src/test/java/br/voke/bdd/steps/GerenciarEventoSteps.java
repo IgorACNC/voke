@@ -50,6 +50,16 @@ public class GerenciarEventoSteps {
                         .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
             }
             @Override public List<Evento> buscarPorCategorias(java.util.Set<java.util.UUID> categoriaIds) { return List.of(); }
+            @Override public List<Evento> buscarPorOrganizador(UUID organizadorId) {
+                return banco.values().stream()
+                        .filter(e -> e.getOrganizadorId().equals(organizadorId))
+                        .collect(java.util.stream.Collectors.toList());
+            }
+            @Override public List<Evento> listarAtivos() {
+                return banco.values().stream()
+                        .filter(br.voke.dominio.evento.evento.Evento::estaAtivo)
+                        .collect(java.util.stream.Collectors.toList());
+            }
             @Override public void remover(EventoId id) { banco.remove(id); }
             @Override public boolean existePorNome(String nome) {
                 return banco.values().stream().anyMatch(evento -> evento.getNome().equals(nome));

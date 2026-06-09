@@ -143,6 +143,15 @@ export default function Auth() {
         <p className="auth-hint">
           {papel === 'ORGANIZADOR' ? 'Organizadores criam e gerenciam eventos.' : 'Participantes se inscrevem e curtem eventos.'}
         </p>
+
+        <div style={{ textAlign: 'center', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
+          <Link
+            to="/catalogo"
+            style={{ color: '#7c6af7', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}
+          >
+            Ver eventos sem fazer login →
+          </Link>
+        </div>
       </div>
     </div>
   )

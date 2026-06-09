@@ -103,6 +103,20 @@ class CriarEventoCasoDeUsoTest {
         }
 
         @Override
+        public List<Evento> buscarPorOrganizador(UUID organizadorId) {
+            return eventos.stream()
+                    .filter(e -> e.getOrganizadorId().equals(organizadorId))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
+        @Override
+        public List<Evento> listarAtivos() {
+            return eventos.stream()
+                    .filter(br.voke.dominio.evento.evento.Evento::estaAtivo)
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
+        @Override
         public void remover(EventoId id) {
             eventos.removeIf(evento -> evento.getId().equals(id));
         }

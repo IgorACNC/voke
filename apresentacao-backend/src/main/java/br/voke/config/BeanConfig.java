@@ -12,6 +12,8 @@ import br.voke.dominio.evento.categoria.CategoriaRepositorio;
 import br.voke.dominio.evento.categoria.CategoriaServico;
 import br.voke.dominio.evento.evento.EventoRepositorio;
 import br.voke.dominio.evento.evento.EventoServico;
+import br.voke.dominio.evento.grupo.*;
+import br.voke.aplicacao.evento.CriarGrupoEventoCasoDeUso;
 import br.voke.aplicacao.fidelidade.ConsultarExtratoCasoDeUso;
 import br.voke.aplicacao.fidelidade.ResetarLimitesDiariosCasoDeUso;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualRepositorio;
@@ -162,6 +164,21 @@ public class BeanConfig {
     @Bean
     public EventoServico eventoServico(EventoRepositorio r) {
         return new EventoServico(r);
+    }
+
+    @Bean
+    public GrupoEventoServicoInterface grupoEventoServico(GrupoEventoRepositorio r) {
+        GrupoEventoServico base = new GrupoEventoServico(r);
+        return new RestricaoEtariaGrupoDecorator(
+                new VerificacaoInscritoGrupoDecorator(
+                        new PrivilegioOrganizadorGrupoDecorator(base, r)
+                )
+        );
+    }
+
+    @Bean
+    public CriarGrupoEventoCasoDeUso criarGrupoEvento(GrupoEventoRepositorio r) {
+        return new CriarGrupoEventoCasoDeUso(r);
     }
 
     @Bean

@@ -36,6 +36,8 @@ public class SegurancaConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/eventos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/eventos/{id}").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFiltro, UsernamePasswordAuthenticationFilter.class)

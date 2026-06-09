@@ -46,6 +46,18 @@ public class EventoRepositorioJpa implements EventoRepositorio {
                 .toList();
     }
 
+    public List<Evento> buscarPorOrganizador(UUID organizadorId) {
+        return repository.findByOrganizadorId(organizadorId).stream()
+                .map(EventoJpaMapper::paraDominio)
+                .toList();
+    }
+
+    public List<Evento> listarAtivos() {
+        return repository.findByStatus(br.voke.dominio.evento.evento.StatusEvento.ATIVO).stream()
+                .map(EventoJpaMapper::paraDominio)
+                .toList();
+    }
+
     public void remover(EventoId id) {
         repository.deleteById(id.getValor());
     }

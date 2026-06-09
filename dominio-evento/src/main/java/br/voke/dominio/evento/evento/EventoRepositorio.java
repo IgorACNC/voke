@@ -12,6 +12,8 @@ public interface EventoRepositorio {
     Optional<Evento> buscarPorNome(String nome);
     List<Evento> buscarPorLocalEPeriodo(String local, LocalDateTime inicio, LocalDateTime fim);
     List<Evento> buscarPorCategorias(Set<UUID> categoriaIds);
+    List<Evento> buscarPorOrganizador(UUID organizadorId);
+    List<Evento> listarAtivos();
     void remover(EventoId id);
     boolean existePorNome(String nome);
 }
