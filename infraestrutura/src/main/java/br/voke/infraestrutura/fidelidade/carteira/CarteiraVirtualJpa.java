@@ -25,18 +25,23 @@ public class CarteiraVirtualJpa {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalInseridoHoje;
 
-    protected CarteiraVirtualJpa() {
-    }
+    @Column(nullable = false)
+    private int contadorSaquesHoje;
 
-    public CarteiraVirtualJpa(UUID id, UUID participanteId, BigDecimal saldo, BigDecimal totalInseridoHoje) {
+    protected CarteiraVirtualJpa() {}
+
+    public CarteiraVirtualJpa(UUID id, UUID participanteId, BigDecimal saldo,
+                              BigDecimal totalInseridoHoje, int contadorSaquesHoje) {
         this.id = id;
         this.participanteId = participanteId;
         this.saldo = saldo;
         this.totalInseridoHoje = totalInseridoHoje;
+        this.contadorSaquesHoje = contadorSaquesHoje;
     }
 
     public UUID getId() { return id; }
     public UUID getParticipanteId() { return participanteId; }
     public BigDecimal getSaldo() { return saldo; }
     public BigDecimal getTotalInseridoHoje() { return totalInseridoHoje; }
+    public int getContadorSaquesHoje() { return contadorSaquesHoje; }
 }

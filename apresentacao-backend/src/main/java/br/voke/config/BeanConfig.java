@@ -12,8 +12,11 @@ import br.voke.dominio.evento.categoria.CategoriaRepositorio;
 import br.voke.dominio.evento.categoria.CategoriaServico;
 import br.voke.dominio.evento.evento.EventoRepositorio;
 import br.voke.dominio.evento.evento.EventoServico;
+import br.voke.aplicacao.fidelidade.ConsultarExtratoCasoDeUso;
+import br.voke.aplicacao.fidelidade.ResetarLimitesDiariosCasoDeUso;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualRepositorio;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualServico;
+import br.voke.dominio.fidelidade.transacao.TransacaoFinanceiraRepositorio;
 import br.voke.dominio.fidelidade.pontos.ContaPontosRepositorio;
 import br.voke.dominio.fidelidade.pontos.ContaPontosServico;
 import br.voke.dominio.fidelidade.recompensa.RecompensaRepositorio;
@@ -260,8 +263,19 @@ public class BeanConfig {
     }
 
     @Bean
-    public CarteiraVirtualServico carteiraVirtualServico(CarteiraVirtualRepositorio r) {
-        return new CarteiraVirtualServico(r);
+    public CarteiraVirtualServico carteiraVirtualServico(CarteiraVirtualRepositorio r,
+                                                          TransacaoFinanceiraRepositorio tr) {
+        return new CarteiraVirtualServico(r, tr);
+    }
+
+    @Bean
+    public ConsultarExtratoCasoDeUso consultarExtrato(TransacaoFinanceiraRepositorio tr) {
+        return new ConsultarExtratoCasoDeUso(tr);
+    }
+
+    @Bean
+    public ResetarLimitesDiariosCasoDeUso resetarLimitesDiarios(CarteiraVirtualServico s) {
+        return new ResetarLimitesDiariosCasoDeUso(s);
     }
 
     @Bean

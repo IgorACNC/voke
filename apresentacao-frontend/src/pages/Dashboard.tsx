@@ -1,18 +1,24 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { temPreferencias } from '../services/sugestaoService'
+import { consultarCarteira } from '../services/carteiraService'
 import './Dashboard.css'
 
 export default function Dashboard() {
   const { usuario, sair } = useAuth()
   const navigate = useNavigate()
+  const [saldo, setSaldo] = useState<number | null>(null)
 
   useEffect(() => {
     if (usuario?.papel === 'PARTICIPANTE') {
       temPreferencias(usuario.id)
         .then((configurado) => { if (!configurado) navigate('/onboarding', { replace: true }) })
         .catch(() => { /* ignora erro silenciosamente */ })
+
+      consultarCarteira(usuario.id)
+        .then((c) => setSaldo(Number(c.saldo)))
+        .catch(() => { /* saldo indisponivel, exibe nada */ })
     }
   }, [usuario, navigate])
 
@@ -33,7 +39,7 @@ export default function Dashboard() {
     { icon: '🛒', label: 'Carrinho' },
     { icon: '⭐', label: 'Favoritos' },
     { icon: '🏆', label: 'Meus Pontos' },
-    { icon: '👛', label: 'Carteira Virtual' },
+    { icon: '💲', label: 'Carteira Virtual', rota: '/carteira' },
     { icon: '★', label: 'Avaliacoes', rota: '/avaliacoes' },
     { icon: '👥', label: 'Amigos e Comunidades', rota: '/amigos-comunidades' },
     { icon: '💬', label: 'Chat Privado', rota: '/chat-privado' },
@@ -49,6 +55,11 @@ export default function Dashboard() {
         <div className="dash-header-right">
           <span className="dash-papel">{usuario?.papel}</span>
           <span className="dash-nome">{usuario?.nome}</span>
+          {saldo !== null && (
+            <span className="dash-saldo">
+              {saldo.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            </span>
+          )}
           <button className="dash-sair" onClick={handleSair}>Sair</button>
         </div>
       </header>

@@ -6,18 +6,22 @@ import br.voke.infraestrutura.compartilhado.DominioReflection;
 
 public final class CarteiraVirtualJpaMapper {
 
-    private CarteiraVirtualJpaMapper() {
-    }
+    private CarteiraVirtualJpaMapper() {}
 
     public static CarteiraVirtualJpa paraJpa(CarteiraVirtual carteira) {
-        return new CarteiraVirtualJpa(carteira.getId().getValor(), carteira.getParticipanteId(),
-                carteira.getSaldo(), carteira.getTotalInseridoHoje());
+        return new CarteiraVirtualJpa(
+                carteira.getId().getValor(),
+                carteira.getParticipanteId(),
+                carteira.getSaldo(),
+                carteira.getTotalInseridoHoje(),
+                carteira.getContadorSaquesHoje());
     }
 
     public static CarteiraVirtual paraDominio(CarteiraVirtualJpa jpa) {
         CarteiraVirtual carteira = new CarteiraVirtual(new CarteiraVirtualId(jpa.getId()), jpa.getParticipanteId());
         DominioReflection.definirCampo(carteira, "saldo", jpa.getSaldo());
         DominioReflection.definirCampo(carteira, "totalInseridoHoje", jpa.getTotalInseridoHoje());
+        DominioReflection.definirCampo(carteira, "contadorSaquesHoje", jpa.getContadorSaquesHoje());
         return carteira;
     }
 }

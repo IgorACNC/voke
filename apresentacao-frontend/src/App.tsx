@@ -11,6 +11,7 @@ import EsqueciSenha from './pages/EsqueciSenha'
 import RedefinirSenha from './pages/RedefinirSenha'
 import Admin from './pages/Admin'
 import Onboarding from './pages/Onboarding'
+import CarteiraVirtual from './pages/CarteiraVirtual'
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/avaliacoes" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Avaliacoes /></PrivateRoute>} />
           <Route path="/avaliacoes/:eventoId" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Avaliacoes /></PrivateRoute>} />
           <Route path="/chat-privado" element={<PrivateRoute papelRequerido="PARTICIPANTE"><ChatPrivado /></PrivateRoute>} />
+          <Route path="/carteira" element={<PrivateRoute papelRequerido="PARTICIPANTE"><CarteiraVirtual /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>

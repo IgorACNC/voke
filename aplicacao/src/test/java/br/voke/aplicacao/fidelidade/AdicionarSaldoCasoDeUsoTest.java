@@ -4,6 +4,7 @@ import br.voke.dominio.fidelidade.carteira.CarteiraVirtual;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualId;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualRepositorio;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualServico;
+import br.voke.dominio.fidelidade.transacao.TransacaoFinanceiraRepositorio;
 import br.voke.dominio.fidelidade.carteira.InsercaoSaldoPadrao;
 import br.voke.dominio.fidelidade.carteira.InsercaoSaldoVip;
 import br.voke.dominio.fidelidade.excecao.LimiteDiarioInsercaoException;
@@ -30,7 +31,8 @@ class AdicionarSaldoCasoDeUsoTest {
     @BeforeEach
     void setUp() {
         repositorio = mock(CarteiraVirtualRepositorio.class);
-        casoDeUso = new AdicionarSaldoCasoDeUso(new CarteiraVirtualServico(repositorio));
+        TransacaoFinanceiraRepositorio transacaoRepositorio = mock(TransacaoFinanceiraRepositorio.class);
+        casoDeUso = new AdicionarSaldoCasoDeUso(new CarteiraVirtualServico(repositorio, transacaoRepositorio));
     }
 
     @Test

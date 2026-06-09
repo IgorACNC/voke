@@ -7,4 +7,5 @@ public interface CarteiraVirtualRepositorio {
     void salvar(CarteiraVirtual carteira);
     Optional<CarteiraVirtual> buscarPorId(CarteiraVirtualId id);
     Optional<CarteiraVirtual> buscarPorParticipanteId(UUID participanteId);
+    void resetarLimitesDiarios();
 }

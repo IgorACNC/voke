@@ -21,6 +21,13 @@
 
 .dash-nome { font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 500; }
 
+.dash-saldo {
+  font-size: 0.85rem; font-weight: 700; color: #fff;
+  background: rgba(255,255,255,0.15); padding: 0.25rem 0.75rem;
+  border-radius: 20px; border: 1px solid rgba(255,255,255,0.25);
+  letter-spacing: 0.01em;
+}
+
 .dash-sair {
   background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
   color: #fff; padding: 0.4rem 0.9rem; border-radius: 8px;
