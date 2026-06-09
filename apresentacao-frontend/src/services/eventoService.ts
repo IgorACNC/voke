@@ -1,4 +1,5 @@
 import api from './api'
+import { endpoints } from './endpoints'
 
 export interface LoteEvento {
   numero: number
@@ -43,35 +44,35 @@ export interface EditarEventoPayload {
 }
 
 export async function listarEventosAtivos(): Promise<Evento[]> {
-  const { data } = await api.get<Evento[]>('/eventos')
+  const { data } = await api.get<Evento[]>(endpoints.listarEventos)
   return data
 }
 
 export async function listarMeusEventos(): Promise<Evento[]> {
-  const { data } = await api.get<Evento[]>('/eventos/meus')
+  const { data } = await api.get<Evento[]>(endpoints.listarMeusEventos)
   return data
 }
 
 export async function buscarEvento(id: string): Promise<Evento> {
-  const { data } = await api.get<Evento>(`/eventos/${id}`)
+  const { data } = await api.get<Evento>(endpoints.buscarEvento(id))
   return data
 }
 
 export async function criarEvento(payload: CriarEventoPayload): Promise<Evento> {
-  const { data } = await api.post<Evento>('/eventos', payload)
+  const { data } = await api.post<Evento>(endpoints.criarEvento, payload)
   return data
 }
 
 export async function editarEvento(id: string, payload: EditarEventoPayload): Promise<Evento> {
-  const { data } = await api.put<Evento>(`/eventos/${id}`, payload)
+  const { data } = await api.put<Evento>(endpoints.editarEvento(id), payload)
   return data
 }
 
 export async function cancelarEvento(id: string): Promise<void> {
-  await api.delete(`/eventos/${id}`)
+  await api.delete(endpoints.cancelarEvento(id))
 }
 
 export async function criarLote(eventoId: string, preco: number, quantidade: number): Promise<Evento> {
-  const { data } = await api.post<Evento>(`/eventos/${eventoId}/lotes`, { preco, quantidade })
+  const { data } = await api.post<Evento>(endpoints.criarLote(eventoId), { preco, quantidade })
   return data
 }

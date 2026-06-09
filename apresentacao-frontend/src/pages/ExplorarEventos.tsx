@@ -99,12 +99,17 @@ export default function ExplorarEventos() {
               )}
 
               <div className="exp-card-acoes">
-                <button
-                  className="exp-btn-grupo"
-                  onClick={() => navigate(`/eventos/${ev.id}/grupo`)}
-                >
-                  Ver Grupo
-                </button>
+                <div>
+                  <button
+                    className="exp-btn-grupo"
+                    onClick={() => navigate(`/eventos/${ev.id}/grupo`)}
+                  >
+                    Ver Grupo
+                  </button>
+                  <button className="exp-btn-comprar" onClick={() => navigate(`/eventos/${ev.id}`)}>
+                    Ver / Comprar
+                  </button>
+                </div>
               </div>
             </div>
           ))}

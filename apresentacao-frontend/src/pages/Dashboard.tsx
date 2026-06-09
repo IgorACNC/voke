@@ -26,8 +26,8 @@ export default function Dashboard() {
 
   const cardsOrganizador = [
     { icon: '📅', label: 'Meus Eventos', rota: '/meus-eventos' },
-    { icon: '🎟️', label: 'Ingressos / Lotes' },
-    { icon: '🏷️', label: 'Cupons' },
+    { icon: '🎟️', label: 'Ingressos / Lotes', rota: '/meus-eventos' },
+    { icon: '🏷️', label: 'Cupons', rota: '/cupons' },
     { icon: '🎁', label: 'Recompensas' },
     { icon: '📊', label: 'Relatórios' },
     { icon: '🔔', label: 'Notificações' },
@@ -35,7 +35,7 @@ export default function Dashboard() {
 
   const cardsParticipante = [
     { icon: '🔍', label: 'Explorar Eventos', rota: '/explorar-eventos' },
-    { icon: '🎫', label: 'Minhas Inscrições' },
+    { icon: '🎫', label: 'Minhas Inscrições', rota: '/minhas-inscricoes' },
     { icon: '🛒', label: 'Carrinho' },
     { icon: '⭐', label: 'Favoritos' },
     { icon: '🏆', label: 'Meus Pontos' },

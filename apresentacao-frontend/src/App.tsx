@@ -19,6 +19,9 @@ import GrupoEvento from './pages/GrupoEvento'
 import CriarGrupo from './pages/CriarGrupo'
 import ExplorarEventos from './pages/ExplorarEventos'
 import CatalogoPublico from './pages/CatalogoPublico'
+import MinhasInscricoes from './pages/MinhasInscricoes'
+import Cupons from './pages/Cupons'
+import EventDetail from './pages/EventDetail'
 
 export default function App() {
   return (
@@ -52,6 +55,10 @@ export default function App() {
           <Route path="/avaliacoes/:eventoId" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Avaliacoes /></PrivateRoute>} />
           <Route path="/chat-privado" element={<PrivateRoute papelRequerido="PARTICIPANTE"><ChatPrivado /></PrivateRoute>} />
           <Route path="/carteira" element={<PrivateRoute papelRequerido="PARTICIPANTE"><CarteiraVirtual /></PrivateRoute>} />
+          <Route path="/minhas-inscricoes" element={<PrivateRoute papelRequerido="PARTICIPANTE"><MinhasInscricoes /></PrivateRoute>} />
+          <Route path="/eventos/:eventoId" element={<PrivateRoute><EventDetail /></PrivateRoute>} />
+
+          <Route path="/cupons" element={<PrivateRoute papelRequerido="ORGANIZADOR"><Cupons /></PrivateRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
