@@ -42,6 +42,15 @@ export default function MinhasInscricoes() {
     return 0
   }
 
+  function eventoFinalizado(dataFimEvento: string): boolean {
+    return new Date(dataFimEvento).getTime() < Date.now()
+  }
+
+  function podeAvaliar(inscricao: Inscricao): boolean {
+    return (inscricao.status === 'CONFIRMADA' || inscricao.status === 'CHECK_IN_REALIZADO')
+      && eventoFinalizado(inscricao.evento.dataHoraFim)
+  }
+
   async function handleCancelar(id: string) {
     const inscr = inscricoes.find((x) => x.id === id)
     if (!inscr) return
@@ -96,6 +105,11 @@ export default function MinhasInscricoes() {
                 <p>Lote: {i.loteNumero ?? '—'} | Status: {i.status}</p>
                 <div style={{ marginTop: 8 }}>
                   <button onClick={() => navigate(`/eventos/${i.evento.id}/grupo`)}>Ver evento</button>
+                  {podeAvaliar(i) && (
+                    <button onClick={() => navigate(`/avaliacoes/${i.evento.id}`, { state: { evento: i.evento } })}>
+                      Avaliar evento
+                    </button>
+                  )}
                   {i.status === 'CONFIRMADA' && (
                     <button className="social-btn-sec" onClick={() => handleCancelar(i.id)}>Cancelar Inscrição</button>
                   )}

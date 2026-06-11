@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { buscarEvento, type Evento } from '../services/eventoService'
 import {
   avaliarEvento,
   buscarAvaliacao,
@@ -14,9 +15,11 @@ import './Social.css'
 
 export default function Avaliacoes() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { eventoId } = useParams()
   const { usuario } = useAuth()
   const [eventos, setEventos] = useState<EventoAvaliavel[]>([])
+  const [eventoDetalhe, setEventoDetalhe] = useState<Evento | null>(null)
   const [nota, setNota] = useState(5)
   const [comentario, setComentario] = useState('')
   const [avaliacao, setAvaliacao] = useState<Avaliacao | null>(null)
@@ -24,10 +27,8 @@ export default function Avaliacoes() {
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
 
-  const eventoSelecionado = useMemo(
-    () => eventos.find((e) => e.id === eventoId),
-    [eventos, eventoId],
-  )
+  const eventoRecebido = (location.state as { evento?: Evento } | null)?.evento
+  const eventoSelecionado = useMemo(() => eventos.find((e) => e.id === eventoId), [eventos, eventoId])
 
   useEffect(() => {
     if (!usuario) return
@@ -37,9 +38,18 @@ export default function Avaliacoes() {
   useEffect(() => {
     if (!usuario || !eventoId) {
       setAvaliacao(null)
+      setEventoDetalhe(null)
       setNota(5)
       setComentario('')
       return
+    }
+
+    if (eventoRecebido?.id === eventoId) {
+      setEventoDetalhe(eventoRecebido)
+    } else {
+      buscarEvento(eventoId)
+        .then(setEventoDetalhe)
+        .catch(() => undefined)
     }
 
     buscarAvaliacao(usuario.id, eventoId)
@@ -140,8 +150,12 @@ export default function Avaliacoes() {
           </section>
         ) : (
           <section className="social-card">
-            <h2>{eventoSelecionado?.nome ?? 'Evento selecionado'}</h2>
-            {eventoSelecionado && <p className="social-card-sub">{eventoSelecionado.local} - encerrado em {new Date(eventoSelecionado.dataHoraFim).toLocaleString()}</p>}
+            <h2>{eventoSelecionado?.nome ?? eventoDetalhe?.nome ?? 'Evento selecionado'}</h2>
+            {(eventoSelecionado || eventoDetalhe) && (
+              <p className="social-card-sub">
+                {(eventoSelecionado?.local ?? eventoDetalhe?.local)} - encerrado em {new Date(eventoSelecionado?.dataHoraFim ?? eventoDetalhe!.dataHoraFim).toLocaleString()}
+              </p>
+            )}
 
             <form className="social-form-col" onSubmit={handleSalvar}>
               <label>

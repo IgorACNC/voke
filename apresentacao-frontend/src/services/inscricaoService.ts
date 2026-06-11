@@ -6,7 +6,7 @@ export interface Inscricao {
   id: string
   evento: Evento
   loteNumero?: number
-  status: 'PENDENTE' | 'CONFIRMADA' | 'CANCELADA'
+  status: 'PENDENTE' | 'CONFIRMADA' | 'CANCELADA' | 'CHECK_IN_REALIZADO'
   dataHoraInscricao: string
   valorPago: number
 }
