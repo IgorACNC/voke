@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   aceitarAmizade,
+  buscarParticipantes,
   criarComunidade,
   desfazerAmizade,
   listarAmizades,
@@ -11,6 +12,7 @@ import {
   solicitarAmizade,
   type Amizade,
   type Comunidade,
+  type ParticipanteResumo,
 } from '../services/socialService'
 import './Social.css'
 
@@ -19,7 +21,8 @@ export default function AmigosComunidades() {
   const { usuario } = useAuth()
   const [amizades, setAmizades] = useState<Amizade[]>([])
   const [comunidades, setComunidades] = useState<Comunidade[]>([])
-  const [receptorId, setReceptorId] = useState('')
+  const [termoBusca, setTermoBusca] = useState('')
+  const [participantesEncontrados, setParticipantesEncontrados] = useState<ParticipanteResumo[]>([])
   const [nomeComunidade, setNomeComunidade] = useState('')
   const [erro, setErro] = useState('')
   const [mensagem, setMensagem] = useState('')
@@ -65,12 +68,28 @@ export default function AmigosComunidades() {
     }, 'Comunidade criada.')
   }
 
-  async function handleSolicitarAmizade(e: React.FormEvent) {
+  async function handleBuscarParticipantes(e: React.FormEvent) {
     e.preventDefault()
-    if (!receptorId.trim()) return
+    if (termoBusca.trim().length < 2) {
+      setErro('Digite pelo menos 2 caracteres para buscar.')
+      return
+    }
+    setErro('')
+    setMensagem('')
+    setCarregando(true)
+    try {
+      setParticipantesEncontrados(await buscarParticipantes(termoBusca, usuario!.id))
+    } catch {
+      setErro('Nao foi possivel buscar participantes.')
+    } finally {
+      setCarregando(false)
+    }
+  }
+
+  async function handleSolicitarAmizade(receptorId: string) {
     await executar(async () => {
       await solicitarAmizade(usuario!.id, receptorId)
-      setReceptorId('')
+      setParticipantesEncontrados((atuais) => atuais.filter((p) => p.id !== receptorId))
     }, 'Solicitacao enviada.')
   }
 
@@ -94,14 +113,33 @@ export default function AmigosComunidades() {
         <div className="social-grid">
           <section className="social-card">
             <h2>Solicitar amizade</h2>
-            <form className="social-form-col" onSubmit={handleSolicitarAmizade}>
+            <form className="social-form-col" onSubmit={handleBuscarParticipantes}>
               <label>
-                ID do participante
-                <input value={receptorId} onChange={(e) => setReceptorId(e.target.value)}
-                       placeholder="Cole o UUID do participante" />
+                Buscar por nome ou e-mail
+                <div className="social-form-linha">
+                  <input
+                    value={termoBusca}
+                    onChange={(e) => setTermoBusca(e.target.value)}
+                    placeholder="Ex: Maria ou maria@email.com"
+                  />
+                  <button disabled={carregando}>Buscar</button>
+                </div>
               </label>
-              <button disabled={carregando}>Enviar solicitacao</button>
             </form>
+            <div className="social-lista">
+              {participantesEncontrados.map((p) => (
+                <div className="social-item" key={p.id}>
+                  <div>
+                    <strong>{p.nome}</strong>
+                    <span>{p.email}</span>
+                  </div>
+                  <button onClick={() => handleSolicitarAmizade(p.id)} disabled={carregando}>Adicionar</button>
+                </div>
+              ))}
+              {termoBusca.length >= 2 && participantesEncontrados.length === 0 && (
+                <p className="social-vazio">Nenhum participante encontrado para essa busca.</p>
+              )}
+            </div>
           </section>
 
           <section className="social-card">

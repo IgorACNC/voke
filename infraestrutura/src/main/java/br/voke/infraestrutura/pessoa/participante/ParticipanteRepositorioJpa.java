@@ -1,12 +1,14 @@
 package br.voke.infraestrutura.pessoa.participante;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.PageRequest;
 import br.voke.dominio.compartilhado.Cpf;
 import br.voke.dominio.compartilhado.Email;
 import br.voke.dominio.pessoa.participante.Participante;
 import br.voke.dominio.pessoa.participante.ParticipanteId;
 import br.voke.dominio.pessoa.participante.ParticipanteRepositorio;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,6 +34,15 @@ public class ParticipanteRepositorioJpa implements ParticipanteRepositorio {
 
     public Optional<Participante> buscarPorCpf(Cpf cpf) {
         return repository.findByCpf(cpf.getValor()).map(ParticipanteJpaMapper::paraDominio);
+    }
+
+    public List<Participante> buscarPorNomeOuEmail(String termo, int limite) {
+        int tamanho = Math.max(1, Math.min(limite, 20));
+        String busca = termo == null ? "" : termo.trim();
+        return repository.findByNomeContainingIgnoreCaseOrEmailContainingIgnoreCase(
+                busca, busca, PageRequest.of(0, tamanho)).stream()
+                .map(ParticipanteJpaMapper::paraDominio)
+                .toList();
     }
 
     public void remover(ParticipanteId id) {

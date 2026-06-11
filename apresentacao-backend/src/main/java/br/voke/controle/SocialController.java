@@ -72,6 +72,19 @@ public class SocialController {
                 .map(a -> toAmizadeResp(a, id)).toList();
     }
 
+    @GetMapping("/participantes")
+    public List<ParticipanteResp> buscarParticipantes(@RequestParam String termo,
+                                                      @RequestParam UUID participanteAtualId) {
+        String busca = termo == null ? "" : termo.trim();
+        if (busca.length() < 2) {
+            return List.of();
+        }
+        return participanteRepositorio.buscarPorNomeOuEmail(busca, 10).stream()
+                .filter(p -> !p.getId().getValor().equals(participanteAtualId))
+                .map(this::toParticipanteResp)
+                .toList();
+    }
+
     @PutMapping("/amizades/{id}/aceitar")
     public ResponseEntity<?> aceitar(@PathVariable UUID id) {
         try {

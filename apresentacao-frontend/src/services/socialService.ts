@@ -34,6 +34,11 @@ export async function solicitarAmizade(solicitanteId: string, receptorId: string
   await api.post('/social/amizades', { solicitanteId, receptorId })
 }
 
+export async function buscarParticipantes(termo: string, participanteAtualId: string): Promise<ParticipanteResumo[]> {
+  const { data } = await api.get('/social/participantes', { params: { termo, participanteAtualId } })
+  return data
+}
+
 export async function listarAmizades(participanteId: string): Promise<Amizade[]> {
   const { data } = await api.get('/social/amizades', { params: { participanteId } })
   return data
