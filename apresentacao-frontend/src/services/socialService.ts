@@ -83,6 +83,11 @@ export async function compartilharEventoComunidade(comunidadeId: string, criador
   return data
 }
 
+export async function sairDaComunidade(comunidadeId: string, participanteId: string): Promise<Comunidade> {
+  const { data } = await api.delete(`/social/comunidades/${comunidadeId}/membros/${participanteId}`)
+  return data
+}
+
 export async function listarConversa(participanteId: string, amigoId: string): Promise<MensagemPrivada[]> {
   const { data } = await api.get('/chats/privado/conversa', { params: { participanteId, amigoId } })
   return data

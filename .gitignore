@@ -16,3 +16,5 @@ src-gen
 **/src/main/resources/static
 
 apresentacao-frontend/dist
+
+**/src/main/resources/application-local.properties

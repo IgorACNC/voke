@@ -158,6 +158,23 @@ public class SocialController {
         }
     }
 
+    @DeleteMapping("/comunidades/{id}/membros/{participanteId}")
+    public ResponseEntity<?> sairDaComunidade(@PathVariable UUID id, @PathVariable UUID participanteId) {
+        try {
+            ComunidadeAmigos comunidade = comunidadeRepositorio.buscarPorId(new ComunidadeAmigosId(id))
+                    .orElseThrow(() -> new IllegalArgumentException("Comunidade nao encontrada"));
+            ParticipanteId membroId = new ParticipanteId(participanteId);
+            if (!comunidade.getMembros().contains(membroId)) {
+                throw new IllegalArgumentException("Participante nao faz parte da comunidade");
+            }
+            comunidade.removerMembro(membroId);
+            comunidadeRepositorio.salvar(comunidade);
+            return ResponseEntity.ok(toComunidadeResp(comunidade));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
+        }
+    }
+
     @PostMapping("/comunidades/{id}/eventos")
     public ResponseEntity<?> compartilharEvento(@PathVariable UUID id, @RequestBody EventoReq req) {
         try {

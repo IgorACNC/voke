@@ -109,11 +109,14 @@
   display: flex;
   justify-content: space-between;
   gap: 1rem;
+  align-items: center;
 }
 
 .social-comunidade-topo strong { color: #1f1b4b; font-size: 0.95rem; }
 .social-comunidade-topo span, .social-mini-lista span { color: #6b7280; font-size: 0.78rem; }
 .social-mini-lista p { color: #374151; font-size: 0.86rem; margin: 0.2rem 0 0; line-height: 1.35; }
+.social-comunidade-resumo { display: flex; gap: 0.6rem; align-items: center; }
+.social-comunidade-resumo button { padding: 0.4rem 0.65rem; }
 
 .social-chat { grid-column: span 2; }
 .social-chat select { margin-bottom: 1rem; }

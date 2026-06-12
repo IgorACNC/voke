@@ -11,6 +11,7 @@ import {
   listarAmizades,
   listarComunidades,
   recusarAmizade,
+  sairDaComunidade,
   solicitarAmizade,
   type Amizade,
   type Comunidade,
@@ -126,6 +127,12 @@ export default function AmigosComunidades() {
     }, 'Evento compartilhado na comunidade.')
   }
 
+  async function handleSairComunidade(comunidadeId: string) {
+    await executar(async () => {
+      await sairDaComunidade(comunidadeId, usuario!.id)
+    }, 'Voce saiu da comunidade.')
+  }
+
   return (
     <div className="social-bg">
       <header className="social-header">
@@ -213,7 +220,14 @@ export default function AmigosComunidades() {
                 <div className="social-comunidade" key={c.id}>
                   <div className="social-comunidade-topo">
                     <strong>{c.nome}</strong>
-                    <span>{c.membros.length} membros - {c.eventosCompartilhados.length} eventos</span>
+                    <div className="social-comunidade-resumo">
+                      <span>{c.membros.length} membros - {c.eventosCompartilhados.length} eventos</span>
+                      {c.criadorId !== usuario.id && (
+                        <button className="social-btn-perigo" onClick={() => handleSairComunidade(c.id)} disabled={carregando}>
+                          Sair
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="social-mini-lista">
                     <span>Membros</span>
