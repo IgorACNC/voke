@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface SpringComunidadeAmigosRepository extends JpaRepository<ComunidadeAmigosJpa, UUID> {
     List<ComunidadeAmigosJpa> findByCriadorId(UUID criadorId);
+    List<ComunidadeAmigosJpa> findByMembrosContaining(UUID membroId);
 }

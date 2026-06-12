@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   aceitarAmizade,
+  adicionarMembroComunidade,
   buscarParticipantes,
+  compartilharEventoComunidade,
   criarComunidade,
   desfazerAmizade,
   listarAmizades,
@@ -14,6 +16,7 @@ import {
   type Comunidade,
   type ParticipanteResumo,
 } from '../services/socialService'
+import { listarEventosAtivos, type Evento } from '../services/eventoService'
 import './Social.css'
 
 export default function AmigosComunidades() {
@@ -21,21 +24,26 @@ export default function AmigosComunidades() {
   const { usuario } = useAuth()
   const [amizades, setAmizades] = useState<Amizade[]>([])
   const [comunidades, setComunidades] = useState<Comunidade[]>([])
+  const [eventos, setEventos] = useState<Evento[]>([])
   const [termoBusca, setTermoBusca] = useState('')
   const [participantesEncontrados, setParticipantesEncontrados] = useState<ParticipanteResumo[]>([])
   const [nomeComunidade, setNomeComunidade] = useState('')
+  const [membroPorComunidade, setMembroPorComunidade] = useState<Record<string, string>>({})
+  const [eventoPorComunidade, setEventoPorComunidade] = useState<Record<string, string>>({})
   const [erro, setErro] = useState('')
   const [mensagem, setMensagem] = useState('')
   const [carregando, setCarregando] = useState(false)
 
   async function carregarBase() {
     if (!usuario) return
-    const [amizadesResp, comunidadesResp] = await Promise.all([
+    const [amizadesResp, comunidadesResp, eventosResp] = await Promise.all([
       listarAmizades(usuario.id),
       listarComunidades(usuario.id),
+      listarEventosAtivos(),
     ])
     setAmizades(amizadesResp)
     setComunidades(comunidadesResp)
+    setEventos(eventosResp)
   }
 
   useEffect(() => {
@@ -91,6 +99,31 @@ export default function AmigosComunidades() {
       await solicitarAmizade(usuario!.id, receptorId)
       setParticipantesEncontrados((atuais) => atuais.filter((p) => p.id !== receptorId))
     }, 'Solicitacao enviada.')
+  }
+
+  function amigosDisponiveis(comunidade: Comunidade): ParticipanteResumo[] {
+    const membrosIds = new Set(comunidade.membros.map((m) => m.id))
+    return amizades
+      .filter((a) => a.status === 'ATIVA' && a.amigo && !membrosIds.has(a.amigo.id))
+      .map((a) => a.amigo!)
+  }
+
+  async function handleAdicionarMembro(comunidadeId: string) {
+    const participanteId = membroPorComunidade[comunidadeId]
+    if (!participanteId) return
+    await executar(async () => {
+      await adicionarMembroComunidade(comunidadeId, usuario!.id, participanteId)
+      setMembroPorComunidade((atuais) => ({ ...atuais, [comunidadeId]: '' }))
+    }, 'Amigo adicionado na comunidade.')
+  }
+
+  async function handleCompartilharEvento(comunidadeId: string) {
+    const eventoId = eventoPorComunidade[comunidadeId]
+    if (!eventoId) return
+    await executar(async () => {
+      await compartilharEventoComunidade(comunidadeId, usuario!.id, eventoId)
+      setEventoPorComunidade((atuais) => ({ ...atuais, [comunidadeId]: '' }))
+    }, 'Evento compartilhado na comunidade.')
   }
 
   return (
@@ -177,11 +210,53 @@ export default function AmigosComunidades() {
             </form>
             <div className="social-lista">
               {comunidades.map((c) => (
-                <div className="social-item" key={c.id}>
-                  <div>
+                <div className="social-comunidade" key={c.id}>
+                  <div className="social-comunidade-topo">
                     <strong>{c.nome}</strong>
                     <span>{c.membros.length} membros - {c.eventosCompartilhados.length} eventos</span>
                   </div>
+                  <div className="social-mini-lista">
+                    <span>Membros</span>
+                    <p>{c.membros.map((m) => m.nome).join(', ') || 'Nenhum membro ainda.'}</p>
+                  </div>
+                  <div className="social-mini-lista">
+                    <span>Eventos indicados</span>
+                    <p>{c.eventosCompartilhados.map((e) => e.nome).join(', ') || 'Nenhum evento indicado ainda.'}</p>
+                  </div>
+                  {c.criadorId === usuario.id && (
+                    <>
+                      <div className="social-form-linha social-form-sem-margem">
+                        <select
+                          value={membroPorComunidade[c.id] ?? ''}
+                          onChange={(e) => setMembroPorComunidade((atuais) => ({ ...atuais, [c.id]: e.target.value }))}
+                        >
+                          <option value="">Adicionar amigo</option>
+                          {amigosDisponiveis(c).map((amigo) => (
+                            <option key={amigo.id} value={amigo.id}>{amigo.nome}</option>
+                          ))}
+                        </select>
+                        <button onClick={() => handleAdicionarMembro(c.id)} disabled={carregando || !membroPorComunidade[c.id]}>
+                          Adicionar
+                        </button>
+                      </div>
+                      <div className="social-form-linha social-form-sem-margem">
+                        <select
+                          value={eventoPorComunidade[c.id] ?? ''}
+                          onChange={(e) => setEventoPorComunidade((atuais) => ({ ...atuais, [c.id]: e.target.value }))}
+                        >
+                          <option value="">Indicar evento</option>
+                          {eventos
+                            .filter((evento) => !c.eventosCompartilhados.some((compartilhado) => compartilhado.id === evento.id))
+                            .map((evento) => (
+                              <option key={evento.id} value={evento.id}>{evento.nome}</option>
+                            ))}
+                        </select>
+                        <button onClick={() => handleCompartilharEvento(c.id)} disabled={carregando || !eventoPorComunidade[c.id]}>
+                          Compartilhar
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
               {comunidades.length === 0 && <p className="social-vazio">Crie uma comunidade depois de ter uma amizade ativa.</p>}

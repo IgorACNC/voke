@@ -9,5 +9,6 @@ public interface ComunidadeAmigosRepositorio {
     void salvar(ComunidadeAmigos comunidade);
     Optional<ComunidadeAmigos> buscarPorId(ComunidadeAmigosId id);
     List<ComunidadeAmigos> buscarPorCriador(ParticipanteId criadorId);
+    List<ComunidadeAmigos> buscarPorMembro(ParticipanteId membroId);
     void remover(ComunidadeAmigosId id);
 }

@@ -18,8 +18,15 @@ export interface Comunidade {
   id: string
   nome: string
   criadorId: string
-  membros: string[]
-  eventosCompartilhados: string[]
+  membros: ParticipanteResumo[]
+  eventosCompartilhados: EventoResumo[]
+}
+
+export interface EventoResumo {
+  id: string
+  nome: string
+  local: string
+  dataHoraInicio: string
 }
 
 export interface MensagemPrivada {
@@ -61,8 +68,18 @@ export async function criarComunidade(criadorId: string, nome: string): Promise<
   return data
 }
 
-export async function listarComunidades(criadorId: string): Promise<Comunidade[]> {
-  const { data } = await api.get('/social/comunidades', { params: { criadorId } })
+export async function listarComunidades(participanteId: string): Promise<Comunidade[]> {
+  const { data } = await api.get('/social/comunidades', { params: { participanteId } })
+  return data
+}
+
+export async function adicionarMembroComunidade(comunidadeId: string, criadorId: string, participanteId: string): Promise<Comunidade> {
+  const { data } = await api.post(`/social/comunidades/${comunidadeId}/membros`, { criadorId, participanteId })
+  return data
+}
+
+export async function compartilharEventoComunidade(comunidadeId: string, criadorId: string, eventoId: string): Promise<Comunidade> {
+  const { data } = await api.post(`/social/comunidades/${comunidadeId}/eventos`, { criadorId, eventoId })
   return data
 }
 
