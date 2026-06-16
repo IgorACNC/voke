@@ -6,6 +6,7 @@ import {
   editarRegras, excluirGrupo, type GrupoEvento as GrupoEventoType,
 } from '../services/grupoEventoService'
 import { buscarEvento, type Evento } from '../services/eventoService'
+import ChatCanal from '../components/ChatCanal'
 import './GrupoEvento.css'
 
 export default function GrupoEvento() {
@@ -199,6 +200,39 @@ export default function GrupoEvento() {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* Chat do Grupo */}
+            {(jaMembro || eOrganizadorDoGrupo) && usuario && (
+              <div className="gev-card">
+                <h3 className="gev-secao-titulo">Chat do Grupo</h3>
+                <ChatCanal
+                  canalTipo="GRUPO_EVENTO"
+                  canalId={grupo.id}
+                  usuarioId={usuario.id}
+                  podeEnviar={true}
+                />
+              </div>
+            )}
+
+            {/* Subgrupos */}
+            <div className="gev-card">
+              <div className="gev-card-topo">
+                <h3 className="gev-secao-titulo">Subgrupos</h3>
+                {eOrganizadorDoGrupo && (
+                  <button className="gev-btn-primario" style={{ padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}
+                    onClick={() => navigate(`/eventos/${eventoId}/grupo/subgrupos/novo?grupoId=${grupo.id}`)}>
+                    + Criar Subgrupo
+                  </button>
+                )}
+              </div>
+              <p className="gev-vazio-desc" style={{ marginBottom: '0.8rem' }}>
+                Organize seus participantes em subgrupos menores (carona, interesse, social...).
+              </p>
+              <button className="gev-btn-regras"
+                onClick={() => navigate(`/eventos/${eventoId}/grupo/subgrupos`)}>
+                Ver subgrupos
+              </button>
             </div>
 
             {/* Ações do organizador */}
