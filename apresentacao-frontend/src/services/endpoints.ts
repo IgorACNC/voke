@@ -11,7 +11,7 @@ export const endpoints = {
   // Inscricoes
   listarMinhasInscricoes: '/inscricoes/minhas',
   validarInscricao: (eventoId: string) => `/eventos/${eventoId}/inscricoes/validar`,
-  criarInscricao: (eventoId: string) => `/eventos/${eventoId}/inscricoes`,
+  criarInscricao: '/inscricoes',
   estimarEstorno: (inscricaoId: string) => `/inscricoes/${inscricaoId}/estorno`,
   cancelarInscricao: (inscricaoId: string) => `/inscricoes/${inscricaoId}`,
 

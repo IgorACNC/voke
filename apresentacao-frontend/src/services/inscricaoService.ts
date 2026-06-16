@@ -21,9 +21,8 @@ export async function validarInscricao(participanteId: string, eventoId: string)
   return data
 }
 
-export async function criarInscricao(eventoId: string, loteNumero?: number): Promise<Inscricao> {
-  const { data } = await api.post<Inscricao>(endpoints.criarInscricao(eventoId), { loteNumero })
-  return data
+export async function criarInscricao(participanteId: string, eventoId: string, valorIngresso: number): Promise<void> {
+  await api.post(endpoints.criarInscricao, { participanteId, eventoId, valorIngresso, limitePorCpf: 1 })
 }
 
 export async function estimarEstorno(inscricaoId: string): Promise<{ percentual: number; valor: number }> {

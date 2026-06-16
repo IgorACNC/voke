@@ -42,7 +42,7 @@ export default function EventDetail() {
   useEffect(() => {
     if (!eventoId) return
     buscarEvento(eventoId).then(setEvento).catch(() => setErro('Erro ao carregar evento.'))
-    if (usuario) {
+    if (usuario?.papel === 'PARTICIPANTE') {
       buscarPerfil(usuario.id).then(setPerfil).catch(() => { /* ignore */ })
       listarMinhasInscricoes(usuario.id).then(setMinhas).catch(() => { /* ignore */ })
     }
@@ -104,7 +104,7 @@ export default function EventDetail() {
 
     setCarregando(true)
     try {
-      await criarInscricao(ev.id, ev.loteAtual!.numero)
+      await criarInscricao(usuario.id, ev.id, precoFinal)
       setMensagem('Inscricao realizada com sucesso.')
       navigate('/minhas-inscricoes')
     } catch (e: unknown) {
