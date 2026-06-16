@@ -27,6 +27,8 @@ import MinhasInscricoes from './pages/MinhasInscricoes'
 import Cupons from './pages/Cupons'
 import EventDetail from './pages/EventDetail'
 import Favoritos from './pages/Favoritos'
+import PerfilOrganizador from './pages/PerfilOrganizador'
+import MeuPerfilOrganizador from './pages/MeuPerfilOrganizador'
 
 export default function App() {
   return (
@@ -43,6 +45,8 @@ export default function App() {
           <Route path="/admin" element={<PrivateRoute papelRequerido="ADMIN"><Admin /></PrivateRoute>} />
 
           {/* Rotas do Organizador */}
+          <Route path="/organizadores/:id" element={<PerfilOrganizador />} />
+          <Route path="/minha-conta-organizador" element={<PrivateRoute papelRequerido="ORGANIZADOR"><MeuPerfilOrganizador /></PrivateRoute>} />
           <Route path="/meus-eventos" element={<PrivateRoute papelRequerido="ORGANIZADOR"><MeusEventos /></PrivateRoute>} />
           <Route path="/meus-eventos/novo" element={<PrivateRoute papelRequerido="ORGANIZADOR"><CriarEvento /></PrivateRoute>} />
           <Route path="/meus-eventos/:id/editar" element={<PrivateRoute papelRequerido="ORGANIZADOR"><EditarEvento /></PrivateRoute>} />

@@ -1,3 +1,3 @@
 package br.voke.dto;
 
-public record LoginRequisicao(String email, String senha) {}
+public record LoginRequisicao(String email, String senha, String papel) {}

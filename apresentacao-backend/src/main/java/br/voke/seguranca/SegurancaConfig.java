@@ -39,6 +39,8 @@ public class SegurancaConfig {
                         .requestMatchers(HttpMethod.GET, "/api/categorias").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/eventos").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/eventos/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/eventos/organizador/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/organizadores/{id}").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )

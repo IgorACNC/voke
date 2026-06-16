@@ -31,6 +31,7 @@ export default function Dashboard() {
     { icon: '🎁', label: 'Recompensas' },
     { icon: '📊', label: 'Relatórios' },
     { icon: '🔔', label: 'Notificações' },
+    { icon: '👤', label: 'Minha Conta', rota: '/minha-conta-organizador' },
   ]
 
   const cardsParticipante = [

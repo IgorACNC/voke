@@ -19,6 +19,7 @@ export interface Evento {
   capacidadeMaxima: number
   status: 'ATIVO' | 'CANCELADO' | 'ENCERRADO'
   idadeMinima: number
+  organizadorId: string
   loteAtual: LoteEvento | null
 }
 
@@ -50,6 +51,11 @@ export async function listarEventosAtivos(): Promise<Evento[]> {
 
 export async function listarMeusEventos(): Promise<Evento[]> {
   const { data } = await api.get<Evento[]>(endpoints.listarMeusEventos)
+  return data
+}
+
+export async function listarEventosPorOrganizador(organizadorId: string): Promise<Evento[]> {
+  const { data } = await api.get<Evento[]>(`/eventos/organizador/${organizadorId}`)
   return data
 }
 

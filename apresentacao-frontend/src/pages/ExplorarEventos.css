@@ -141,6 +141,15 @@
   margin: 0.15rem 0 0;
 }
 
+.exp-card-organizador {
+  font-size: 0.8rem;
+  color: #9333ea;
+  margin: 0.25rem 0 0;
+  cursor: pointer;
+  font-weight: 500;
+}
+.exp-card-organizador:hover { text-decoration: underline; }
+
 .exp-badge-idade {
   background: #fef3c7;
   color: #92400e;

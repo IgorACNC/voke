@@ -57,33 +57,48 @@ public class AutenticacaoController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequisicao req) {
         Email email = new Email(req.email());
+        String papelDesejado = req.papel(); // null = qualquer
 
-        // Tenta como participante primeiro
-        var optParticipante = participanteRepositorio.buscarPorEmail(email);
-        if (optParticipante.isPresent()) {
-            Participante p = optParticipante.get();
-            if (!passwordEncoder.matches(req.senha(), p.getSenha().getValor())) {
+        // Se papel não foi especificado ou é PARTICIPANTE, tenta como participante
+        if (papelDesejado == null || "PARTICIPANTE".equalsIgnoreCase(papelDesejado)) {
+            var optParticipante = participanteRepositorio.buscarPorEmail(email);
+            if (optParticipante.isPresent()) {
+                Participante p = optParticipante.get();
+                if (passwordEncoder.matches(req.senha(), p.getSenha().getValor())) {
+                    String token = jwtUtil.gerar(p.getEmail().getValor(), "PARTICIPANTE",
+                            p.getId().getValor().toString());
+                    return ResponseEntity.ok(new LoginResposta(token, "PARTICIPANTE",
+                            p.getId().getValor().toString(), p.getNome().getValor(), p.getEmail().getValor()));
+                }
+                if ("PARTICIPANTE".equalsIgnoreCase(papelDesejado)) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body(new ErroResposta("Credenciais inválidas"));
+                }
+            } else if ("PARTICIPANTE".equalsIgnoreCase(papelDesejado)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(new ErroResposta("Credenciais inválidas"));
             }
-            String token = jwtUtil.gerar(p.getEmail().getValor(), "PARTICIPANTE",
-                    p.getId().getValor().toString());
-            return ResponseEntity.ok(new LoginResposta(token, "PARTICIPANTE",
-                    p.getId().getValor().toString(), p.getNome().getValor(), p.getEmail().getValor()));
         }
 
         // Tenta como organizador
-        var optOrganizador = organizadorRepositorio.buscarPorEmail(email);
-        if (optOrganizador.isPresent()) {
-            Organizador o = optOrganizador.get();
-            if (!passwordEncoder.matches(req.senha(), o.getSenha().getValor())) {
+        if (papelDesejado == null || "ORGANIZADOR".equalsIgnoreCase(papelDesejado)) {
+            var optOrganizador = organizadorRepositorio.buscarPorEmail(email);
+            if (optOrganizador.isPresent()) {
+                Organizador o = optOrganizador.get();
+                if (passwordEncoder.matches(req.senha(), o.getSenha().getValor())) {
+                    String token = jwtUtil.gerar(o.getEmail().getValor(), "ORGANIZADOR",
+                            o.getId().getValor().toString());
+                    return ResponseEntity.ok(new LoginResposta(token, "ORGANIZADOR",
+                            o.getId().getValor().toString(), o.getNome().getValor(), o.getEmail().getValor()));
+                }
+                if ("ORGANIZADOR".equalsIgnoreCase(papelDesejado)) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body(new ErroResposta("Credenciais inválidas"));
+                }
+            } else if ("ORGANIZADOR".equalsIgnoreCase(papelDesejado)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(new ErroResposta("Credenciais inválidas"));
             }
-            String token = jwtUtil.gerar(o.getEmail().getValor(), "ORGANIZADOR",
-                    o.getId().getValor().toString());
-            return ResponseEntity.ok(new LoginResposta(token, "ORGANIZADOR",
-                    o.getId().getValor().toString(), o.getNome().getValor(), o.getEmail().getValor()));
         }
 
         // Tenta como administrador

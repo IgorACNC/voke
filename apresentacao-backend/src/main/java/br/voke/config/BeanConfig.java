@@ -85,8 +85,11 @@ public class BeanConfig {
     }
 
     @Bean
-    public OrganizadorServico organizadorServico(OrganizadorRepositorio r) {
-        return new OrganizadorServico(r);
+    public OrganizadorServico organizadorServico(
+            OrganizadorRepositorio r,
+            ParticipanteRepositorio pr,
+            br.voke.dominio.pessoa.organizador.EventosOrganizadorGateway eg) {
+        return new OrganizadorServico(r, pr, eg);
     }
 
     @Bean

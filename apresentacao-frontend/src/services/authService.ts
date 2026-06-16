@@ -4,6 +4,7 @@ import type { LoginResposta, Papel } from '../types/auth'
 export interface LoginPayload {
   email: string
   senha: string
+  papel?: Papel
 }
 
 export interface CadastroPayload {

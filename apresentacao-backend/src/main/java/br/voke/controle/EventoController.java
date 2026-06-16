@@ -77,6 +77,12 @@ public class EventoController {
         return ResponseEntity.ok(eventos.stream().map(this::toResposta).toList());
     }
 
+    @GetMapping("/organizador/{organizadorId}")
+    public ResponseEntity<?> listarPorOrganizador(@PathVariable UUID organizadorId) {
+        List<Evento> eventos = eventoRepositorio.buscarPorOrganizador(organizadorId);
+        return ResponseEntity.ok(eventos.stream().map(this::toResposta).toList());
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ORGANIZADOR')")
     public ResponseEntity<?> editar(@PathVariable UUID id, @RequestBody EditarEventoReq req,
@@ -142,6 +148,7 @@ public class EventoController {
     private record EventoResp(String id, String nome, String descricao, String local,
                                LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
                                int capacidadeMaxima, String status, int idadeMinima,
+                               String organizadorId,
                                LoteResp loteAtual) {}
 
     private EventoResp toResposta(Evento e) {
@@ -153,7 +160,8 @@ public class EventoController {
         }
         return new EventoResp(e.getId().getValor().toString(), e.getNome(), e.getDescricao(),
                 e.getLocal(), e.getDataHoraInicio(), e.getDataHoraFim(),
-                e.getCapacidadeMaxima(), e.getStatus().name(), e.getIdadeMinima(), lote);
+                e.getCapacidadeMaxima(), e.getStatus().name(), e.getIdadeMinima(),
+                e.getOrganizadorId().toString(), lote);
     }
 
     record ErroResp(String mensagem) {}

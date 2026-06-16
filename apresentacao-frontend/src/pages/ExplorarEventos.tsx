@@ -6,12 +6,14 @@ import {
   listarColecoes, criarColecao, adicionarEventoColecao,
   type ColecaoResumo,
 } from '../services/colecaoService'
+import { buscarPerfilPublico } from '../services/organizadorService'
 import './ExplorarEventos.css'
 
 export default function ExplorarEventos() {
   const { usuario, sair } = useAuth()
   const navigate = useNavigate()
   const [eventos, setEventos] = useState<Evento[]>([])
+  const [organizadores, setOrganizadores] = useState<Map<string, string>>(new Map())
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
   const [busca, setBusca] = useState('')
@@ -29,15 +31,29 @@ export default function ExplorarEventos() {
 
   useEffect(() => {
     listarEventosAtivos()
-      .then(setEventos)
+      .then(async (evs) => {
+        setEventos(evs)
+        const ids = Array.from(new Set(evs.map((e) => e.organizadorId).filter(Boolean)))
+        const map = new Map<string, string>()
+        await Promise.all(ids.map(async (id) => {
+          try {
+            const o = await buscarPerfilPublico(id)
+            map.set(id, o.nome)
+          } catch { /* ignora organizador não encontrado */ }
+        }))
+        setOrganizadores(map)
+      })
       .catch(() => setErro('Erro ao carregar eventos.'))
       .finally(() => setCarregando(false))
   }, [])
 
-  const eventosFiltrados = eventos.filter((ev) =>
-    ev.nome.toLowerCase().includes(busca.toLowerCase()) ||
-    ev.local.toLowerCase().includes(busca.toLowerCase())
-  )
+  const eventosFiltrados = eventos.filter((ev) => {
+    const termo = busca.toLowerCase()
+    const nomeOrg = organizadores.get(ev.organizadorId) ?? ''
+    return ev.nome.toLowerCase().includes(termo)
+      || ev.local.toLowerCase().includes(termo)
+      || nomeOrg.toLowerCase().includes(termo)
+  })
 
   async function abrirModalFavoritar(ev: Evento) {
     setEventoParaFav(ev)
@@ -101,7 +117,7 @@ export default function ExplorarEventos() {
 
         <input
           className="exp-busca"
-          placeholder="Buscar por nome ou local..."
+          placeholder="Buscar por nome, local ou organizador..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
         />
@@ -119,6 +135,14 @@ export default function ExplorarEventos() {
                 <div>
                   <h2 className="exp-card-nome">{ev.nome}</h2>
                   <p className="exp-card-local">{ev.local}</p>
+                  {organizadores.get(ev.organizadorId) && (
+                    <p
+                      className="exp-card-organizador"
+                      onClick={(e) => { e.stopPropagation(); navigate(`/organizadores/${ev.organizadorId}`) }}
+                    >
+                      por {organizadores.get(ev.organizadorId)}
+                    </p>
+                  )}
                 </div>
                 <div className="exp-card-topo-right">
                   {ev.idadeMinima > 0 && (
