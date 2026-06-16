@@ -1,10 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { alterarSenha, editarPerfil, removerConta } from '../services/participanteService'
+import { alterarSenha, buscarPerfil, editarPerfil, removerConta } from '../services/participanteService'
+import type { PerfilParticipante } from '../services/participanteService'
 import './MeuPerfil.css'
 
 type Modo = 'visualizar' | 'editar' | 'senha'
+
+function formatarData(iso?: string | null): string {
+  if (!iso) return '—'
+  const [ano, mes, dia] = iso.split('-')
+  if (!ano || !mes || !dia) return iso
+  return `${dia}/${mes}/${ano}`
+}
 
 export default function MeuPerfil() {
   const navigate = useNavigate()
@@ -24,6 +32,14 @@ export default function MeuPerfil() {
   const [senhaForm, setSenhaForm] = useState({
     senhaAtual: '', novaSenha: '', confirmarSenha: '',
   })
+
+  const [perfil, setPerfil] = useState<PerfilParticipante | null>(null)
+
+  useEffect(() => {
+    if (usuario) {
+      buscarPerfil(usuario.id).then(setPerfil).catch(() => { /* silencioso */ })
+    }
+  }, [usuario])
 
   if (!usuario) {
     navigate('/login')
@@ -142,6 +158,14 @@ export default function MeuPerfil() {
               <div className="perfil-campo">
                 <label>E-mail</label>
                 <span>{usuario.email}</span>
+              </div>
+              <div className="perfil-campo">
+                <label>CPF</label>
+                <span>{perfil?.cpf ?? '—'}</span>
+              </div>
+              <div className="perfil-campo">
+                <label>Data de nascimento</label>
+                <span>{formatarData(perfil?.dataNascimento)}</span>
               </div>
               <div className="perfil-campo">
                 <label>Tipo de conta</label>

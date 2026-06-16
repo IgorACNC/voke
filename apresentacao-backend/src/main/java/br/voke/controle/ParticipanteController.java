@@ -39,7 +39,20 @@ public class ParticipanteController {
 
     record EditarReq(UUID id, String nome, String email) {}
     record AlterarSenhaReq(UUID id, String senhaAtual, String novaSenha) {}
+    record PerfilResp(UUID id, String nome, String email, String cpf, String dataNascimento) {}
     record ErroResp(String mensagem) {}
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> buscarPerfil(@PathVariable UUID id) {
+        return participanteRepositorio.buscarPorId(new ParticipanteId(id))
+                .map(p -> ResponseEntity.ok((Object) new PerfilResp(
+                        p.getId().getValor(),
+                        p.getNome().getValor(),
+                        p.getEmail().getValor(),
+                        p.getCpf().getValor(),
+                        p.getDataNascimento().getValor().toString())))
+                .orElse(ResponseEntity.notFound().build());
+    }
 
     @PutMapping("/perfil")
     public ResponseEntity<?> editar(@RequestBody EditarReq req) {
