@@ -1,6 +1,10 @@
 package br.voke.controle;
 
 import br.voke.aplicacao.evento.CriarGrupoEventoCasoDeUso;
+import br.voke.aplicacao.evento.EnviarMensagemCanalCasoDeUso;
+import br.voke.aplicacao.evento.ListarMensagensCanalCasoDeUso;
+import br.voke.dominio.evento.chat.MensagemCanal;
+import br.voke.dominio.evento.chat.TipoCanalChat;
 import br.voke.dominio.evento.evento.EventoId;
 import br.voke.dominio.evento.evento.EventoRepositorio;
 import br.voke.dominio.evento.grupo.GrupoEvento;
@@ -8,6 +12,8 @@ import br.voke.dominio.evento.grupo.GrupoEventoId;
 import br.voke.dominio.evento.grupo.GrupoEventoRepositorio;
 import br.voke.dominio.evento.grupo.GrupoEventoServicoInterface;
 import br.voke.dominio.inscricao.inscricao.InscricaoRepositorio;
+import br.voke.dominio.pessoa.organizador.OrganizadorId;
+import br.voke.dominio.pessoa.organizador.OrganizadorRepositorio;
 import br.voke.dominio.pessoa.participante.ParticipanteId;
 import br.voke.dominio.pessoa.participante.ParticipanteRepositorio;
 import br.voke.seguranca.JwtUtil;
@@ -17,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -31,6 +38,9 @@ public class GrupoEventoController {
     private final EventoRepositorio eventoRepositorio;
     private final InscricaoRepositorio inscricaoRepositorio;
     private final ParticipanteRepositorio participanteRepositorio;
+    private final OrganizadorRepositorio organizadorRepositorio;
+    private final EnviarMensagemCanalCasoDeUso enviarMensagemCanal;
+    private final ListarMensagensCanalCasoDeUso listarMensagensCanal;
     private final JwtUtil jwtUtil;
 
     public GrupoEventoController(CriarGrupoEventoCasoDeUso criarGrupo,
@@ -39,6 +49,9 @@ public class GrupoEventoController {
                                   EventoRepositorio eventoRepositorio,
                                   InscricaoRepositorio inscricaoRepositorio,
                                   ParticipanteRepositorio participanteRepositorio,
+                                  OrganizadorRepositorio organizadorRepositorio,
+                                  EnviarMensagemCanalCasoDeUso enviarMensagemCanal,
+                                  ListarMensagensCanalCasoDeUso listarMensagensCanal,
                                   JwtUtil jwtUtil) {
         this.criarGrupo = criarGrupo;
         this.grupoServico = grupoServico;
@@ -46,11 +59,18 @@ public class GrupoEventoController {
         this.eventoRepositorio = eventoRepositorio;
         this.inscricaoRepositorio = inscricaoRepositorio;
         this.participanteRepositorio = participanteRepositorio;
+        this.organizadorRepositorio = organizadorRepositorio;
+        this.enviarMensagemCanal = enviarMensagemCanal;
+        this.listarMensagensCanal = listarMensagensCanal;
         this.jwtUtil = jwtUtil;
     }
 
     record CriarGrupoReq(UUID eventoId, String nome, String regras) {}
     record EditarRegrasReq(String regras) {}
+    record EnviarMensagemReq(String conteudo) {}
+    record MensagemCanalResp(String id, String remetenteId, String remetenteNome,
+                             String canalTipo, String canalId, String conteudo,
+                             LocalDateTime enviadaEm) {}
 
     @PostMapping
     @PreAuthorize("hasRole('ORGANIZADOR')")
@@ -121,6 +141,59 @@ public class GrupoEventoController {
         grupoServico.remover(new GrupoEventoId(id), organizadorId);
         return ResponseEntity.noContent().build();
     }
+
+    // ======================== Chat do Grupo ========================
+
+    @GetMapping("/{id}/mensagens")
+    public ResponseEntity<?> listarMensagens(@PathVariable UUID id, HttpServletRequest httpReq) {
+        UUID solicitanteId = idAutenticado(httpReq);
+        GrupoEvento grupo = grupoRepositorio.buscarPorId(new GrupoEventoId(id))
+                .orElseThrow(() -> new IllegalArgumentException("Grupo não encontrado"));
+        boolean podeAcessar = podeAcessarChatGrupo(grupo, solicitanteId);
+        List<MensagemCanal> mensagens = listarMensagensCanal.executar(
+                TipoCanalChat.GRUPO_EVENTO, id, solicitanteId, podeAcessar);
+        return ResponseEntity.ok(mensagens.stream().map(this::toMensagemResp).toList());
+    }
+
+    @PostMapping("/{id}/mensagens")
+    public ResponseEntity<?> enviarMensagem(@PathVariable UUID id,
+                                             @RequestBody EnviarMensagemReq req,
+                                             HttpServletRequest httpReq) {
+        UUID remetenteId = idAutenticado(httpReq);
+        GrupoEvento grupo = grupoRepositorio.buscarPorId(new GrupoEventoId(id))
+                .orElseThrow(() -> new IllegalArgumentException("Grupo não encontrado"));
+        boolean podeAcessar = podeAcessarChatGrupo(grupo, remetenteId);
+        MensagemCanal mensagem = enviarMensagemCanal.executar(
+                TipoCanalChat.GRUPO_EVENTO, id, remetenteId, req.conteudo(), podeAcessar);
+        return ResponseEntity.status(HttpStatus.CREATED).body(toMensagemResp(mensagem));
+    }
+
+    private boolean podeAcessarChatGrupo(GrupoEvento grupo, UUID solicitanteId) {
+        boolean ehMembro = grupo.getMembrosIds().contains(solicitanteId);
+        boolean ehOrganizador = grupo.getOrganizadorId().equals(solicitanteId);
+        return ehMembro || ehOrganizador;
+    }
+
+    private MensagemCanalResp toMensagemResp(MensagemCanal m) {
+        return new MensagemCanalResp(
+                m.getId().getValor().toString(),
+                m.getRemetenteId().toString(),
+                resolverNomeRemetente(m.getRemetenteId()),
+                m.getCanalTipo().name(),
+                m.getCanalId().toString(),
+                m.getConteudo(),
+                m.getEnviadaEm());
+    }
+
+    private String resolverNomeRemetente(UUID remetenteId) {
+        return participanteRepositorio.buscarPorId(new ParticipanteId(remetenteId))
+                .map(p -> p.getNome().getValor())
+                .orElseGet(() -> organizadorRepositorio.buscarPorId(new OrganizadorId(remetenteId))
+                        .map(o -> o.getNome().getValor())
+                        .orElse("Usuario"));
+    }
+
+    // ======================== Helpers ========================
 
     private UUID idAutenticado(HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);

@@ -186,19 +186,31 @@
 .exp-card-acoes {
   margin-top: auto;
   padding-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
 }
 
-.exp-btn-grupo {
-  width: 100%;
+.exp-btn-grupo,
+.exp-btn-comprar {
+  flex: 1;
   padding: 0.55rem;
-  background: #7c6af7;
-  color: #fff;
-  border: none;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, opacity 0.2s;
 }
 
-.exp-btn-grupo:hover { background: #6250e0; }
+.exp-btn-grupo {
+  background: transparent;
+  color: #7c6af7;
+  border: 1.5px solid #7c6af7;
+}
+.exp-btn-grupo:hover { background: rgba(124,106,247,0.1); }
+
+.exp-btn-comprar {
+  background: #7c6af7;
+  color: #fff;
+  border: none;
+}
+.exp-btn-comprar:hover { background: #6250e0; }
