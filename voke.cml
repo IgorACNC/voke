@@ -384,6 +384,47 @@ BoundedContext Evento implements Evento {
 
     }
 
+    Aggregate MensagemCanal {
+
+        Entity MensagemCanal {
+
+            aggregateRoot
+
+            -MensagemCanalId id
+
+            -TipoCanalChat canalTipo
+
+            String canalId
+
+            String remetenteId
+
+            String conteudo
+
+            Date enviadaEm
+
+        }
+
+        ValueObject MensagemCanalId {
+
+            String valor
+
+        }
+
+        ValueObject TipoCanalChat {
+
+            String valor
+
+        }
+
+        Service ChatCanalServico {
+
+            MensagemCanal enviar(TipoCanalChat tipo, String canalId, String remetenteId, String conteudo, boolean podeAcessar);
+            List listar(TipoCanalChat tipo, String canalId, String solicitanteId, boolean podeAcessar);
+
+        }
+
+    }
+
 }
 
 BoundedContext Inscricao implements Inscricao {
