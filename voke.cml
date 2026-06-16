@@ -322,6 +322,14 @@ BoundedContext Evento implements Evento {
 
             boolean editada
 
+            String status
+
+            Date dataAgendamento nullable
+
+            int contadorEdicoes
+
+            String criterioSegmentacao nullable
+
         }
 
         ValueObject NotificacaoId {
