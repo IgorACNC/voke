@@ -4,7 +4,9 @@ import org.springframework.stereotype.Repository;
 import br.voke.dominio.evento.notificacao.Notificacao;
 import br.voke.dominio.evento.notificacao.NotificacaoId;
 import br.voke.dominio.evento.notificacao.NotificacaoRepositorio;
+import br.voke.dominio.evento.notificacao.StatusNotificacao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,6 +34,14 @@ public class NotificacaoRepositorioJpa implements NotificacaoRepositorio {
 
     public List<Notificacao> buscarPorParticipanteId(UUID participanteId) {
         return repository.findByParticipanteId(participanteId).stream().map(NotificacaoJpaMapper::paraDominio).toList();
+    }
+
+    public List<Notificacao> buscarAgendadasAteDataHora(LocalDateTime dataHora) {
+        return repository
+                .findByStatusAndDataAgendamentoLessThanEqual(StatusNotificacao.AGENDADA, dataHora)
+                .stream()
+                .map(NotificacaoJpaMapper::paraDominio)
+                .toList();
     }
 
     public void remover(NotificacaoId id) {

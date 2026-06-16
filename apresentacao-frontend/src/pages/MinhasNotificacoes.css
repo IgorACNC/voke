@@ -1,0 +1,59 @@
+.mn-bg { min-height: 100vh; background: #f8f9fb; }
+
+.mn-header {
+  background: linear-gradient(135deg, #302b63, #9333ea);
+  padding: 1rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.mn-logo { font-size: 1.6rem; font-weight: 800; color: #fff; }
+.mn-voltar, .mn-sair {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; padding: 0.4rem 0.9rem; border-radius: 8px;
+  font-size: 0.85rem; cursor: pointer;
+}
+.mn-voltar:hover, .mn-sair:hover { background: rgba(255,255,255,0.25); }
+
+.mn-main { padding: 2rem; max-width: 720px; margin: 0 auto; }
+.mn-titulo { font-size: 1.7rem; font-weight: 700; color: #1f1b4b; margin: 0 0 0.3rem; }
+.mn-sub { color: #6b7280; font-size: 0.95rem; margin: 0 0 1.5rem; }
+
+.mn-erro {
+  background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;
+  padding: 0.7rem 1rem; border-radius: 10px; font-size: 0.9rem;
+}
+
+.mn-info { color: #9ca3af; font-style: italic; }
+
+.mn-vazio {
+  background: #fff; border-radius: 14px; padding: 3rem 1.5rem;
+  text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+.mn-vazio span { font-size: 3rem; display: block; margin-bottom: 0.75rem; }
+.mn-vazio p { color: #1f1b4b; font-weight: 600; margin: 0 0 0.3rem; }
+.mn-vazio small { color: #6b7280; font-size: 0.85rem; }
+
+.mn-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.85rem; }
+
+.mn-item {
+  background: #fff; border-radius: 14px; padding: 1.15rem 1.25rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  border-left: 4px solid #9333ea;
+}
+
+.mn-item-topo { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+
+.mn-evento-nome {
+  font-size: 0.95rem; font-weight: 700; color: #1f1b4b;
+  cursor: pointer; transition: color 0.15s;
+}
+.mn-evento-nome:hover { color: #9333ea; text-decoration: underline; }
+
+.mn-badge-cancelado {
+  background: #fee2e2; color: #991b1b;
+  padding: 0.2rem 0.55rem; border-radius: 6px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+}
+
+.mn-conteudo { margin: 0.4rem 0 0.5rem; color: #374151; font-size: 0.95rem; line-height: 1.45; white-space: pre-wrap; }
+.mn-meta { margin: 0; color: #9ca3af; font-size: 0.78rem; }

@@ -30,7 +30,7 @@ export default function Dashboard() {
     { icon: '🏷️', label: 'Cupons', rota: '/cupons' },
     { icon: '🎁', label: 'Recompensas' },
     { icon: '📊', label: 'Relatórios' },
-    { icon: '🔔', label: 'Notificações' },
+    { icon: '🔔', label: 'Notificações', rota: '/meus-eventos' },
     { icon: '👤', label: 'Minha Conta', rota: '/minha-conta-organizador' },
   ]
 
@@ -44,6 +44,7 @@ export default function Dashboard() {
     { icon: '★', label: 'Avaliacoes', rota: '/avaliacoes' },
     { icon: '👥', label: 'Amigos e Comunidades', rota: '/amigos-comunidades' },
     { icon: '💬', label: 'Chat Privado', rota: '/chat-privado' },
+    { icon: '🔔', label: 'Notificações', rota: '/notificacoes' },
     { icon: '👤', label: 'Minha Conta', rota: '/meu-perfil' },
   ]
 

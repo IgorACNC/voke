@@ -11,6 +11,7 @@ import java.util.UUID;
 
 public interface SpringInscricaoRepository extends JpaRepository<InscricaoJpa, UUID> {
     List<InscricaoJpa> findByParticipanteId(UUID participanteId);
+    List<InscricaoJpa> findByEventoId(UUID eventoId);
     int countByParticipanteIdAndEventoId(UUID participanteId, UUID eventoId);
 
     @Query("SELECT COUNT(i) FROM InscricaoJpa i, EventoJpa e WHERE i.eventoId = e.id" +

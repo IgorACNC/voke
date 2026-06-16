@@ -113,15 +113,23 @@ export default function MeusEventos() {
                     <button className="mev-btn-grupo" onClick={() => navigate(`/eventos/${ev.id}/grupo`)}>
                       Grupo
                     </button>
+                    <button className="mev-btn-grupo" onClick={() => navigate(`/eventos/${ev.id}/notificacoes`)}>
+                      🔔 Notificações
+                    </button>
                     <button className="mev-btn-cancelar" onClick={() => setConfirmarCancelId(ev.id)}>
                       Cancelar Evento
                     </button>
                   </>
                 )}
                 {ev.status !== 'ATIVO' && (
-                  <button className="mev-btn-editar" onClick={() => navigate(`/meus-eventos/${ev.id}/editar`)}>
-                    Ver detalhes
-                  </button>
+                  <>
+                    <button className="mev-btn-editar" onClick={() => navigate(`/meus-eventos/${ev.id}/editar`)}>
+                      Ver detalhes
+                    </button>
+                    <button className="mev-btn-grupo" onClick={() => navigate(`/eventos/${ev.id}/notificacoes`)}>
+                      🔔 Notificações
+                    </button>
+                  </>
                 )}
               </div>
             </div>

@@ -16,6 +16,8 @@ import br.voke.dominio.evento.categoria.CategoriaRepositorio;
 import br.voke.dominio.evento.categoria.CategoriaServico;
 import br.voke.dominio.evento.evento.EventoRepositorio;
 import br.voke.dominio.evento.evento.EventoServico;
+import br.voke.dominio.evento.notificacao.NotificacaoRepositorio;
+import br.voke.dominio.evento.notificacao.NotificacaoServico;
 import br.voke.dominio.evento.chat.*;
 import br.voke.dominio.evento.grupo.*;
 import br.voke.dominio.evento.subgrupo.*;
@@ -179,6 +181,11 @@ public class BeanConfig {
     @Bean
     public EventoServico eventoServico(EventoRepositorio r) {
         return new EventoServico(r);
+    }
+
+    @Bean
+    public NotificacaoServico notificacaoServico(NotificacaoRepositorio r) {
+        return new NotificacaoServico(r);
     }
 
     @Bean

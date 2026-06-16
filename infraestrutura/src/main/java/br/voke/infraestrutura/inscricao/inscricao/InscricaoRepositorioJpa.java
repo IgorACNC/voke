@@ -32,6 +32,10 @@ public class InscricaoRepositorioJpa implements InscricaoRepositorio {
         return repository.findByParticipanteId(participanteId).stream().map(InscricaoJpaMapper::paraDominio).toList();
     }
 
+    public List<Inscricao> buscarPorEventoId(UUID eventoId) {
+        return repository.findByEventoId(eventoId).stream().map(InscricaoJpaMapper::paraDominio).toList();
+    }
+
     public void remover(InscricaoId id) {
         repository.deleteById(id.getValor());
     }
