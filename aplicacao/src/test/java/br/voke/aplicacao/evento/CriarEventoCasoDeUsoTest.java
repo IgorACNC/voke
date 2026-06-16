@@ -117,6 +117,13 @@ class CriarEventoCasoDeUsoTest {
         }
 
         @Override
+        public List<Evento> buscarExpirados(LocalDateTime referencia) {
+            return eventos.stream()
+                    .filter(e -> e.estaAtivo() && e.getDataHoraFim().isBefore(referencia))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
+        @Override
         public void remover(EventoId id) {
             eventos.removeIf(evento -> evento.getId().equals(id));
         }

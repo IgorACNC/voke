@@ -58,6 +58,13 @@ public class EventoRepositorioJpa implements EventoRepositorio {
                 .toList();
     }
 
+    public List<Evento> buscarExpirados(LocalDateTime referencia) {
+        return repository.findByStatusAndDataHoraFimBefore(
+                        br.voke.dominio.evento.evento.StatusEvento.ATIVO, referencia).stream()
+                .map(EventoJpaMapper::paraDominio)
+                .toList();
+    }
+
     public void remover(EventoId id) {
         repository.deleteById(id.getValor());
     }

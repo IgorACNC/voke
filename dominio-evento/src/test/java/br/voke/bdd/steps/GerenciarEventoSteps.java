@@ -60,6 +60,11 @@ public class GerenciarEventoSteps {
                         .filter(br.voke.dominio.evento.evento.Evento::estaAtivo)
                         .collect(java.util.stream.Collectors.toList());
             }
+            @Override public List<Evento> buscarExpirados(LocalDateTime referencia) {
+                return banco.values().stream()
+                        .filter(e -> e.estaAtivo() && e.getDataHoraFim().isBefore(referencia))
+                        .collect(java.util.stream.Collectors.toList());
+            }
             @Override public void remover(EventoId id) { banco.remove(id); }
             @Override public boolean existePorNome(String nome) {
                 return banco.values().stream().anyMatch(evento -> evento.getNome().equals(nome));

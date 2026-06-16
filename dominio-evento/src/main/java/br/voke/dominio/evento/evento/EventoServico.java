@@ -73,4 +73,13 @@ public class EventoServico {
         evento.cancelar();
         repositorio.salvar(evento);
     }
+
+    public int encerrarExpirados(LocalDateTime referencia) {
+        List<Evento> expirados = repositorio.buscarExpirados(referencia);
+        expirados.forEach(e -> {
+            e.encerrar();
+            repositorio.salvar(e);
+        });
+        return expirados.size();
+    }
 }

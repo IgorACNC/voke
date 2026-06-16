@@ -5,8 +5,9 @@ import { listarMeusEventos, cancelarEvento, type Evento } from '../services/even
 import './MeusEventos.css'
 
 function statusLabel(s: string) {
-  if (s === 'ATIVO') return 'PUBLICADO'
+  if (s === 'ATIVO') return 'ATIVO'
   if (s === 'CANCELADO') return 'CANCELADO'
+  if (s === 'ENCERRADO') return 'ENCERRADO'
   return s
 }
 
