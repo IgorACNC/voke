@@ -3,6 +3,10 @@ package br.voke.controle;
 import br.voke.dominio.evento.chat.AcessoChatCanalNegadoException;
 import br.voke.dominio.evento.chat.ConteudoMensagemInvalidoException;
 import br.voke.dominio.evento.excecao.*;
+import br.voke.dominio.evento.excecao.ColecaoNaoEncontradaException;
+import br.voke.dominio.evento.excecao.EventoJaNaColecaoException;
+import br.voke.dominio.evento.excecao.EventoNaoNaColecaoException;
+import br.voke.dominio.evento.excecao.NomeColecaoDuplicadoException;
 import br.voke.dominio.evento.subgrupo.AcessoSubgrupoNegadoException;
 import br.voke.dominio.evento.subgrupo.MembroNaoEstaNoGrupoPrincipalException;
 import br.voke.dominio.evento.subgrupo.ParticipanteNaoEhMembroException;
@@ -80,6 +84,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConteudoMensagemInvalidoException.class)
     public ResponseEntity<ErroResp> handleConteudoInvalido(ConteudoMensagemInvalidoException ex) {
+        return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ColecaoNaoEncontradaException.class)
+    public ResponseEntity<ErroResp> handleColecaoNaoEncontrada(ColecaoNaoEncontradaException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler({NomeColecaoDuplicadoException.class,
+                       EventoJaNaColecaoException.class,
+                       EventoNaoNaColecaoException.class})
+    public ResponseEntity<ErroResp> handleColecaoRegras(RuntimeException ex) {
         return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
     }
 }

@@ -27,4 +27,21 @@ export const endpoints = {
   editarPerfil: '/participantes/perfil',
   removerConta: (id: string) => `/participantes/${id}`,
   alterarSenha: '/participantes/senha',
+
+  // Favoritos
+  adicionarFavorito: (eventoId: string) => `/favoritos/${eventoId}`,
+  removerFavorito: (favoritoId: string) => `/favoritos/${favoritoId}`,
+  listarFavoritos: '/favoritos',
+
+  // Coleções de Favoritos
+  listarColecoes: '/colecoes-favoritos',
+  criarColecao: '/colecoes-favoritos',
+  buscarColecao: (id: string) => `/colecoes-favoritos/${id}`,
+  editarColecao: (id: string) => `/colecoes-favoritos/${id}`,
+  excluirColecao: (id: string) => `/colecoes-favoritos/${id}`,
+  adicionarEventoColecao: (id: string) => `/colecoes-favoritos/${id}/eventos`,
+  removerEventoColecao: (id: string, eventoId: string) => `/colecoes-favoritos/${id}/eventos/${eventoId}`,
+  moverEventoColecao: (id: string) => `/colecoes-favoritos/${id}/mover`,
+  reordenarEventoColecao: (id: string, eventoId: string) => `/colecoes-favoritos/${id}/reordenar/${eventoId}`,
+  duplicarColecao: (id: string) => `/colecoes-favoritos/${id}/duplicar`,
 }

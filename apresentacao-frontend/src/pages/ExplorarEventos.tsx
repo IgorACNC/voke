@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { listarEventosAtivos, type Evento } from '../services/eventoService'
+import {
+  listarColecoes, criarColecao, adicionarEventoColecao,
+  type ColecaoResumo,
+} from '../services/colecaoService'
 import './ExplorarEventos.css'
 
 export default function ExplorarEventos() {
@@ -11,6 +15,17 @@ export default function ExplorarEventos() {
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
   const [busca, setBusca] = useState('')
+
+  // Modal favoritar
+  const [modalFavAberto, setModalFavAberto] = useState(false)
+  const [eventoParaFav, setEventoParaFav] = useState<Evento | null>(null)
+  const [colecoes, setColecoes] = useState<ColecaoResumo[]>([])
+  const [colecaoSelecionada, setColecaoSelecionada] = useState('')
+  const [criarNova, setCriarNova] = useState(false)
+  const [novoNomeColecao, setNovoNomeColecao] = useState('')
+  const [salvandoFav, setSalvandoFav] = useState(false)
+  const [erroFav, setErroFav] = useState('')
+  const [sucessoFav, setSucessoFav] = useState('')
 
   useEffect(() => {
     listarEventosAtivos()
@@ -23,6 +38,45 @@ export default function ExplorarEventos() {
     ev.nome.toLowerCase().includes(busca.toLowerCase()) ||
     ev.local.toLowerCase().includes(busca.toLowerCase())
   )
+
+  async function abrirModalFavoritar(ev: Evento) {
+    setEventoParaFav(ev)
+    setColecaoSelecionada('')
+    setCriarNova(false)
+    setNovoNomeColecao('')
+    setErroFav('')
+    setSucessoFav('')
+    setModalFavAberto(true)
+    try {
+      const data = await listarColecoes()
+      setColecoes(data)
+      if (data.length === 0) setCriarNova(true)
+    } catch {
+      setErroFav('Erro ao carregar coleções.')
+    }
+  }
+
+  async function confirmarFavoritar() {
+    if (!eventoParaFav) return
+    setSalvandoFav(true)
+    setErroFav('')
+    try {
+      let idColecao = colecaoSelecionada
+      if (criarNova) {
+        if (!novoNomeColecao.trim()) { setErroFav('Informe o nome da nova coleção.'); setSalvandoFav(false); return }
+        const nova = await criarColecao(novoNomeColecao, 'PRIVADA')
+        idColecao = nova.id
+      }
+      if (!idColecao) { setErroFav('Selecione ou crie uma coleção.'); setSalvandoFav(false); return }
+      await adicionarEventoColecao(idColecao, eventoParaFav.id)
+      setSucessoFav(`"${eventoParaFav.nome}" adicionado à coleção!`)
+      setTimeout(() => setModalFavAberto(false), 1500)
+    } catch (e: any) {
+      setErroFav(e?.response?.data?.mensagem ?? 'Erro ao favoritar evento.')
+    } finally {
+      setSalvandoFav(false)
+    }
+  }
 
   function handleSair() { sair(); navigate('/login') }
 
@@ -66,9 +120,18 @@ export default function ExplorarEventos() {
                   <h2 className="exp-card-nome">{ev.nome}</h2>
                   <p className="exp-card-local">{ev.local}</p>
                 </div>
-                {ev.idadeMinima > 0 && (
-                  <span className="exp-badge-idade">{ev.idadeMinima}+</span>
-                )}
+                <div className="exp-card-topo-right">
+                  {ev.idadeMinima > 0 && (
+                    <span className="exp-badge-idade">{ev.idadeMinima}+</span>
+                  )}
+                  <button
+                    className="exp-btn-fav"
+                    title="Salvar em coleção"
+                    onClick={() => abrirModalFavoritar(ev)}
+                  >
+                    ⭐
+                  </button>
+                </div>
               </div>
 
               {ev.descricao && (
@@ -116,6 +179,72 @@ export default function ExplorarEventos() {
           ))}
         </div>
       </main>
+
+      {/* Modal Favoritar */}
+      {modalFavAberto && (
+        <div className="exp-overlay" onClick={() => setModalFavAberto(false)}>
+          <div className="exp-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="exp-modal-titulo">Salvar em coleção</h2>
+            <p className="exp-modal-evento">"{eventoParaFav?.nome}"</p>
+
+            {sucessoFav ? (
+              <p className="exp-modal-sucesso">{sucessoFav}</p>
+            ) : (
+              <>
+                {colecoes.length > 0 && !criarNova && (
+                  <>
+                    <label className="exp-label">Escolha uma coleção</label>
+                    <select
+                      className="exp-select"
+                      value={colecaoSelecionada}
+                      onChange={(e) => setColecaoSelecionada(e.target.value)}
+                    >
+                      <option value="">-- Selecione --</option>
+                      {colecoes.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.nome} ({c.quantidadeItens} eventos)
+                        </option>
+                      ))}
+                    </select>
+                    <button className="exp-btn-nova-colecao" onClick={() => { setCriarNova(true); setColecaoSelecionada('') }}>
+                      + Criar nova coleção
+                    </button>
+                  </>
+                )}
+
+                {(criarNova || colecoes.length === 0) && (
+                  <>
+                    <label className="exp-label">Nome da nova coleção</label>
+                    <input
+                      className="exp-input"
+                      placeholder="Ex: Shows 2025..."
+                      value={novoNomeColecao}
+                      onChange={(e) => setNovoNomeColecao(e.target.value)}
+                      autoFocus
+                    />
+                    {colecoes.length > 0 && (
+                      <button className="exp-btn-nova-colecao" onClick={() => setCriarNova(false)}>
+                        ← Usar coleção existente
+                      </button>
+                    )}
+                  </>
+                )}
+
+                {erroFav && <p className="exp-erro-modal">{erroFav}</p>}
+
+                <div className="exp-modal-acoes">
+                  <button className="exp-btn-cancelar" onClick={() => setModalFavAberto(false)}>
+                    Cancelar
+                  </button>
+                  <button className="exp-btn-salvar" onClick={confirmarFavoritar} disabled={salvandoFav}>
+                    {salvandoFav ? 'Salvando...' : 'Salvar'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -2,6 +2,10 @@ package br.voke.config;
 
 import br.voke.aplicacao.evento.*;
 import br.voke.aplicacao.fidelidade.*;
+import br.voke.dominio.evento.favorito.ColecaoFavoritosRepositorio;
+import br.voke.dominio.evento.favorito.ColecaoFavoritosServico;
+import br.voke.dominio.evento.favorito.FavoritoRepositorio;
+import br.voke.dominio.evento.favorito.FavoritoServico;
 import br.voke.aplicacao.inscricao.*;
 import br.voke.aplicacao.pessoa.*;
 import br.voke.dominio.evento.cupom.CupomRepositorio;
@@ -458,6 +462,85 @@ public class BeanConfig {
     @Bean
     public ConfigurarPreferenciasCasoDeUso configurarPreferencias(SugestaoServico s) {
         return new ConfigurarPreferenciasCasoDeUso(s);
+    }
+
+    // ======================== Favoritos ========================
+
+    @Bean
+    public FavoritoServico favoritoServico(FavoritoRepositorio r) {
+        return new FavoritoServico(r);
+    }
+
+    @Bean
+    public AdicionarFavoritoCasoDeUso adicionarFavorito(FavoritoServico s) {
+        return new AdicionarFavoritoCasoDeUso(s);
+    }
+
+    @Bean
+    public RemoverFavoritoCasoDeUso removerFavorito(FavoritoServico s) {
+        return new RemoverFavoritoCasoDeUso(s);
+    }
+
+    @Bean
+    public ListarFavoritosDoParticipanteCasoDeUso listarFavoritos(FavoritoRepositorio r) {
+        return new ListarFavoritosDoParticipanteCasoDeUso(r);
+    }
+
+    // ======================== Coleções de Favoritos ========================
+
+    @Bean
+    public ColecaoFavoritosServico colecaoFavoritosServico(ColecaoFavoritosRepositorio r) {
+        return new ColecaoFavoritosServico(r);
+    }
+
+    @Bean
+    public CriarColecaoFavoritosCasoDeUso criarColecao(ColecaoFavoritosServico s) {
+        return new CriarColecaoFavoritosCasoDeUso(s);
+    }
+
+    @Bean
+    public EditarColecaoFavoritosCasoDeUso editarColecao(ColecaoFavoritosServico s) {
+        return new EditarColecaoFavoritosCasoDeUso(s);
+    }
+
+    @Bean
+    public ExcluirColecaoFavoritosCasoDeUso excluirColecao(ColecaoFavoritosServico s) {
+        return new ExcluirColecaoFavoritosCasoDeUso(s);
+    }
+
+    @Bean
+    public ListarColecoesDoParticipanteCasoDeUso listarColecoes(ColecaoFavoritosServico s) {
+        return new ListarColecoesDoParticipanteCasoDeUso(s);
+    }
+
+    @Bean
+    public BuscarColecaoCasoDeUso buscarColecao(ColecaoFavoritosServico s) {
+        return new BuscarColecaoCasoDeUso(s);
+    }
+
+    @Bean
+    public AdicionarEventoColecaoCasoDeUso adicionarEventoColecao(ColecaoFavoritosServico s) {
+        return new AdicionarEventoColecaoCasoDeUso(s);
+    }
+
+    @Bean
+    public RemoverEventoColecaoCasoDeUso removerEventoColecao(ColecaoFavoritosServico s) {
+        return new RemoverEventoColecaoCasoDeUso(s);
+    }
+
+    @Bean
+    public MoverEventoEntreColecoesCasoDeUso moverEventoColecao(ColecaoFavoritosServico s) {
+        return new MoverEventoEntreColecoesCasoDeUso(s);
+    }
+
+    @Bean
+    public ReordenarEventoColecaoCasoDeUso reordenarEventoColecao(ColecaoFavoritosServico s) {
+        return new ReordenarEventoColecaoCasoDeUso(s);
+    }
+
+    @Bean
+    public DuplicarColecaoCasoDeUso duplicarColecao(ColecaoFavoritosServico s) {
+        return new DuplicarColecaoCasoDeUso(s);
     }
 
     @Bean

@@ -26,6 +26,7 @@ import MinhasSolicitacoesSubgrupo from './pages/MinhasSolicitacoesSubgrupo'
 import MinhasInscricoes from './pages/MinhasInscricoes'
 import Cupons from './pages/Cupons'
 import EventDetail from './pages/EventDetail'
+import Favoritos from './pages/Favoritos'
 
 export default function App() {
   return (
@@ -66,6 +67,7 @@ export default function App() {
           <Route path="/chat-privado" element={<PrivateRoute papelRequerido="PARTICIPANTE"><ChatPrivado /></PrivateRoute>} />
           <Route path="/carteira" element={<PrivateRoute papelRequerido="PARTICIPANTE"><CarteiraVirtual /></PrivateRoute>} />
           <Route path="/minhas-inscricoes" element={<PrivateRoute papelRequerido="PARTICIPANTE"><MinhasInscricoes /></PrivateRoute>} />
+          <Route path="/favoritos" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Favoritos /></PrivateRoute>} />
           <Route path="/eventos/:eventoId" element={<PrivateRoute><EventDetail /></PrivateRoute>} />
 
           <Route path="/cupons" element={<PrivateRoute papelRequerido="ORGANIZADOR"><Cupons /></PrivateRoute>} />
