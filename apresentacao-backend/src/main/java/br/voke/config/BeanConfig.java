@@ -12,8 +12,16 @@ import br.voke.dominio.evento.categoria.CategoriaRepositorio;
 import br.voke.dominio.evento.categoria.CategoriaServico;
 import br.voke.dominio.evento.evento.EventoRepositorio;
 import br.voke.dominio.evento.evento.EventoServico;
+import br.voke.dominio.evento.chat.*;
 import br.voke.dominio.evento.grupo.*;
+import br.voke.dominio.evento.subgrupo.*;
+import br.voke.dominio.evento.subgrupo.solicitacao.SolicitacaoSubgrupoRepositorio;
+import br.voke.dominio.evento.subgrupo.solicitacao.SolicitacaoSubgrupoServico;
 import br.voke.aplicacao.evento.CriarGrupoEventoCasoDeUso;
+import br.voke.aplicacao.evento.CriarSubgrupoCasoDeUso;
+import br.voke.aplicacao.evento.SolicitarEntradaSubgrupoCasoDeUso;
+import br.voke.aplicacao.evento.AprovarSolicitacaoSubgrupoCasoDeUso;
+import br.voke.aplicacao.evento.RejeitarSolicitacaoSubgrupoCasoDeUso;
 import br.voke.aplicacao.fidelidade.ConsultarExtratoCasoDeUso;
 import br.voke.aplicacao.fidelidade.ResetarLimitesDiariosCasoDeUso;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualRepositorio;
@@ -182,6 +190,43 @@ public class BeanConfig {
     }
 
     @Bean
+    public SubgrupoServicoInterface subgrupoServico(SubgrupoRepositorio sr) {
+        SubgrupoServico base = new SubgrupoServico(sr);
+        return new TipoFechadoSubgrupoDecorator(
+                new MembroDoGrupoPrincipalSubgrupoDecorator(
+                        new PrivilegioGestorSubgrupoDecorator(base)),
+                sr);
+    }
+
+    @Bean
+    public SolicitacaoSubgrupoServico solicitacaoSubgrupoServico(SolicitacaoSubgrupoRepositorio r) {
+        return new SolicitacaoSubgrupoServico(r);
+    }
+
+    @Bean
+    public CriarSubgrupoCasoDeUso criarSubgrupo(SubgrupoServicoInterface s) {
+        return new CriarSubgrupoCasoDeUso(s);
+    }
+
+    @Bean
+    public SolicitarEntradaSubgrupoCasoDeUso solicitarEntradaSubgrupo(
+            SolicitacaoSubgrupoServico ss, SubgrupoRepositorio sr) {
+        return new SolicitarEntradaSubgrupoCasoDeUso(ss, sr);
+    }
+
+    @Bean
+    public AprovarSolicitacaoSubgrupoCasoDeUso aprovarSolicitacaoSubgrupo(
+            SolicitacaoSubgrupoServico ss, SubgrupoServicoInterface subSvc) {
+        return new AprovarSolicitacaoSubgrupoCasoDeUso(ss, subSvc);
+    }
+
+    @Bean
+    public RejeitarSolicitacaoSubgrupoCasoDeUso rejeitarSolicitacaoSubgrupo(
+            SolicitacaoSubgrupoServico ss) {
+        return new RejeitarSolicitacaoSubgrupoCasoDeUso(ss);
+    }
+
+    @Bean
     public CupomServico cupomServico(CupomRepositorio r) {
         return new CupomServico(r);
     }
@@ -204,6 +249,11 @@ public class BeanConfig {
     @Bean
     public CancelarEventoCasoDeUso cancelarEvento(EventoServico s) {
         return new CancelarEventoCasoDeUso(s);
+    }
+
+    @Bean
+    public EncerrarEventosExpiradosCasoDeUso encerrarEventosExpirados(EventoServico s) {
+        return new EncerrarEventosExpiradosCasoDeUso(s);
     }
 
     @Bean
@@ -433,5 +483,24 @@ public class BeanConfig {
     @Bean
     public ListarCategoriasCasoDeUso listarCategorias(CategoriaServico s) {
         return new ListarCategoriasCasoDeUso(s);
+    }
+
+    // ======================== Chat Canal ========================
+
+    @Bean
+    public ChatCanalServicoInterface chatCanalServico(MensagemCanalRepositorio r) {
+        return new ConteudoValidoDecorator(
+                new AcessoCanalDecorator(
+                        new ChatCanalServico(r)));
+    }
+
+    @Bean
+    public EnviarMensagemCanalCasoDeUso enviarMensagemCanal(ChatCanalServicoInterface s) {
+        return new EnviarMensagemCanalCasoDeUso(s);
+    }
+
+    @Bean
+    public ListarMensagensCanalCasoDeUso listarMensagensCanal(ChatCanalServicoInterface s) {
+        return new ListarMensagensCanalCasoDeUso(s);
     }
 }

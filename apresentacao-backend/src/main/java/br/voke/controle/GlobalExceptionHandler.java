@@ -1,6 +1,15 @@
 package br.voke.controle;
 
+import br.voke.dominio.evento.chat.AcessoChatCanalNegadoException;
+import br.voke.dominio.evento.chat.ConteudoMensagemInvalidoException;
 import br.voke.dominio.evento.excecao.*;
+import br.voke.dominio.evento.subgrupo.AcessoSubgrupoNegadoException;
+import br.voke.dominio.evento.subgrupo.MembroNaoEstaNoGrupoPrincipalException;
+import br.voke.dominio.evento.subgrupo.ParticipanteNaoEhMembroException;
+import br.voke.dominio.evento.subgrupo.SolicitacaoDuplicadaException;
+import br.voke.dominio.evento.subgrupo.SolicitacaoJaDecididaException;
+import br.voke.dominio.evento.subgrupo.SubgrupoFechadoException;
+import br.voke.dominio.evento.subgrupo.SubgrupoLotadoException;
 import br.voke.dominio.fidelidade.excecao.LimiteDiarioInsercaoException;
 import br.voke.dominio.fidelidade.excecao.LimiteFrequenciaSaqueException;
 import br.voke.dominio.fidelidade.excecao.LimiteRemocaoException;
@@ -30,6 +39,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErroResp(ex.getMessage()));
     }
 
+    @ExceptionHandler({SubgrupoLotadoException.class, SubgrupoFechadoException.class,
+                       MembroNaoEstaNoGrupoPrincipalException.class,
+                       ParticipanteNaoEhMembroException.class,
+                       SolicitacaoJaDecididaException.class,
+                       SolicitacaoDuplicadaException.class})
+    public ResponseEntity<ErroResp> handleSubgrupoRegras(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler(AcessoSubgrupoNegadoException.class)
+    public ResponseEntity<ErroResp> handleSubgrupoAcesso(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErroResp(ex.getMessage()));
+    }
+
     @ExceptionHandler(LimiteDiarioInsercaoException.class)
     public ResponseEntity<ErroResp> handleLimiteDiario(LimiteDiarioInsercaoException ex) {
         return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
@@ -47,6 +70,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(LimiteFrequenciaSaqueException.class)
     public ResponseEntity<ErroResp> handleLimiteFrequencia(LimiteFrequenciaSaqueException ex) {
+        return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler(AcessoChatCanalNegadoException.class)
+    public ResponseEntity<ErroResp> handleAcessoChat(AcessoChatCanalNegadoException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ConteudoMensagemInvalidoException.class)
+    public ResponseEntity<ErroResp> handleConteudoInvalido(ConteudoMensagemInvalidoException ex) {
         return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
     }
 }
