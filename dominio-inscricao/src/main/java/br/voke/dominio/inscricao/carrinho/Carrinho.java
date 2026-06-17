@@ -46,6 +46,7 @@ public class Carrinho extends EntidadeBase<CarrinhoId> {
             throw new LimiteEventosCarrinhoException();
         }
         itens.add(item);
+        this.criadoEm = LocalDateTime.now();
     }
 
     public void removerItem(UUID eventoId) {
