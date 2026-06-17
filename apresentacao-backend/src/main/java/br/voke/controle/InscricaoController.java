@@ -6,7 +6,9 @@ import br.voke.dominio.evento.evento.Evento;
 import br.voke.dominio.evento.evento.EventoId;
 import br.voke.dominio.evento.evento.EventoRepositorio;
 import br.voke.dominio.evento.evento.Lote;
+import br.voke.dominio.fidelidade.carteira.CarteiraVirtualServico;
 import br.voke.dominio.inscricao.inscricao.Inscricao;
+import br.voke.dominio.inscricao.inscricao.InscricaoId;
 import br.voke.dominio.inscricao.inscricao.InscricaoRepositorio;
 import br.voke.dominio.pessoa.participante.Participante;
 import br.voke.dominio.pessoa.participante.ParticipanteId;
@@ -32,23 +34,25 @@ public class InscricaoController {
     private final EventoRepositorio eventoRepositorio;
     private final ParticipanteRepositorio participanteRepositorio;
     private final InscricaoRepositorio inscricaoRepositorio;
+    private final CarteiraVirtualServico carteiraServico;
 
     public InscricaoController(RealizarInscricaoCasoDeUso realizarInscricao,
                                 CancelarInscricaoCasoDeUso cancelarInscricao,
                                 EventoRepositorio eventoRepositorio,
                                 ParticipanteRepositorio participanteRepositorio,
-                                InscricaoRepositorio inscricaoRepositorio) {
+                                InscricaoRepositorio inscricaoRepositorio,
+                                CarteiraVirtualServico carteiraServico) {
         this.realizarInscricao = realizarInscricao;
         this.cancelarInscricao = cancelarInscricao;
         this.eventoRepositorio = eventoRepositorio;
         this.participanteRepositorio = participanteRepositorio;
         this.inscricaoRepositorio = inscricaoRepositorio;
+        this.carteiraServico = carteiraServico;
     }
 
     record RealizarInscricaoReq(UUID participanteId, UUID eventoId,
                                  BigDecimal valorIngresso, int limitePorCpf) {}
 
-    record CancelarInscricaoReq(UUID inscricaoId, LocalDateTime dataEvento) {}
 
     record LoteEmInscricaoResp(int numero, BigDecimal preco, int quantidadeTotal,
                                int quantidadeVendida, boolean ativo) {}
@@ -61,6 +65,22 @@ public class InscricaoController {
     record InscricaoDetalhadaResp(String id, EventoEmInscricaoResp evento, Integer loteNumero,
                                    BigDecimal valorPago, String status,
                                    LocalDateTime dataHoraInscricao) {}
+
+    @GetMapping("/{inscricaoId}/estorno")
+    public ResponseEntity<?> estimarEstorno(@PathVariable UUID inscricaoId) {
+        try {
+            Inscricao inscricao = inscricaoRepositorio.buscarPorId(new InscricaoId(inscricaoId))
+                    .orElseThrow(() -> new IllegalArgumentException("Inscrição não encontrada"));
+            Evento evento = eventoRepositorio.buscarPorId(new EventoId(inscricao.getEventoId()))
+                    .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado"));
+            BigDecimal devolucao = inscricao.calcularDevolucao(evento.getDataHoraInicio());
+            double percentual = inscricao.getValorPago().compareTo(BigDecimal.ZERO) == 0 ? 0
+                    : devolucao.divide(inscricao.getValorPago(), 4, java.math.RoundingMode.HALF_UP).doubleValue();
+            return ResponseEntity.ok(new EstornoResp(percentual, devolucao));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+        }
+    }
 
     @GetMapping("/minhas")
     public ResponseEntity<?> listarMinhas(@RequestParam UUID participanteId) {
@@ -94,10 +114,27 @@ public class InscricaoController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> cancelar(@RequestBody CancelarInscricaoReq req) {
+    @DeleteMapping("/{inscricaoId}")
+    public ResponseEntity<?> cancelar(@PathVariable UUID inscricaoId) {
         try {
-            BigDecimal devolucao = cancelarInscricao.executar(req.inscricaoId(), req.dataEvento());
+            Inscricao inscricao = inscricaoRepositorio.buscarPorId(
+                    new InscricaoId(inscricaoId))
+                    .orElseThrow(() -> new IllegalArgumentException("Inscrição não encontrada"));
+
+            Evento evento = eventoRepositorio.buscarPorId(new EventoId(inscricao.getEventoId()))
+                    .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado"));
+
+            BigDecimal devolucao = cancelarInscricao.executar(inscricaoId, evento.getDataHoraInicio());
+
+            if (evento.getLoteAtual() != null) {
+                evento.getLoteAtual().cancelarVenda();
+                eventoRepositorio.salvar(evento);
+            }
+
+            if (devolucao.compareTo(java.math.BigDecimal.ZERO) > 0) {
+                carteiraServico.estornar(inscricao.getParticipanteId(), devolucao);
+            }
+
             return ResponseEntity.ok(new CancelamentoResp("Inscrição cancelada", devolucao));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
@@ -129,6 +166,7 @@ public class InscricaoController {
                 i.getValorPago(), i.getStatus().name(), i.getDataInscricao());
     }
 
+    record EstornoResp(double percentual, BigDecimal valor) {}
     record CancelamentoResp(String mensagem, BigDecimal valorDevolvido) {}
     record ErroResp(String mensagem) {}
 }

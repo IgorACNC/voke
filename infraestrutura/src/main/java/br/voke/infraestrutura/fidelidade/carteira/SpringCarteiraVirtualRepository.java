@@ -13,6 +13,6 @@ public interface SpringCarteiraVirtualRepository extends JpaRepository<CarteiraV
 
     @Modifying
     @Transactional
-    @Query("UPDATE CarteiraVirtualJpa c SET c.totalInseridoHoje = 0, c.contadorSaquesHoje = 0")
+    @Query("UPDATE CarteiraVirtualJpa c SET c.totalInseridoHoje = 0, c.contadorSaquesHoje = 0, c.dataContador = CURRENT_DATE")
     void resetarLimitesDiarios();
 }

@@ -80,7 +80,9 @@ public class FidelidadeController {
                         t.getValor(),
                         t.getDescricao(),
                         t.getDataHora().format(FORMATTER),
-                        t.getTipo() == TipoTransacao.DEPOSITO || t.getTipo() == TipoTransacao.CREDITO_BONUS
+                        t.getTipo() == TipoTransacao.DEPOSITO
+                                || t.getTipo() == TipoTransacao.CREDITO_BONUS
+                                || t.getTipo() == TipoTransacao.ESTORNO
                                 ? "ENTRADA" : "SAIDA"))
                 .toList();
         return ResponseEntity.ok(extrato);

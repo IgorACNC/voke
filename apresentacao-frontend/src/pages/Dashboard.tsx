@@ -37,7 +37,7 @@ export default function Dashboard() {
   const cardsParticipante = [
     { icon: '🔍', label: 'Explorar Eventos', rota: '/explorar-eventos' },
     { icon: '🎫', label: 'Minhas Inscrições', rota: '/minhas-inscricoes' },
-    { icon: '🛒', label: 'Carrinho' },
+    { icon: '🛒', label: 'Carrinho', rota: '/carrinho' },
     { icon: '⭐', label: 'Favoritos', rota: '/favoritos' },
     { icon: '🏆', label: 'Meus Pontos' },
     { icon: '💲', label: 'Carteira Virtual', rota: '/carteira' },

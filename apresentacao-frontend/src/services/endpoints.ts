@@ -28,6 +28,13 @@ export const endpoints = {
   removerConta: (id: string) => `/participantes/${id}`,
   alterarSenha: '/participantes/senha',
 
+  // Carrinho
+  consultarCarrinho: (participanteId: string) => `/carrinho/${participanteId}`,
+  adicionarItemCarrinho: '/carrinho/itens',
+  removerItemCarrinho: (participanteId: string, eventoId: string) => `/carrinho/itens/${participanteId}/${eventoId}`,
+  aplicarCupomCarrinho: '/carrinho/cupom',
+  finalizarCarrinho: '/carrinho/finalizar',
+
   // Favoritos
   adicionarFavorito: (eventoId: string) => `/favoritos/${eventoId}`,
   removerFavorito: (favoritoId: string) => `/favoritos/${favoritoId}`,

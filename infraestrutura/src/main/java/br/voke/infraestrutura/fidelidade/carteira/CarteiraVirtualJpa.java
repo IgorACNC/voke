@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -28,15 +29,19 @@ public class CarteiraVirtualJpa {
     @Column(nullable = false)
     private int contadorSaquesHoje;
 
+    @Column
+    private LocalDate dataContador;
+
     protected CarteiraVirtualJpa() {}
 
     public CarteiraVirtualJpa(UUID id, UUID participanteId, BigDecimal saldo,
-                              BigDecimal totalInseridoHoje, int contadorSaquesHoje) {
+                              BigDecimal totalInseridoHoje, int contadorSaquesHoje, LocalDate dataContador) {
         this.id = id;
         this.participanteId = participanteId;
         this.saldo = saldo;
         this.totalInseridoHoje = totalInseridoHoje;
         this.contadorSaquesHoje = contadorSaquesHoje;
+        this.dataContador = dataContador;
     }
 
     public UUID getId() { return id; }
@@ -44,4 +49,5 @@ public class CarteiraVirtualJpa {
     public BigDecimal getSaldo() { return saldo; }
     public BigDecimal getTotalInseridoHoje() { return totalInseridoHoje; }
     public int getContadorSaquesHoje() { return contadorSaquesHoje; }
+    public LocalDate getDataContador() { return dataContador; }
 }

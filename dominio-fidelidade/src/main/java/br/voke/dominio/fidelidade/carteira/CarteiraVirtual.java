@@ -6,6 +6,7 @@ import br.voke.dominio.fidelidade.excecao.LimiteRemocaoException;
 import br.voke.dominio.fidelidade.excecao.SaldoInsuficienteException;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ public class CarteiraVirtual extends EntidadeBase<CarteiraVirtualId> {
     private BigDecimal saldo;
     private BigDecimal totalInseridoHoje;
     private int contadorSaquesHoje;
+    private LocalDate dataContador;
 
     public CarteiraVirtual(CarteiraVirtualId id, UUID participanteId) {
         super(id);
@@ -26,6 +28,16 @@ public class CarteiraVirtual extends EntidadeBase<CarteiraVirtualId> {
         this.saldo = BigDecimal.ZERO;
         this.totalInseridoHoje = BigDecimal.ZERO;
         this.contadorSaquesHoje = 0;
+        this.dataContador = LocalDate.now();
+    }
+
+    private void resetarSeNovoDia() {
+        LocalDate hoje = LocalDate.now();
+        if (dataContador == null || !dataContador.equals(hoje)) {
+            this.totalInseridoHoje = BigDecimal.ZERO;
+            this.contadorSaquesHoje = 0;
+            this.dataContador = hoje;
+        }
     }
 
     public void adicionarSaldo(BigDecimal valor) {
@@ -38,6 +50,7 @@ public class CarteiraVirtual extends EntidadeBase<CarteiraVirtualId> {
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Valor deve ser positivo");
         }
+        resetarSeNovoDia();
         estrategia.validar(totalInseridoHoje, valor);
         this.saldo = this.saldo.add(valor);
         this.totalInseridoHoje = this.totalInseridoHoje.add(valor);
@@ -48,6 +61,7 @@ public class CarteiraVirtual extends EntidadeBase<CarteiraVirtualId> {
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Valor deve ser positivo");
         }
+        resetarSeNovoDia();
         if (contadorSaquesHoje >= LIMITE_SAQUES_DIA) {
             throw new LimiteFrequenciaSaqueException();
         }
@@ -59,6 +73,7 @@ public class CarteiraVirtual extends EntidadeBase<CarteiraVirtualId> {
         }
         this.saldo = this.saldo.subtract(valor);
         this.contadorSaquesHoje++;
+        this.dataContador = LocalDate.now();
     }
 
     public void debitar(BigDecimal valor) {
@@ -77,10 +92,12 @@ public class CarteiraVirtual extends EntidadeBase<CarteiraVirtualId> {
     public void resetarLimiteDiario() {
         this.totalInseridoHoje = BigDecimal.ZERO;
         this.contadorSaquesHoje = 0;
+        this.dataContador = LocalDate.now();
     }
 
     public UUID getParticipanteId() { return participanteId; }
     public BigDecimal getSaldo() { return saldo; }
     public BigDecimal getTotalInseridoHoje() { return totalInseridoHoje; }
     public int getContadorSaquesHoje() { return contadorSaquesHoje; }
+    public LocalDate getDataContador() { return dataContador; }
 }

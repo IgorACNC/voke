@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { buscarEvento, type Evento } from '../services/eventoService'
-import { criarInscricao, listarMinhasInscricoes, validarInscricao, type Inscricao } from '../services/inscricaoService'
-import { validarCupom } from '../services/cupomService'
+import { listarMinhasInscricoes, type Inscricao } from '../services/inscricaoService'
 import { buscarPerfil, type PerfilParticipante } from '../services/participanteService'
+import { adicionarAoCarrinho } from '../services/carrinhoService'
 import './Social.css'
 
 function calcularIdade(dataNascimento: string, referencia: string) {
@@ -32,91 +32,55 @@ export default function EventDetail() {
   const [evento, setEvento] = useState<Evento | null>(null)
   const [perfil, setPerfil] = useState<PerfilParticipante | null>(null)
   const [minhas, setMinhas] = useState<Inscricao[]>([])
-
-  const [cupom, setCupom] = useState('')
-  const [cupomValido, setCupomValido] = useState<any>(null)
   const [erro, setErro] = useState('')
-  const [mensagem, setMensagem] = useState('')
   const [carregando, setCarregando] = useState(false)
 
   useEffect(() => {
     if (!eventoId) return
     buscarEvento(eventoId).then(setEvento).catch(() => setErro('Erro ao carregar evento.'))
     if (usuario?.papel === 'PARTICIPANTE') {
-      buscarPerfil(usuario.id).then(setPerfil).catch(() => { /* ignore */ })
-      listarMinhasInscricoes(usuario.id).then(setMinhas).catch(() => { /* ignore */ })
+      buscarPerfil(usuario.id).then(setPerfil).catch(() => {})
+      listarMinhasInscricoes(usuario.id).then(setMinhas).catch(() => {})
     }
   }, [eventoId, usuario?.id])
 
   if (!evento) return null
-  const ev = evento!
+  const ev = evento
 
   const precoBase = ev.loteAtual?.preco ?? 0
   const vagas = ev.loteAtual ? ev.loteAtual.quantidadeTotal - ev.loteAtual.quantidadeVendida : 0
 
-  const idadeParticipante = perfil?.dataNascimento ? calcularIdade(perfil.dataNascimento, ev.dataHoraInicio) : null
-  const bloqueadoPorIdade = ev.idadeMinima > 0 && (idadeParticipante === null || idadeParticipante < ev.idadeMinima)
+  const idadeParticipante = perfil?.dataNascimento
+    ? calcularIdade(perfil.dataNascimento, ev.dataHoraInicio)
+    : null
+  const bloqueadoPorIdade =
+    ev.idadeMinima > 0 && (idadeParticipante === null || idadeParticipante < ev.idadeMinima)
 
-  const conflito = minhas.some((i) => i.status === 'CONFIRMADA' && periodoSobrepoe(i.evento.dataHoraInicio, i.evento.dataHoraFim, ev.dataHoraInicio, ev.dataHoraFim))
+  const conflito = minhas.some(
+    (i) =>
+      i.status === 'CONFIRMADA' &&
+      periodoSobrepoe(i.evento.dataHoraInicio, i.evento.dataHoraFim, ev.dataHoraInicio, ev.dataHoraFim),
+  )
 
+  const jaInscrito = minhas.some(
+    (i) => i.evento.id === ev.id && (i.status === 'CONFIRMADA' || i.status === 'CHECK_IN_REALIZADO'),
+  )
 
-  const precoFinal = (() => {
-    if (!cupomValido) return precoBase
-    if (cupomValido.percentual) return Math.max(0, precoBase * (1 - cupomValido.valor / 100))
-    return Math.max(0, precoBase - cupomValido.valor)
-  })()
-
-  async function aplicarCupom() {
+  async function handleAdicionarCarrinho() {
     setErro('')
-    setMensagem('')
-    if (!cupom) return setErro('Informe um codigo de cupom.')
-    try {
-      const res = await validarCupom(cupom, evento!.id)
-      if (!res.valido) return setErro('Cupom invalido para este evento.')
-      setCupomValido(res.cupom)
-      setMensagem('Cupom aplicado.')
-    } catch (e: unknown) {
-      setErro((e as any)?.response?.data?.mensagem ?? 'Erro ao validar cupom.')
-    }
-  }
-
-  async function comprar() {
-    setErro('')
-    setMensagem('')
-    if (!usuario) return setErro('Usuario nao autenticado.')
-    if (!ev.loteAtual || !ev.loteAtual.ativo) return setErro('Nao ha lote ativo.')
+    if (!usuario) return setErro('Usuário não autenticado.')
+    if (!ev.loteAtual || !ev.loteAtual.ativo) return setErro('Não há lote ativo para este evento.')
     if (vagas <= 0) return setErro('Lote esgotado.')
-    if (bloqueadoPorIdade) return setErro('Voce nao atende a idade minima do evento.')
-    if (conflito) return setErro('Conflito de agenda com outra inscricao confirmada.')
-
-    // tentar validar no servidor regras compostas (idade, conflito, limite por CPF, vigencia do lote)
-    // se a validação remota falhar (rota não existente ou indisponível), prosseguir com validações client-side já aplicadas acima
-    try {
-      const valid = await validarInscricao(usuario.id, ev.id)
-      if (!valid.ok) {
-        setErro(valid.motivos?.join('; ') || 'Validacao falhou no servidor.')
-        return
-      }
-    } catch (e: unknown) {
-      console.warn('validarInscricao nao disponivel, aplicando validacoes client-side como fallback', e)
-      // continua com verificacoes locais
-    }
+    if (bloqueadoPorIdade) return setErro('Você não atende à idade mínima do evento.')
+    if (conflito) return setErro('Conflito de agenda com outra inscrição confirmada.')
+    if (jaInscrito) return setErro('Você já está inscrito neste evento.')
 
     setCarregando(true)
     try {
-      await criarInscricao(usuario.id, ev.id, precoFinal)
-      setMensagem('Inscricao realizada com sucesso.')
-      navigate('/minhas-inscricoes')
-    } catch (e: unknown) {
-      const err = e as any
-      const msg = err?.response?.data?.mensagem
-      if (err?.response?.status === 409) {
-        setErro(msg ?? 'Conflito: possivelmente lote ja reservado por outra transacao.')
-      } else if (err?.response?.status === 410) {
-        setErro(msg ?? 'Lote Esgotado.')
-      } else {
-        setErro(msg ?? 'Erro ao criar inscricao. Pode ser lote esgotado.')
-      }
+      await adicionarAoCarrinho(usuario.id, ev.id, ev.nome, 1, precoBase)
+      navigate('/carrinho')
+    } catch (e: any) {
+      setErro(e?.response?.data?.mensagem ?? 'Erro ao adicionar ao carrinho.')
     } finally {
       setCarregando(false)
     }
@@ -125,7 +89,7 @@ export default function EventDetail() {
   return (
     <div className="social-bg">
       <header className="social-header">
-        <button className="social-voltar" onClick={() => navigate('/explorar-eventos')}>Voltar</button>
+        <button className="social-voltar" onClick={() => navigate(-1)}>Voltar</button>
         <span className="social-logo">Voke</span>
         <div style={{ width: 90 }} />
       </header>
@@ -136,33 +100,46 @@ export default function EventDetail() {
           <p>{ev.descricao}</p>
         </section>
 
-        {mensagem && <p className="social-msg-sucesso">{mensagem}</p>}
         {erro && <p className="social-msg-erro">{erro}</p>}
 
         <div className="social-card">
           <p><strong>Local:</strong> {ev.local}</p>
-          <p><strong>Data:</strong> {new Date(ev.dataHoraInicio).toLocaleString('pt-BR')} - {new Date(ev.dataHoraFim).toLocaleString('pt-BR')}</p>
-          {ev.idadeMinima > 0 && <p><strong>Idade minima:</strong> {ev.idadeMinima} anos</p>}
+          <p>
+            <strong>Data:</strong>{' '}
+            {new Date(ev.dataHoraInicio).toLocaleString('pt-BR')} –{' '}
+            {new Date(ev.dataHoraFim).toLocaleString('pt-BR')}
+          </p>
+          {ev.idadeMinima > 0 && (
+            <p><strong>Idade mínima:</strong> {ev.idadeMinima} anos</p>
+          )}
           {ev.loteAtual && (
-            <p><strong>Lote atual:</strong> #{ev.loteAtual.numero} — R$ {ev.loteAtual.preco.toFixed(2)} — {vagas} vagas</p>
+            <p>
+              <strong>Lote:</strong> #{ev.loteAtual.numero} — {vagas > 0 ? `${vagas} vagas disponíveis` : 'Esgotado'}{' '}
+              — <strong>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(precoBase)}</strong>
+            </p>
           )}
 
-          <div style={{ marginTop: 12 }}>
-            <label>
-              Codigo do Cupom
-              <input value={cupom} onChange={(e) => setCupom(e.target.value)} />
-            </label>
-            <button className="social-btn-sec" onClick={aplicarCupom}>Aplicar Cupom</button>
-          </div>
+          {/* Alertas de validação */}
+          {bloqueadoPorIdade && (
+            <p className="social-msg-erro">Você não atende à idade mínima ({ev.idadeMinima} anos) deste evento.</p>
+          )}
+          {conflito && (
+            <p className="social-msg-erro">Você já tem uma inscrição confirmada no mesmo horário.</p>
+          )}
+          {jaInscrito && (
+            <p className="social-msg-sucesso">Você já está inscrito neste evento.</p>
+          )}
 
-          <div style={{ marginTop: 12 }}>
-            <p><strong>Preco final:</strong> R$ {precoFinal.toFixed(2)}</p>
-            {usuario?.papel === 'PARTICIPANTE' && (
-              <div>
-                <button disabled={carregando} onClick={comprar}>Confirmar Inscricao</button>
-              </div>
-            )}
-          </div>
+          {usuario?.papel === 'PARTICIPANTE' && !jaInscrito && (
+            <div style={{ marginTop: '1rem' }}>
+              <button
+                onClick={handleAdicionarCarrinho}
+                disabled={carregando || bloqueadoPorIdade || conflito || vagas <= 0}
+              >
+                {carregando ? 'Adicionando...' : '🛒 Adicionar ao Carrinho'}
+              </button>
+            </div>
+          )}
         </div>
       </main>
     </div>

@@ -7,7 +7,7 @@ export interface SaldoCarteira {
   saldo: number
 }
 
-export type TipoTransacao = 'DEPOSITO' | 'SAQUE' | 'DEBITO_COMPRA' | 'CREDITO_BONUS'
+export type TipoTransacao = 'DEPOSITO' | 'SAQUE' | 'DEBITO_COMPRA' | 'CREDITO_BONUS' | 'ESTORNO'
 export type DirecaoTransacao = 'ENTRADA' | 'SAIDA'
 
 export interface Transacao {

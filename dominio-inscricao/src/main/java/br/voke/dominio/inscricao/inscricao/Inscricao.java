@@ -28,13 +28,15 @@ public class Inscricao extends EntidadeBase<InscricaoId> {
     }
 
     public BigDecimal calcularDevolucao(LocalDateTime dataEvento) {
-        long diasAteEvento = java.time.Duration.between(LocalDateTime.now(), dataEvento).toDays();
-        if (diasAteEvento >= 7) {
-            return valorPago; // 100%
-        } else if (diasAteEvento >= 3) {
-            return valorPago.multiply(BigDecimal.valueOf(0.5)); // 50%
-        } else {
-            return BigDecimal.ZERO; // 0%
+        long horasAteEvento = java.time.Duration.between(LocalDateTime.now(), dataEvento).toHours();
+        if (horasAteEvento >= 168) {          // >= 7 dias → 100%
+            return valorPago;
+        } else if (horasAteEvento >= 48) {    // >= 48 horas → 50%
+            return valorPago.multiply(BigDecimal.valueOf(0.5));
+        } else if (horasAteEvento > 0) {      // evento ainda não começou → 25%
+            return valorPago.multiply(BigDecimal.valueOf(0.25));
+        } else {                              // evento já começou ou passou → sem estorno
+            return BigDecimal.ZERO;
         }
     }
 

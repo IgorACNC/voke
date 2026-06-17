@@ -333,8 +333,19 @@ public class BeanConfig {
     }
 
     @Bean
-    public FinalizarCompraCasoDeUso finalizarCompra(CarrinhoServico s) {
-        return new FinalizarCompraCasoDeUso(s);
+    public ConsultarCarrinhoCasoDeUso consultarCarrinho(CarrinhoRepositorio r) {
+        return new ConsultarCarrinhoCasoDeUso(r);
+    }
+
+    @Bean
+    public FinalizarCompraCasoDeUso finalizarCompra(CarrinhoServico carrinhoServico,
+                                                     CarrinhoRepositorio carrinhoRepositorio,
+                                                     CarteiraVirtualServico carteiraServico,
+                                                     InscricaoServico inscricaoServico,
+                                                     EventoRepositorio eventoRepositorio,
+                                                     ParticipanteRepositorio participanteRepositorio) {
+        return new FinalizarCompraCasoDeUso(carrinhoServico, carrinhoRepositorio,
+                carteiraServico, inscricaoServico, eventoRepositorio, participanteRepositorio);
     }
 
 

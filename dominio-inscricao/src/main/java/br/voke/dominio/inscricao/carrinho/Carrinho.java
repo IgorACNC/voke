@@ -1,10 +1,12 @@
 package br.voke.dominio.inscricao.carrinho;
 
 import br.voke.dominio.compartilhado.EntidadeBase;
+import br.voke.dominio.inscricao.excecao.CarrinhoExpiradoException;
 import br.voke.dominio.inscricao.excecao.CupomDuplicadoCarrinhoException;
 import br.voke.dominio.inscricao.excecao.LimiteEventosCarrinhoException;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,11 +16,13 @@ import java.util.UUID;
 public class Carrinho extends EntidadeBase<CarrinhoId> {
 
     public static final int MAX_EVENTOS = 2;
+    public static final long MINUTOS_EXPIRACAO = 15;
 
     private final UUID participanteId;
     private final List<ItemCarrinho> itens;
     private String cupomAplicado;
     private EstrategiaDesconto estrategiaDesconto;
+    private LocalDateTime criadoEm;
 
     public Carrinho(CarrinhoId id, UUID participanteId) {
         super(id);
@@ -27,6 +31,7 @@ public class Carrinho extends EntidadeBase<CarrinhoId> {
         this.itens = new ArrayList<>();
         this.cupomAplicado = null;
         this.estrategiaDesconto = null;
+        this.criadoEm = LocalDateTime.now();
     }
 
     public void adicionarItem(ItemCarrinho item) {
@@ -71,6 +76,17 @@ public class Carrinho extends EntidadeBase<CarrinhoId> {
         itens.clear();
         cupomAplicado = null;
         estrategiaDesconto = null;
+        criadoEm = LocalDateTime.now();
+    }
+
+    public void validarNaoExpirado() {
+        if (criadoEm != null && criadoEm.plusMinutes(MINUTOS_EXPIRACAO).isBefore(LocalDateTime.now())) {
+            throw new CarrinhoExpiradoException();
+        }
+    }
+
+    public boolean isExpirado() {
+        return criadoEm != null && criadoEm.plusMinutes(MINUTOS_EXPIRACAO).isBefore(LocalDateTime.now());
     }
 
     private BigDecimal calcularSubtotal() {
@@ -82,6 +98,7 @@ public class Carrinho extends EntidadeBase<CarrinhoId> {
     public UUID getParticipanteId() { return participanteId; }
     public List<ItemCarrinho> getItens() { return Collections.unmodifiableList(itens); }
     public String getCupomAplicado() { return cupomAplicado; }
+    public LocalDateTime getCriadoEm() { return criadoEm; }
 
     public BigDecimal getDescontoCupom() {
         if (estrategiaDesconto == null) return BigDecimal.ZERO;

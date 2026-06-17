@@ -3,14 +3,47 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { listarMinhasInscricoes, cancelarInscricao, estimarEstorno, type Inscricao } from '../services/inscricaoService'
 import './Social.css'
+import './MinhasInscricoes.css'
+
+type StatusFiltro = 'TODOS' | 'CONFIRMADA' | 'CHECK_IN_REALIZADO' | 'CANCELADA' | 'PENDENTE'
+
+const FILTROS: { valor: StatusFiltro; label: string }[] = [
+  { valor: 'TODOS', label: 'Todos' },
+  { valor: 'CONFIRMADA', label: 'Confirmada' },
+  { valor: 'CHECK_IN_REALIZADO', label: 'Check-in' },
+  { valor: 'CANCELADA', label: 'Cancelada' },
+  { valor: 'PENDENTE', label: 'Pendente' },
+]
+
+const STATUS_CONFIG: Record<string, { label: string; cls: string }> = {
+  CONFIRMADA:          { label: 'Confirmada',   cls: 'badge-confirmada' },
+  CHECK_IN_REALIZADO:  { label: 'Check-in feito', cls: 'badge-checkin' },
+  CANCELADA:           { label: 'Cancelada',    cls: 'badge-cancelada' },
+  PENDENTE:            { label: 'Pendente',     cls: 'badge-pendente' },
+}
+
+function calcularPercentualEstorno(dataInicioEvento: string): number {
+  const diffHours = (new Date(dataInicioEvento).getTime() - Date.now()) / 3_600_000
+  if (diffHours >= 168) return 1      // >= 7 dias
+  if (diffHours >= 48) return 0.5     // >= 48 horas
+  if (diffHours > 0) return 0.25      // evento ainda não começou
+  return 0                            // evento já passou
+}
+
+function eventoFinalizado(dataFim: string) {
+  return new Date(dataFim).getTime() < Date.now()
+}
 
 export default function MinhasInscricoes() {
   const navigate = useNavigate()
   const { usuario } = useAuth()
+
   const [inscricoes, setInscricoes] = useState<Inscricao[]>([])
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState('')
   const [mensagem, setMensagem] = useState('')
+  const [filtro, setFiltro] = useState<StatusFiltro>('TODOS')
+  const [cancelando, setCancelando] = useState<string | null>(null)
 
   useEffect(() => {
     if (!usuario) return
@@ -21,60 +54,48 @@ export default function MinhasInscricoes() {
     setErro('')
     setCarregando(true)
     try {
-      const dados = await listarMinhasInscricoes(usuario!.id)
-      setInscricoes(dados)
+      setInscricoes(await listarMinhasInscricoes(usuario!.id))
     } catch {
-      setErro('Nao foi possivel carregar suas inscricoes.')
+      setErro('Não foi possível carregar suas inscrições.')
     } finally {
       setCarregando(false)
     }
-  }
-
-  function calcularPercentualEstorno(dataInicioEvento: string): number {
-    const now = Date.now()
-    const inicio = new Date(dataInicioEvento).getTime()
-    const diffMs = inicio - now
-    const diffHours = diffMs / (1000 * 60 * 60)
-    const diffDays = diffHours / 24
-    // regras: >=7 dias => 100%; >=48 horas => 50%; <48 horas => 0%
-    if (diffDays >= 7) return 1
-    if (diffHours >= 48) return 0.5
-    return 0
-  }
-
-  function eventoFinalizado(dataFimEvento: string): boolean {
-    return new Date(dataFimEvento).getTime() < Date.now()
-  }
-
-  function podeAvaliar(inscricao: Inscricao): boolean {
-    return (inscricao.status === 'CONFIRMADA' || inscricao.status === 'CHECK_IN_REALIZADO')
-      && eventoFinalizado(inscricao.evento.dataHoraFim)
   }
 
   async function handleCancelar(id: string) {
     const inscr = inscricoes.find((x) => x.id === id)
     if (!inscr) return
     setErro('')
-    let valorEstorno: number | null = null
+
+    let valorEstorno = 0
     try {
       const resp = await estimarEstorno(id)
       valorEstorno = Math.round(resp.valor * 100) / 100
     } catch {
-      const percentual = calcularPercentualEstorno(inscr.evento.dataHoraInicio)
-      valorEstorno = Math.round(inscr.valorPago * percentual * 100) / 100
+      const pct = calcularPercentualEstorno(inscr.evento.dataHoraInicio)
+      valorEstorno = Math.round(inscr.valorPago * pct * 100) / 100
     }
-    if (!confirm(`Deseja cancelar esta inscricao? Estorno estimado: R$ ${valorEstorno.toFixed(2)}`)) return
 
+    if (!confirm(`Cancelar inscrição em "${inscr.evento.nome}"?\nEstorno estimado: R$ ${valorEstorno.toFixed(2)}`)) return
+
+    setCancelando(id)
     try {
       await cancelarInscricao(id)
-      setMensagem('Inscricao cancelada com sucesso.')
+      setMensagem('Inscrição cancelada com sucesso.')
       await carregar()
     } catch (e: unknown) {
-      setErro((e as any)?.response?.data?.mensagem ?? 'Nao foi possivel cancelar a inscricao.')
+      setErro((e as any)?.response?.data?.mensagem ?? 'Não foi possível cancelar a inscrição.')
+    } finally {
+      setCancelando(null)
     }
   }
 
   if (!usuario) return null
+
+  const visíveis = filtro === 'TODOS' ? inscricoes : inscricoes.filter((i) => i.status === filtro)
+
+  const contagem = (s: StatusFiltro) =>
+    s === 'TODOS' ? inscricoes.length : inscricoes.filter((i) => i.status === s).length
 
   return (
     <div className="social-bg">
@@ -87,35 +108,99 @@ export default function MinhasInscricoes() {
       <main className="social-main">
         <section className="social-title">
           <h1>Minhas Inscrições</h1>
-          <p>Visualize seus ingressos confirmados e cancele sua participação quando permitido.</p>
+          <p>Acompanhe seus ingressos, faça check-in e cancele quando necessário.</p>
         </section>
 
         {mensagem && <p className="social-msg-sucesso">{mensagem}</p>}
         {erro && <p className="social-msg-erro">{erro}</p>}
 
+        {/* Filtros */}
+        <div className="inscricao-filtros">
+          {FILTROS.map((f) => {
+            const n = contagem(f.valor)
+            if (f.valor !== 'TODOS' && n === 0) return null
+            return (
+              <button
+                key={f.valor}
+                className={`inscricao-filtro-btn inscricao-filtro-${f.valor.toLowerCase()} ${filtro === f.valor ? 'ativo' : ''}`}
+                onClick={() => setFiltro(f.valor)}
+              >
+                {f.label}
+                <span className="inscricao-filtro-count">{n}</span>
+              </button>
+            )
+          })}
+        </div>
+
         {carregando ? (
-          <p>Carregando...</p>
+          <p style={{ color: '#9ca3af', textAlign: 'center', padding: '2rem' }}>Carregando...</p>
+        ) : visíveis.length === 0 ? (
+          <div className="inscricao-vazio">
+            <span>🎫</span>
+            <p>{filtro === 'TODOS' ? 'Você ainda não tem inscrições.' : 'Nenhuma inscrição com esse status.'}</p>
+            {filtro === 'TODOS' && (
+              <button className="inscricao-btn-explorar" onClick={() => navigate('/explorar-eventos')}>
+                Explorar eventos
+              </button>
+            )}
+          </div>
         ) : (
-          <div className="social-card">
-            {inscricoes.length === 0 && <p className="social-vazio">Nenhuma inscricao encontrada.</p>}
-            {inscricoes.map((i) => (
-              <div key={i.id} className="inscricao-item">
-                <h3>{i.evento.nome}</h3>
-                <p>{new Date(i.evento.dataHoraInicio).toLocaleString('pt-BR')} - {new Date(i.evento.dataHoraFim).toLocaleString('pt-BR')}</p>
-                <p>Lote: {i.loteNumero ?? '—'} | Status: {i.status}</p>
-                <div style={{ marginTop: 8 }}>
-                  <button onClick={() => navigate(`/eventos/${i.evento.id}/grupo`)}>Ver evento</button>
-                  {podeAvaliar(i) && (
-                    <button onClick={() => navigate(`/avaliacoes/${i.evento.id}`, { state: { evento: i.evento } })}>
-                      Avaliar evento
+          <div className="inscricao-lista">
+            {visíveis.map((i) => {
+              const cfg = STATUS_CONFIG[i.status] ?? { label: i.status, cls: 'badge-pendente' }
+              const finalizado = eventoFinalizado(i.evento.dataHoraFim)
+              const podeAvaliar = (i.status === 'CONFIRMADA' || i.status === 'CHECK_IN_REALIZADO') && finalizado
+              const podeCancelar = i.status === 'CONFIRMADA'
+
+              return (
+                <div key={i.id} className="inscricao-card">
+                  <div className="inscricao-card-topo">
+                    <div className="inscricao-card-info">
+                      <div className="inscricao-card-nome-linha">
+                        <h3 className="inscricao-card-nome">{i.evento.nome}</h3>
+                        <span className={`inscricao-badge ${cfg.cls}`}>{cfg.label}</span>
+                      </div>
+                      <p className="inscricao-card-local">📍 {i.evento.local}</p>
+                      <p className="inscricao-card-data">
+                        🗓 {new Date(i.evento.dataHoraInicio).toLocaleString('pt-BR', {
+                          day: '2-digit', month: 'short', year: 'numeric',
+                          hour: '2-digit', minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
+                    <div className="inscricao-card-valor">
+                      <span className="inscricao-card-preco">
+                        {Number(i.valorPago).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      </span>
+                      {i.loteNumero && <span className="inscricao-card-lote">Lote {i.loteNumero}</span>}
+                    </div>
+                  </div>
+
+                  <div className="inscricao-card-acoes">
+                    <button className="inscricao-btn-ver" onClick={() => navigate(`/eventos/${i.evento.id}`)}>
+                      Ver evento
                     </button>
-                  )}
-                  {i.status === 'CONFIRMADA' && (
-                    <button className="social-btn-sec" onClick={() => handleCancelar(i.id)}>Cancelar Inscrição</button>
-                  )}
+                    {podeAvaliar && (
+                      <button
+                        className="inscricao-btn-avaliar"
+                        onClick={() => navigate(`/avaliacoes/${i.evento.id}`, { state: { evento: i.evento } })}
+                      >
+                        ⭐ Avaliar
+                      </button>
+                    )}
+                    {podeCancelar && (
+                      <button
+                        className="inscricao-btn-cancelar"
+                        onClick={() => handleCancelar(i.id)}
+                        disabled={cancelando === i.id}
+                      >
+                        {cancelando === i.id ? 'Cancelando...' : 'Cancelar inscrição'}
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </main>

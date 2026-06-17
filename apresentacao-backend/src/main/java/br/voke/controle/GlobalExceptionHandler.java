@@ -18,6 +18,11 @@ import br.voke.dominio.fidelidade.excecao.LimiteDiarioInsercaoException;
 import br.voke.dominio.fidelidade.excecao.LimiteFrequenciaSaqueException;
 import br.voke.dominio.fidelidade.excecao.LimiteRemocaoException;
 import br.voke.dominio.fidelidade.excecao.SaldoInsuficienteException;
+import br.voke.dominio.inscricao.excecao.CarrinhoExpiradoException;
+import br.voke.dominio.inscricao.excecao.ConflitoDeAgendaException;
+import br.voke.dominio.inscricao.excecao.IdadeMinimaEventoException;
+import br.voke.dominio.inscricao.excecao.LimiteEventosCarrinhoException;
+import br.voke.dominio.inscricao.excecao.VagasEsgotadasException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -96,6 +101,19 @@ public class GlobalExceptionHandler {
                        EventoJaNaColecaoException.class,
                        EventoNaoNaColecaoException.class})
     public ResponseEntity<ErroResp> handleColecaoRegras(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler(CarrinhoExpiradoException.class)
+    public ResponseEntity<ErroResp> handleCarrinhoExpirado(CarrinhoExpiradoException ex) {
+        return ResponseEntity.status(HttpStatus.GONE).body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler({LimiteEventosCarrinhoException.class,
+                       VagasEsgotadasException.class,
+                       IdadeMinimaEventoException.class,
+                       ConflitoDeAgendaException.class})
+    public ResponseEntity<ErroResp> handleInscricaoRegras(RuntimeException ex) {
         return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
     }
 }

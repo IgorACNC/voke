@@ -31,6 +31,7 @@ import PerfilOrganizador from './pages/PerfilOrganizador'
 import MeuPerfilOrganizador from './pages/MeuPerfilOrganizador'
 import NotificacoesEvento from './pages/NotificacoesEvento'
 import MinhasNotificacoes from './pages/MinhasNotificacoes'
+import Carrinho from './pages/Carrinho'
 
 export default function App() {
   return (
@@ -75,6 +76,7 @@ export default function App() {
           <Route path="/chat-privado" element={<PrivateRoute papelRequerido="PARTICIPANTE"><ChatPrivado /></PrivateRoute>} />
           <Route path="/carteira" element={<PrivateRoute papelRequerido="PARTICIPANTE"><CarteiraVirtual /></PrivateRoute>} />
           <Route path="/minhas-inscricoes" element={<PrivateRoute papelRequerido="PARTICIPANTE"><MinhasInscricoes /></PrivateRoute>} />
+          <Route path="/carrinho" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Carrinho /></PrivateRoute>} />
           <Route path="/favoritos" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Favoritos /></PrivateRoute>} />
           <Route path="/eventos/:eventoId" element={<PrivateRoute><EventDetail /></PrivateRoute>} />
 

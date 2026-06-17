@@ -65,6 +65,14 @@ public class CarteiraVirtualServico {
         registrar(participanteId, TipoTransacao.CREDITO_BONUS, valor, "Crédito bônus");
     }
 
+    public void estornar(UUID participanteId, BigDecimal valor) {
+        if (valor.compareTo(BigDecimal.ZERO) <= 0) return;
+        CarteiraVirtual carteira = obterOuCriar(participanteId);
+        carteira.creditar(valor);
+        repositorio.salvar(carteira);
+        registrar(participanteId, TipoTransacao.ESTORNO, valor, "Estorno de inscrição cancelada");
+    }
+
     public BigDecimal consultarSaldo(UUID participanteId) {
         return obterOuCriar(participanteId).getSaldo();
     }
