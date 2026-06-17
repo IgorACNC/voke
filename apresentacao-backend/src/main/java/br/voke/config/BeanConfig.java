@@ -6,8 +6,11 @@ import br.voke.dominio.evento.favorito.ColecaoFavoritosRepositorio;
 import br.voke.dominio.evento.favorito.ColecaoFavoritosServico;
 import br.voke.dominio.evento.favorito.FavoritoRepositorio;
 import br.voke.dominio.evento.favorito.FavoritoServico;
+import br.voke.aplicacao.convite.*;
 import br.voke.aplicacao.inscricao.*;
 import br.voke.aplicacao.pessoa.*;
+import br.voke.dominio.inscricao.convite.ConviteRepositorio;
+import br.voke.dominio.inscricao.convite.ConviteServico;
 import br.voke.dominio.evento.cupom.CupomRepositorio;
 import br.voke.dominio.evento.cupom.CupomServico;
 import br.voke.dominio.evento.avaliacao.AvaliacaoRepositorio;
@@ -606,5 +609,43 @@ public class BeanConfig {
     @Bean
     public ListarMensagensCanalCasoDeUso listarMensagensCanal(ChatCanalServicoInterface s) {
         return new ListarMensagensCanalCasoDeUso(s);
+    }
+
+    // ======================== Convites ========================
+
+    @Bean
+    public ConviteServico conviteServico(ConviteRepositorio r) {
+        return new ConviteServico(r);
+    }
+
+    @Bean
+    public EnviarConviteCasoDeUso enviarConvite(ConviteServico cs, EventoRepositorio er,
+                                                 ParticipanteRepositorio pr, InscricaoRepositorio ir) {
+        return new EnviarConviteCasoDeUso(cs, er, pr, ir);
+    }
+
+    @Bean
+    public AceitarConviteCasoDeUso aceitarConvite(ConviteServico s) {
+        return new AceitarConviteCasoDeUso(s);
+    }
+
+    @Bean
+    public RejeitarConviteCasoDeUso rejeitarConvite(ConviteServico s) {
+        return new RejeitarConviteCasoDeUso(s);
+    }
+
+    @Bean
+    public CancelarConviteCasoDeUso cancelarConvite(ConviteServico s) {
+        return new CancelarConviteCasoDeUso(s);
+    }
+
+    @Bean
+    public ListarConvitesRecebidosCasoDeUso listarConvitesRecebidos(ConviteServico s) {
+        return new ListarConvitesRecebidosCasoDeUso(s);
+    }
+
+    @Bean
+    public ListarConvitesEnviadosCasoDeUso listarConvitesEnviados(ConviteServico s) {
+        return new ListarConvitesEnviadosCasoDeUso(s);
     }
 }

@@ -35,6 +35,14 @@ export const endpoints = {
   aplicarCupomCarrinho: '/carrinho/cupom',
   finalizarCarrinho: '/carrinho/finalizar',
 
+  // Convites
+  enviarConvite: '/convites',
+  listarConvitesRecebidos: '/convites/recebidos',
+  listarConvitesEnviados: '/convites/enviados',
+  aceitarConvite: (id: string) => `/convites/${id}/aceitar`,
+  rejeitarConvite: (id: string) => `/convites/${id}/rejeitar`,
+  cancelarConvite: (id: string) => `/convites/${id}`,
+
   // Favoritos
   adicionarFavorito: (eventoId: string) => `/favoritos/${eventoId}`,
   removerFavorito: (favoritoId: string) => `/favoritos/${favoritoId}`,

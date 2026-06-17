@@ -96,6 +96,16 @@
 .social-acoes { display: flex; gap: 0.75rem; }
 .social-form-sem-margem { margin: 0; }
 
+.social-btn-ativo { background: #9333ea !important; color: #fff !important; }
+
+.convite-item {
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  background: #fafafa;
+}
+
 .social-comunidade {
   display: flex;
   flex-direction: column;

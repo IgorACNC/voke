@@ -44,6 +44,7 @@ export default function Dashboard() {
     { icon: '★', label: 'Avaliacoes', rota: '/avaliacoes' },
     { icon: '👥', label: 'Amigos e Comunidades', rota: '/amigos-comunidades' },
     { icon: '💬', label: 'Chat Privado', rota: '/chat-privado' },
+    { icon: '✉️', label: 'Convites', rota: '/convites' },
     { icon: '🔔', label: 'Notificações', rota: '/notificacoes' },
     { icon: '👤', label: 'Minha Conta', rota: '/meu-perfil' },
   ]
