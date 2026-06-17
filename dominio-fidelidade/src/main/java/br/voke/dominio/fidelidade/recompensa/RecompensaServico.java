@@ -95,6 +95,10 @@ public class RecompensaServico {
         return repositorio.buscarPorOrganizadorId(organizadorId);
     }
 
+    public List<Recompensa> listarAtivas() {
+        return repositorio.buscarAtivas();
+    }
+
     private void notificarResgatada(Recompensa recompensa, UUID participanteId) {
         for (RecompensaObserver observer : observers) {
             observer.onRecompensaResgatada(recompensa, participanteId);

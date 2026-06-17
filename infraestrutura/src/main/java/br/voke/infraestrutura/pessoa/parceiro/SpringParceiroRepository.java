@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface SpringParceiroRepository extends JpaRepository<ParceiroJpa, UUID> {
     List<ParceiroJpa> findByOrganizadorId(UUID organizadorId);
+    List<ParceiroJpa> findByParticipanteId(UUID participanteId);
     Optional<ParceiroJpa> findByParticipanteIdAndOrganizadorId(UUID participanteId, UUID organizadorId);
 }

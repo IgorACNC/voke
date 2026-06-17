@@ -30,6 +30,10 @@ public class RecompensaRepositorioJpa implements RecompensaRepositorio {
         return repository.findByOrganizadorId(organizadorId).stream().map(RecompensaJpaMapper::paraDominio).toList();
     }
 
+    public List<Recompensa> buscarAtivas() {
+        return repository.findByAtivaTrue().stream().map(RecompensaJpaMapper::paraDominio).toList();
+    }
+
     public void remover(RecompensaId id) {
         repository.deleteById(id.getValor());
     }

@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface SpringRecompensaRepository extends JpaRepository<RecompensaJpa, UUID> {
     List<RecompensaJpa> findByOrganizadorId(UUID organizadorId);
+    List<RecompensaJpa> findByAtivaTrue();
 }

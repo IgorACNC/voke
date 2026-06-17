@@ -116,4 +116,29 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErroResp> handleInscricaoRegras(RuntimeException ex) {
         return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
     }
+
+    @ExceptionHandler(br.voke.dominio.pessoa.excecao.PresencaInsuficienteException.class)
+    public ResponseEntity<ErroResp> handlePresencaInsuficiente(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler(br.voke.dominio.pessoa.excecao.LimiteAtividadesException.class)
+    public ResponseEntity<ErroResp> handleLimiteAtividades(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler(br.voke.dominio.fidelidade.excecao.CongelamentoDePrecoException.class)
+    public ResponseEntity<ErroResp> handleCongelamento(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler(br.voke.dominio.fidelidade.excecao.RecompensaEsgotadaException.class)
+    public ResponseEntity<ErroResp> handleRecompensaEsgotada(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler(br.voke.dominio.fidelidade.excecao.PontosInsuficientesException.class)
+    public ResponseEntity<ErroResp> handlePontosInsuficientes(RuntimeException ex) {
+        return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+    }
 }

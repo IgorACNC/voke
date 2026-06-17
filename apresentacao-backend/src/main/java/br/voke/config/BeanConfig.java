@@ -648,4 +648,40 @@ public class BeanConfig {
     public ListarConvitesEnviadosCasoDeUso listarConvitesEnviados(ConviteServico s) {
         return new ListarConvitesEnviadosCasoDeUso(s);
     }
+
+    // ======================== Parceiros ========================
+
+    @Bean
+    public br.voke.dominio.pessoa.parceiro.ParceiroServico parceiroServico(
+            br.voke.dominio.pessoa.parceiro.ParceiroRepositorio r,
+            br.voke.dominio.pessoa.parceiro.PresencaConsulta pc) {
+        return new br.voke.dominio.pessoa.parceiro.ParceiroServico(r, pc);
+    }
+
+    @Bean
+    public CadastrarParceiroCasoDeUso cadastrarParceiro(br.voke.dominio.pessoa.parceiro.ParceiroServico s) {
+        return new CadastrarParceiroCasoDeUso(s);
+    }
+
+    @Bean
+    public EditarParceiroCasoDeUso editarParceiro(br.voke.dominio.pessoa.parceiro.ParceiroServico s) {
+        return new EditarParceiroCasoDeUso(s);
+    }
+
+    @Bean
+    public RemoverParceiroCasoDeUso removerParceiro(br.voke.dominio.pessoa.parceiro.ParceiroServico s) {
+        return new RemoverParceiroCasoDeUso(s);
+    }
+
+    @Bean
+    public ListarParceirosOrganizadorCasoDeUso listarParceiros(br.voke.dominio.pessoa.parceiro.ParceiroServico s) {
+        return new ListarParceirosOrganizadorCasoDeUso(s);
+    }
+
+    // ======================== Recompensas Ativas ========================
+
+    @Bean
+    public ListarRecompensasAtivasCasoDeUso listarRecompensasAtivas(RecompensaServico s) {
+        return new ListarRecompensasAtivasCasoDeUso(s);
+    }
 }

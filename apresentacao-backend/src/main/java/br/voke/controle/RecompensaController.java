@@ -2,6 +2,7 @@ package br.voke.controle;
 
 import br.voke.aplicacao.fidelidade.*;
 import br.voke.dominio.fidelidade.recompensa.Recompensa;
+import br.voke.dominio.fidelidade.pontos.ContaPontosRepositorio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,20 +20,26 @@ public class RecompensaController {
     private final RemoverRecompensaCasoDeUso remover;
     private final InativarRecompensaCasoDeUso inativar;
     private final ListarRecompensasOrganizadorCasoDeUso listar;
+    private final ListarRecompensasAtivasCasoDeUso listarAtivas;
     private final ResgatarRecompensaCasoDeUso resgatar;
+    private final ConsultarSaldoPontosCasoDeUso consultarPontos;
 
     public RecompensaController(CadastrarRecompensaCasoDeUso cadastrar,
                                  EditarRecompensaCasoDeUso editar,
                                  RemoverRecompensaCasoDeUso remover,
                                  InativarRecompensaCasoDeUso inativar,
                                  ListarRecompensasOrganizadorCasoDeUso listar,
-                                 ResgatarRecompensaCasoDeUso resgatar) {
+                                 ListarRecompensasAtivasCasoDeUso listarAtivas,
+                                 ResgatarRecompensaCasoDeUso resgatar,
+                                 ConsultarSaldoPontosCasoDeUso consultarPontos) {
         this.cadastrar = cadastrar;
         this.editar = editar;
         this.remover = remover;
         this.inativar = inativar;
         this.listar = listar;
+        this.listarAtivas = listarAtivas;
         this.resgatar = resgatar;
+        this.consultarPontos = consultarPontos;
     }
 
     record CriarReq(String nome, String descricao, int custoEmPontos, int estoqueTotal, UUID organizadorId) {}
@@ -90,23 +97,37 @@ public class RecompensaController {
         return ResponseEntity.ok(listar.executar(organizadorId).stream().map(this::toResposta).toList());
     }
 
+    @GetMapping("/ativas")
+    @PreAuthorize("hasRole('PARTICIPANTE')")
+    public ResponseEntity<List<RecompensaResp>> listarAtivas() {
+        return ResponseEntity.ok(listarAtivas.executar().stream().map(this::toResposta).toList());
+    }
+
+    @GetMapping("/participante/{participanteId}/saldo-pontos")
+    @PreAuthorize("hasRole('PARTICIPANTE')")
+    public ResponseEntity<?> saldoPontos(@PathVariable UUID participanteId) {
+        return ResponseEntity.ok(new SaldoResp(consultarPontos.executar(participanteId)));
+    }
+
     @PostMapping("/{id}/resgatar")
     @PreAuthorize("hasRole('PARTICIPANTE')")
     public ResponseEntity<?> resgatar(@PathVariable UUID id, @RequestParam UUID participanteId) {
         try {
             resgatar.executar(participanteId, id);
             return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
         }
     }
 
     private record RecompensaResp(String id, String nome, String descricao,
-                                   int custoEmPontos, int estoqueDisponivel, boolean ativa) {}
+                                   int custoEmPontos, int estoqueDisponivel, int estoqueTotal, boolean ativa) {}
+
+    private record SaldoResp(int saldo) {}
 
     private RecompensaResp toResposta(Recompensa r) {
         return new RecompensaResp(r.getId().getValor().toString(), r.getNome(), r.getDescricao(),
-                r.getCustoEmPontos(), r.getEstoqueRestante(), r.isAtiva());
+                r.getCustoEmPontos(), r.getEstoqueRestante(), r.getEstoqueTotal(), r.isAtiva());
     }
 
     record ErroResp(String mensagem) {}

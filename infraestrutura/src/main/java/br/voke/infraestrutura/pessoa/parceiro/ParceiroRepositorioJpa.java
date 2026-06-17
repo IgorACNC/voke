@@ -37,6 +37,11 @@ public class ParceiroRepositorioJpa implements ParceiroRepositorio {
                 .map(ParceiroJpaMapper::paraDominio);
     }
 
+    public List<Parceiro> buscarPorParticipante(ParticipanteId participanteId) {
+        return repository.findByParticipanteId(participanteId.getValor()).stream()
+                .map(ParceiroJpaMapper::paraDominio).toList();
+    }
+
     public void remover(ParceiroId id) {
         repository.deleteById(id.getValor());
     }

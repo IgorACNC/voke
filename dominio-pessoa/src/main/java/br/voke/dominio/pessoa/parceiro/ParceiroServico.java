@@ -52,4 +52,12 @@ public class ParceiroServico {
                 .orElseThrow(() -> new IllegalArgumentException("Parceiro não encontrado"));
         repositorio.remover(parceiroId);
     }
+
+    public java.util.List<Parceiro> listarPorOrganizador(OrganizadorId organizadorId) {
+        return repositorio.buscarPorOrganizador(organizadorId);
+    }
+
+    public java.util.List<Parceiro> buscarPorParticipante(ParticipanteId participanteId) {
+        return repositorio.buscarPorParticipante(participanteId);
+    }
 }
