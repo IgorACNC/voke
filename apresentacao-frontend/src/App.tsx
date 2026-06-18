@@ -36,6 +36,9 @@ import Convites from './pages/Convites'
 import CarteiraPontos from './pages/CarteiraPontos'
 import CatalogoRecompensas from './pages/CatalogoRecompensas'
 import Recompensas from './pages/Recompensas'
+import ListaParceiros from './pages/ListaParceiros'
+import CadastrarParceiro from './pages/CadastrarParceiro'
+import PainelParceiro from './pages/PainelParceiro'
 
 export default function App() {
   return (
@@ -89,6 +92,11 @@ export default function App() {
           <Route path="/carteira-pontos" element={<PrivateRoute papelRequerido="PARTICIPANTE"><CarteiraPontos /></PrivateRoute>} />
           <Route path="/catalogo-recompensas" element={<PrivateRoute papelRequerido="PARTICIPANTE"><CatalogoRecompensas /></PrivateRoute>} />
           <Route path="/convites" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Convites /></PrivateRoute>} />
+          <Route path="/painel-parceiro" element={<PrivateRoute papelRequerido="PARTICIPANTE"><PainelParceiro /></PrivateRoute>} />
+
+          {/* Rotas do Organizador — Parceiros */}
+          <Route path="/parceiros" element={<PrivateRoute papelRequerido="ORGANIZADOR"><ListaParceiros /></PrivateRoute>} />
+          <Route path="/parceiros/novo" element={<PrivateRoute papelRequerido="ORGANIZADOR"><CadastrarParceiro /></PrivateRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
