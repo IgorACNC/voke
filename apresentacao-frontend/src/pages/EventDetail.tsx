@@ -5,6 +5,7 @@ import { buscarEvento, type Evento } from '../services/eventoService'
 import { listarMinhasInscricoes, type Inscricao } from '../services/inscricaoService'
 import { buscarPerfil, type PerfilParticipante } from '../services/participanteService'
 import { adicionarAoCarrinho } from '../services/carrinhoService'
+import { registrarVisualizacao } from '../services/dashboardService'
 import './Social.css'
 
 function calcularIdade(dataNascimento: string, referencia: string) {
@@ -38,6 +39,8 @@ export default function EventDetail() {
   useEffect(() => {
     if (!eventoId) return
     buscarEvento(eventoId).then(setEvento).catch(() => setErro('Erro ao carregar evento.'))
+    // F17 - RN03/visualizacoes: incrementa contador (silencioso em caso de erro)
+    registrarVisualizacao(eventoId).catch(() => {})
     if (usuario?.papel === 'PARTICIPANTE') {
       buscarPerfil(usuario.id).then(setPerfil).catch(() => {})
       listarMinhasInscricoes(usuario.id).then(setMinhas).catch(() => {})

@@ -23,6 +23,8 @@ import Subgrupos from './pages/Subgrupos'
 import CriarSubgrupo from './pages/CriarSubgrupo'
 import SubgrupoDetalhe from './pages/SubgrupoDetalhe'
 import MinhasSolicitacoesSubgrupo from './pages/MinhasSolicitacoesSubgrupo'
+import DashboardOrganizador from './pages/DashboardOrganizador'
+import EstatisticaEvento from './pages/EstatisticaEvento'
 import MinhasInscricoes from './pages/MinhasInscricoes'
 import Cupons from './pages/Cupons'
 import EventDetail from './pages/EventDetail'
@@ -72,6 +74,10 @@ export default function App() {
           <Route path="/eventos/:eventoId/grupo/subgrupos/novo" element={<PrivateRoute papelRequerido="ORGANIZADOR"><CriarSubgrupo /></PrivateRoute>} />
           <Route path="/subgrupos/:id" element={<PrivateRoute><SubgrupoDetalhe /></PrivateRoute>} />
           <Route path="/minhas-solicitacoes-subgrupo" element={<PrivateRoute papelRequerido="PARTICIPANTE"><MinhasSolicitacoesSubgrupo /></PrivateRoute>} />
+
+          {/* Dashboard & Estatísticas (F17) */}
+          <Route path="/dashboard-organizador" element={<PrivateRoute papelRequerido="ORGANIZADOR"><DashboardOrganizador /></PrivateRoute>} />
+          <Route path="/dashboard-organizador/eventos/:id" element={<PrivateRoute papelRequerido="ORGANIZADOR"><EstatisticaEvento /></PrivateRoute>} />
 
           {/* Rotas do Participante */}
           <Route path="/explorar-eventos" element={<PrivateRoute papelRequerido="PARTICIPANTE"><ExplorarEventos /></PrivateRoute>} />

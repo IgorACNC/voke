@@ -30,7 +30,7 @@ export default function Dashboard() {
     { icon: '🏷️', label: 'Cupons', rota: '/cupons' },
     { icon: '🤝', label: 'Parceiros', rota: '/parceiros' },
     { icon: '🎁', label: 'Recompensas', rota: '/recompensas' },
-    { icon: '📊', label: 'Relatórios' },
+    { icon: '📊', label: 'Dashboard & Relatórios', rota: '/dashboard-organizador' },
     { icon: '🔔', label: 'Notificações', rota: '/meus-eventos' },
     { icon: '👤', label: 'Minha Conta', rota: '/minha-conta-organizador' },
   ]

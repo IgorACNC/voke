@@ -1,0 +1,65 @@
+.dor-bg { min-height: 100vh; background: #f4f6fb; font-family: 'Inter', sans-serif; }
+.dor-header {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #1a1a2e; padding: 1rem 2rem; color: #fff;
+}
+.dor-logo { font-size: 1.5rem; font-weight: 700; color: #7c6af7; cursor: pointer; }
+.dor-header-right { display: flex; align-items: center; gap: 1rem; }
+.dor-papel {
+  background: #7c6af7; color: #fff; border-radius: 12px; padding: 0.2rem 0.7rem;
+  font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+}
+.dor-nome { font-size: 0.9rem; color: #ccc; }
+.dor-sair {
+  background: transparent; border: 1px solid #555; color: #ccc;
+  padding: 0.3rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem;
+}
+.dor-sair:hover { border-color: #7c6af7; color: #7c6af7; }
+
+.dor-main { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
+.dor-topo { margin-bottom: 1.5rem; }
+.dor-titulo { font-size: 1.8rem; font-weight: 700; color: #1a1a2e; margin: 0; }
+.dor-sub { color: #666; margin: 0.3rem 0 0; font-size: 0.95rem; }
+
+.dor-erro { background: #fef2f2; color: #dc2626; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
+.dor-info { color: #888; text-align: center; padding: 2rem; }
+
+.dor-kpis {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem; margin-bottom: 2rem;
+}
+
+.dor-secao { background: #fff; border-radius: 12px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.dor-secao-titulo { font-size: 1.2rem; font-weight: 700; color: #1a1a2e; margin: 0 0 1rem; }
+
+.dor-tabela { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.dor-tabela thead th {
+  text-align: left; padding: 0.7rem; color: #777; font-weight: 600;
+  border-bottom: 2px solid #eee; text-transform: uppercase; font-size: 0.75rem;
+}
+.dor-tabela tbody td { padding: 0.7rem; border-bottom: 1px solid #f0f0f0; color: #444; }
+
+.dor-tag {
+  font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 10px;
+}
+.dor-tag--ativo { background: #d1fae5; color: #065f46; }
+.dor-tag--encerrado { background: #e5e7eb; color: #374151; }
+.dor-tag--cancelado { background: #fee2e2; color: #991b1b; }
+.dor-tag--congelado { background: #e5e7eb; color: #374151; }
+
+.dor-btn-ver {
+  background: transparent; color: #7c6af7; border: 1.5px solid #7c6af7;
+  padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
+}
+.dor-btn-ver:hover { background: rgba(124,106,247,0.1); }
+
+.dor-acoes { display: flex; gap: 0.6rem; margin-top: 1rem; flex-wrap: wrap; }
+.dor-btn-export {
+  background: #7c6af7; color: #fff; border: none;
+  padding: 0.55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem;
+}
+.dor-btn-export:hover { background: #6250e0; }
+.dor-btn-voltar {
+  background: transparent; color: #666; border: 1px solid #ddd;
+  padding: 0.55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem;
+}
