@@ -36,13 +36,21 @@ public class Carrinho extends EntidadeBase<CarrinhoId> {
 
     public void adicionarItem(ItemCarrinho item) {
         Objects.requireNonNull(item, "Item é obrigatório");
+        // Se o evento ja esta no carrinho, consolida quantidade (nao cria nova linha).
+        // Garante invariante de "no maximo 1 item por evento" — necessario para que
+        // removerItem(eventoId) remova exatamente 1 linha visivel ao usuario.
+        for (ItemCarrinho existente : itens) {
+            if (existente.getEventoId().equals(item.getEventoId())) {
+                existente.atualizarQuantidade(existente.getQuantidade() + item.getQuantidade());
+                this.criadoEm = LocalDateTime.now();
+                return;
+            }
+        }
         long eventosDistintos = itens.stream()
                 .map(ItemCarrinho::getEventoId)
                 .distinct()
                 .count();
-        boolean eventoJaNoCarrinho = itens.stream()
-                .anyMatch(i -> i.getEventoId().equals(item.getEventoId()));
-        if (!eventoJaNoCarrinho && eventosDistintos >= MAX_EVENTOS) {
+        if (eventosDistintos >= MAX_EVENTOS) {
             throw new LimiteEventosCarrinhoException();
         }
         itens.add(item);
