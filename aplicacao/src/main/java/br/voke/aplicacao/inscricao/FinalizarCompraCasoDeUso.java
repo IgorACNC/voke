@@ -18,6 +18,9 @@ import br.voke.dominio.inscricao.inscricao.InscricaoServico;
 import br.voke.dominio.pessoa.participante.Participante;
 import br.voke.dominio.pessoa.participante.ParticipanteId;
 import br.voke.dominio.pessoa.participante.ParticipanteRepositorio;
+import br.voke.dominio.fidelidade.comissao.ComissaoParceiroServico;
+import br.voke.dominio.evento.cupom.CupomRepositorio;
+import br.voke.dominio.pessoa.parceiro.ParceiroRepositorio;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -35,6 +38,9 @@ public class FinalizarCompraCasoDeUso {
     private final EventoRepositorio eventoRepositorio;
     private final ParticipanteRepositorio participanteRepositorio;
     private final AtualizadorEstatisticaListener atualizadorEstatistica;
+    private final ComissaoParceiroServico comissaoParceiroServico;
+    private final CupomRepositorio cupomRepositorio;
+    private final ParceiroRepositorio parceiroRepositorio;
 
     public FinalizarCompraCasoDeUso(CarrinhoServico carrinhoServico,
                                      CarrinhoRepositorio carrinhoRepositorio,
@@ -42,7 +48,10 @@ public class FinalizarCompraCasoDeUso {
                                      InscricaoServico inscricaoServico,
                                      EventoRepositorio eventoRepositorio,
                                      ParticipanteRepositorio participanteRepositorio,
-                                     AtualizadorEstatisticaListener atualizadorEstatistica) {
+                                     AtualizadorEstatisticaListener atualizadorEstatistica,
+                                     ComissaoParceiroServico comissaoParceiroServico,
+                                     CupomRepositorio cupomRepositorio,
+                                     ParceiroRepositorio parceiroRepositorio) {
         Objects.requireNonNull(carrinhoServico);
         Objects.requireNonNull(carrinhoRepositorio);
         Objects.requireNonNull(carteiraServico);
@@ -50,6 +59,9 @@ public class FinalizarCompraCasoDeUso {
         Objects.requireNonNull(eventoRepositorio);
         Objects.requireNonNull(participanteRepositorio);
         Objects.requireNonNull(atualizadorEstatistica);
+        Objects.requireNonNull(comissaoParceiroServico);
+        Objects.requireNonNull(cupomRepositorio);
+        Objects.requireNonNull(parceiroRepositorio);
         this.carrinhoServico = carrinhoServico;
         this.carrinhoRepositorio = carrinhoRepositorio;
         this.carteiraServico = carteiraServico;
@@ -57,6 +69,9 @@ public class FinalizarCompraCasoDeUso {
         this.eventoRepositorio = eventoRepositorio;
         this.participanteRepositorio = participanteRepositorio;
         this.atualizadorEstatistica = atualizadorEstatistica;
+        this.comissaoParceiroServico = comissaoParceiroServico;
+        this.cupomRepositorio = cupomRepositorio;
+        this.parceiroRepositorio = parceiroRepositorio;
     }
 
     public Resultado executar(UUID participanteId, MetodoPagamento metodoPagamento) {
@@ -103,6 +118,23 @@ public class FinalizarCompraCasoDeUso {
                 }
                 // F17 - RN03: atualiza snapshot apos cada inscricao confirmada
                 atualizadorEstatistica.aoConfirmarInscricao(item.getEventoId(), valorPorIngresso);
+
+                if (carrinho.getCupomAplicado() != null) {
+                    cupomRepositorio.buscarPorCodigo(carrinho.getCupomAplicado()).ifPresent(cupom -> {
+                        if (cupom.isVinculadoAParceiro()) {
+                            parceiroRepositorio
+                                    .buscarPorParticipante(new ParticipanteId(cupom.getParceiroId()))
+                                    .stream()
+                                    .findFirst()
+                                    .ifPresent(parceiro -> comissaoParceiroServico.creditarComissao(
+                                            parceiro.getId().getValor(),
+                                            cupom.getId().getValor(),
+                                            inscricao.getId().getValor(),
+                                            valorPorIngresso
+                                    ));
+                        }
+                    });
+                }
             }
             eventoRepositorio.salvar(evento);
         }

@@ -9,6 +9,7 @@ export interface Cupom {
   tipoDesconto: TipoDescontoCupom
   organizadorId: string | null
   eventoId: string | null
+  parceiroId: string | null
   quantidadeMaxima: number
   quantidadeUtilizada: number
   ativo: boolean
@@ -21,6 +22,7 @@ export interface CriarCupomPayload {
   tipoDesconto: TipoDescontoCupom
   organizadorId: string
   eventoId: string | null
+  parceiroId?: string
   quantidadeMaxima: number
 }
 

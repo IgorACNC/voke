@@ -43,7 +43,7 @@ public class CupomController {
     }
 
     record CriarCupomReq(String codigo, BigDecimal desconto, String tipoDesconto,
-                          UUID organizadorId, UUID eventoId, int quantidadeMaxima) {}
+                          UUID organizadorId, UUID eventoId, UUID parceiroId, int quantidadeMaxima) {}
     record CriarCupomGlobalReq(String codigo, BigDecimal desconto, String tipoDesconto,
                                 int quantidadeMaxima) {}
     record EditarCupomReq(BigDecimal novoDesconto, int novaQuantidade) {}
@@ -79,7 +79,7 @@ public class CupomController {
             }
             TipoDesconto tipo = parseTipo(req.tipoDesconto());
             Cupom c = criarCupom.executar(req.codigo(), req.desconto(), tipo,
-                    req.organizadorId(), req.eventoId(), req.quantidadeMaxima());
+                    req.organizadorId(), req.eventoId(), req.parceiroId(), req.quantidadeMaxima());
             return ResponseEntity.status(HttpStatus.CREATED).body(toResp(c));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
@@ -92,7 +92,7 @@ public class CupomController {
         try {
             TipoDesconto tipo = parseTipo(req.tipoDesconto());
             Cupom c = criarCupom.executar(req.codigo(), req.desconto(), tipo,
-                    null, null, req.quantidadeMaxima());
+                    null, null, null, req.quantidadeMaxima());
             return ResponseEntity.status(HttpStatus.CREATED).body(toResp(c));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
@@ -159,6 +159,7 @@ public class CupomController {
                 c.getTipoDesconto().name(),
                 c.getOrganizadorId() == null ? null : c.getOrganizadorId().toString(),
                 c.getEventoId() == null ? null : c.getEventoId().toString(),
+                c.getParceiroId() == null ? null : c.getParceiroId().toString(),
                 c.getQuantidadeMaxima(),
                 c.getQuantidadeUtilizada(),
                 c.isAtivo(),
@@ -166,7 +167,7 @@ public class CupomController {
     }
 
     record CupomResp(String id, String codigo, BigDecimal desconto, String tipoDesconto,
-                     String organizadorId, String eventoId,
+                     String organizadorId, String eventoId, String parceiroId,
                      int quantidadeMaxima, int quantidadeUtilizada,
                      boolean ativo, boolean global) {}
     record DescontoResp(BigDecimal desconto) {}

@@ -28,6 +28,7 @@ export default function Cupons() {
   const [quantidade, setQuantidade] = useState('')
   const [eventoId, setEventoId] = useState<string>('')
   const [escopo, setEscopo] = useState<'evento' | 'organizador'>('evento')
+  const [parceiroId, setParceiroId] = useState<string>('')
 
   useEffect(() => {
     if (!usuario) return
@@ -78,11 +79,12 @@ export default function Cupons() {
           tipoDesconto,
           organizadorId: usuario!.id,
           eventoId: escopo === 'evento' ? (eventoId || null) : null,
+          parceiroId: parceiroId.trim() || undefined,
           quantidadeMaxima: qtde,
         })
       }
       setMensagem('Cupom criado com sucesso.')
-      setCodigo(''); setDesconto(''); setQuantidade(''); setEventoId('')
+      setCodigo(''); setDesconto(''); setQuantidade(''); setEventoId(''); setParceiroId('')
       setTipoDesconto('FIXO')
       await carregar()
     } catch (e: unknown) {
@@ -151,7 +153,7 @@ export default function Cupons() {
             <label>
               Código
               <input value={codigo} onChange={(e) => setCodigo(e.target.value.toUpperCase())}
-                     placeholder="VERAO20" required />
+                placeholder="VERAO20" required />
             </label>
 
             <label>
@@ -165,14 +167,14 @@ export default function Cupons() {
             <label>
               {tipoDesconto === 'PERCENTUAL' ? 'Desconto (%)' : 'Desconto (R$)'}
               <input type="number" step="0.01" min="0.01"
-                     max={tipoDesconto === 'PERCENTUAL' ? 100 : undefined}
-                     value={desconto} onChange={(e) => setDesconto(e.target.value)} required />
+                max={tipoDesconto === 'PERCENTUAL' ? 100 : undefined}
+                value={desconto} onChange={(e) => setDesconto(e.target.value)} required />
             </label>
 
             <label>
               Quantidade máxima de usos
               <input type="number" min="1"
-                     value={quantidade} onChange={(e) => setQuantidade(e.target.value)} required />
+                value={quantidade} onChange={(e) => setQuantidade(e.target.value)} required />
             </label>
 
             {!isAdmin && (
@@ -195,6 +197,14 @@ export default function Cupons() {
                     </select>
                   </label>
                 )}
+                <label>
+                  ID do Parceiro <span style={{ color: '#9ca3af', fontWeight: 400 }}>(opcional)</span>
+                  <input
+                    value={parceiroId}
+                    onChange={(e) => setParceiroId(e.target.value)}
+                    placeholder="UUID do parceiro"
+                  />
+                </label>
               </>
             )}
 
@@ -238,9 +248,9 @@ export default function Cupons() {
                     {c.ativo ? 'Desativar' : 'Ativar'}
                   </button>
                   <button className="social-btn-sec"
-                          onClick={() => handleExcluir(c.id)}
-                          disabled={c.quantidadeUtilizada > 0}
-                          title={c.quantidadeUtilizada > 0 ? 'Cupom já usado, não pode ser excluído' : ''}>
+                    onClick={() => handleExcluir(c.id)}
+                    disabled={c.quantidadeUtilizada > 0}
+                    title={c.quantidadeUtilizada > 0 ? 'Cupom já usado, não pode ser excluído' : ''}>
                     Excluir
                   </button>
                 </div>

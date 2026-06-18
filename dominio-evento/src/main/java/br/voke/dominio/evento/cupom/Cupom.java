@@ -18,17 +18,18 @@ public class Cupom extends EntidadeBase<CupomId> {
     private TipoDesconto tipoDesconto;
     private final UUID organizadorId;
     private final UUID eventoId; // null = cupom global
+    private final UUID parceiroId; // null = cupom sem parceiro
     private int quantidadeMaxima;
     private boolean ativo;
     private final Set<String> cpfsUtilizados;
 
     public Cupom(CupomId id, String codigo, BigDecimal desconto, UUID organizadorId,
                  UUID eventoId, int quantidadeMaxima) {
-        this(id, codigo, desconto, TipoDesconto.FIXO, organizadorId, eventoId, quantidadeMaxima);
+        this(id, codigo, desconto, TipoDesconto.FIXO, organizadorId, eventoId, null, quantidadeMaxima);
     }
 
     public Cupom(CupomId id, String codigo, BigDecimal desconto, TipoDesconto tipoDesconto,
-                 UUID organizadorId, UUID eventoId, int quantidadeMaxima) {
+                 UUID organizadorId, UUID eventoId, UUID parceiroId, int quantidadeMaxima) {
         super(id);
         Objects.requireNonNull(codigo, "Código é obrigatório");
         Objects.requireNonNull(desconto, "Desconto é obrigatório");
@@ -47,6 +48,7 @@ public class Cupom extends EntidadeBase<CupomId> {
         this.tipoDesconto = tipoDesconto;
         this.organizadorId = organizadorId;
         this.eventoId = eventoId;
+        this.parceiroId = parceiroId;
         this.quantidadeMaxima = quantidadeMaxima;
         this.ativo = true;
         this.cpfsUtilizados = new HashSet<>();
@@ -118,6 +120,8 @@ public class Cupom extends EntidadeBase<CupomId> {
     public TipoDesconto getTipoDesconto() { return tipoDesconto; }
     public UUID getOrganizadorId() { return organizadorId; }
     public UUID getEventoId() { return eventoId; }
+    public UUID getParceiroId() { return parceiroId; }
+    public boolean isVinculadoAParceiro() { return parceiroId != null; }
     public int getQuantidadeMaxima() { return quantidadeMaxima; }
     public int getQuantidadeUtilizada() { return cpfsUtilizados.size(); }
     public boolean isAtivo() { return ativo; }

@@ -4,6 +4,8 @@ import br.voke.aplicacao.pessoa.CadastrarParceiroCasoDeUso;
 import br.voke.aplicacao.pessoa.EditarParceiroCasoDeUso;
 import br.voke.aplicacao.pessoa.ListarParceirosOrganizadorCasoDeUso;
 import br.voke.aplicacao.pessoa.RemoverParceiroCasoDeUso;
+import br.voke.aplicacao.fidelidade.ConsultarComissoesCasoDeUso;
+import br.voke.dominio.fidelidade.comissao.ComissaoParceiro;
 import br.voke.dominio.pessoa.parceiro.AtividadeParceiro;
 import br.voke.dominio.pessoa.parceiro.Parceiro;
 import br.voke.dominio.pessoa.parceiro.ParceiroServico;
@@ -29,19 +31,22 @@ public class ParceiroController {
     private final ListarParceirosOrganizadorCasoDeUso listar;
     private final ParceiroServico parceiroServico;
     private final ParticipanteRepositorio participanteRepositorio;
+    private final ConsultarComissoesCasoDeUso consultarComissoes;
 
     public ParceiroController(CadastrarParceiroCasoDeUso cadastrar,
                                EditarParceiroCasoDeUso editar,
                                RemoverParceiroCasoDeUso remover,
                                ListarParceirosOrganizadorCasoDeUso listar,
                                ParceiroServico parceiroServico,
-                               ParticipanteRepositorio participanteRepositorio) {
+                               ParticipanteRepositorio participanteRepositorio,
+                               ConsultarComissoesCasoDeUso consultarComissoes) {
         this.cadastrar = cadastrar;
         this.editar = editar;
         this.remover = remover;
         this.listar = listar;
         this.parceiroServico = parceiroServico;
         this.participanteRepositorio = participanteRepositorio;
+        this.consultarComissoes = consultarComissoes;
     }
 
     record CriarReq(UUID participanteId, UUID organizadorId, Set<AtividadeParceiro> atividades) {}
@@ -108,6 +113,22 @@ public class ParceiroController {
         }
     }
 
+    @GetMapping("/{parceiroId}/comissoes")
+    @PreAuthorize("hasAnyRole('ORGANIZADOR', 'PARTICIPANTE')")
+    public ResponseEntity<List<ComissaoResp>> listarComissoes(@PathVariable UUID parceiroId) {
+        List<ComissaoResp> lista = consultarComissoes.listar(parceiroId).stream()
+                .map(c -> new ComissaoResp(c.getId().getValor().toString(), c.getCupomId().toString(),
+                        c.getInscricaoId().toString(), c.getValor(), c.getStatus().name(),
+                        c.getDataHora().toString())).toList();
+        return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/{parceiroId}/comissoes/saldo")
+    @PreAuthorize("hasAnyRole('ORGANIZADOR', 'PARTICIPANTE')")
+    public ResponseEntity<SaldoResp> consultarSaldo(@PathVariable UUID parceiroId) {
+        return ResponseEntity.ok(new SaldoResp(consultarComissoes.consultarSaldo(parceiroId)));
+    }
+
     private record ParceiroResp(String id, String participanteId, String organizadorId,
                                  Set<AtividadeParceiro> atividades, String nomeParticipante) {}
 
@@ -126,4 +147,6 @@ public class ParceiroController {
     }
 
     record ErroResp(String mensagem) {}
+    record ComissaoResp(String id, String cupomId, String inscricaoId, java.math.BigDecimal valor, String status, String dataHora) {}
+    record SaldoResp(java.math.BigDecimal saldo) {}
 }

@@ -61,6 +61,9 @@ import br.voke.dominio.pessoa.chat.MensagemPrivadaRepositorio;
 import br.voke.dominio.pessoa.participante.ParticipanteRepositorio;
 import br.voke.dominio.pessoa.participante.ParticipanteServico;
 import br.voke.dominio.pessoa.participante.TokenRecuperacaoSenhaRepositorio;
+import br.voke.dominio.fidelidade.comissao.ComissaoParceiroRepositorio;
+import br.voke.dominio.fidelidade.comissao.ComissaoParceiroServico;
+import br.voke.aplicacao.fidelidade.ConsultarComissoesCasoDeUso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -323,8 +326,9 @@ public class BeanConfig {
     @Bean
     public CancelarInscricaoCasoDeUso cancelarInscricao(InscricaoServico s,
                                                         InscricaoRepositorio ir,
-                                                        AtualizadorEstatisticaListener l) {
-        return new CancelarInscricaoCasoDeUso(s, ir, l);
+                                                        AtualizadorEstatisticaListener l,
+                                                        ComissaoParceiroServico cs) {
+        return new CancelarInscricaoCasoDeUso(s, ir, l, cs);
     }
 
     @Bean
@@ -371,17 +375,20 @@ public class BeanConfig {
     }
 
     @Bean
-    public FinalizarCompraCasoDeUso finalizarCompra(CarrinhoServico carrinhoServico,
-                                                     CarrinhoRepositorio carrinhoRepositorio,
-                                                     CarteiraVirtualServico carteiraServico,
-                                                     InscricaoServico inscricaoServico,
-                                                     EventoRepositorio eventoRepositorio,
-                                                     ParticipanteRepositorio participanteRepositorio,
-                                                     AtualizadorEstatisticaListener atualizadorEstatistica) {
-        return new FinalizarCompraCasoDeUso(carrinhoServico, carrinhoRepositorio,
-                carteiraServico, inscricaoServico, eventoRepositorio, participanteRepositorio,
-                atualizadorEstatistica);
-    }
+public FinalizarCompraCasoDeUso finalizarCompra(CarrinhoServico carrinhoServico,
+                                                 CarrinhoRepositorio carrinhoRepositorio,
+                                                 CarteiraVirtualServico carteiraServico,
+                                                 InscricaoServico inscricaoServico,
+                                                 EventoRepositorio eventoRepositorio,
+                                                 ParticipanteRepositorio participanteRepositorio,
+                                                 AtualizadorEstatisticaListener atualizadorEstatistica,
+                                                 ComissaoParceiroServico comissaoParceiroServico,
+                                                 CupomRepositorio cupomRepositorio,
+                                                 br.voke.dominio.pessoa.parceiro.ParceiroRepositorio parceiroRepositorio) {
+    return new FinalizarCompraCasoDeUso(carrinhoServico, carrinhoRepositorio,
+            carteiraServico, inscricaoServico, eventoRepositorio, participanteRepositorio,
+            atualizadorEstatistica, comissaoParceiroServico, cupomRepositorio, parceiroRepositorio);
+}
 
 
     @Bean
@@ -721,6 +728,16 @@ public class BeanConfig {
     @Bean
     public ListarParceirosOrganizadorCasoDeUso listarParceiros(br.voke.dominio.pessoa.parceiro.ParceiroServico s) {
         return new ListarParceirosOrganizadorCasoDeUso(s);
+    }
+
+    @Bean
+    public ComissaoParceiroServico comissaoParceiroServico(ComissaoParceiroRepositorio r, CarteiraVirtualServico cvs) {
+        return new ComissaoParceiroServico(r, cvs);
+    }
+
+    @Bean
+    public ConsultarComissoesCasoDeUso consultarComissoesCasoDeUso(ComissaoParceiroServico s) {
+        return new ConsultarComissoesCasoDeUso(s);
     }
 
     // ======================== Recompensas Ativas ========================

@@ -23,6 +23,15 @@ export interface Parceiro {
   nomeParticipante: string
 }
 
+export interface Comissao {
+  id: string
+  cupomId: string
+  inscricaoId: string
+  valor: number
+  status: 'CREDITADA' | 'ESTORNADA'
+  dataHora: string
+}
+
 export async function cadastrarParceiro(payload: {
   participanteId: string
   organizadorId: string
@@ -52,4 +61,14 @@ export async function removerAtividade(parceiroId: string, atividade: AtividadeP
 
 export async function removerParceiro(id: string): Promise<void> {
   await api.delete(`/parceiros/${id}`)
+}
+
+export async function consultarComissoes(parceiroId: string): Promise<Comissao[]> {
+  const { data } = await api.get<Comissao[]>(`/parceiros/${parceiroId}/comissoes`)
+  return data
+}
+
+export async function consultarSaldoComissoes(parceiroId: string): Promise<number> {
+  const { data } = await api.get<{ saldo: number }>(`/parceiros/${parceiroId}/comissoes/saldo`)
+  return data.saldo
 }

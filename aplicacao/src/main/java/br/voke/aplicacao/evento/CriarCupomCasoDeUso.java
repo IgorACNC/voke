@@ -23,7 +23,7 @@ public class CriarCupomCasoDeUso {
     }
 
     public Cupom executar(String codigo, BigDecimal desconto, TipoDesconto tipoDesconto,
-                          UUID organizadorId, UUID eventoId, int quantidadeMaxima) {
-        return servico.criar(codigo, desconto, tipoDesconto, organizadorId, eventoId, quantidadeMaxima);
+                          UUID organizadorId, UUID eventoId, UUID parceiroId, int quantidadeMaxima) {
+        return servico.criar(codigo, desconto, tipoDesconto, organizadorId, eventoId, parceiroId, quantidadeMaxima);
     }
 }

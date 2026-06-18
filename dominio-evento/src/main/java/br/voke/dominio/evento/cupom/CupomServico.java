@@ -17,13 +17,13 @@ public class CupomServico {
 
     public Cupom criar(String codigo, BigDecimal desconto, UUID organizadorId,
                        UUID eventoId, int quantidadeMaxima) {
-        return criar(codigo, desconto, TipoDesconto.FIXO, organizadorId, eventoId, quantidadeMaxima);
+        return criar(codigo, desconto, TipoDesconto.FIXO, organizadorId, eventoId, null, quantidadeMaxima);
     }
 
     public Cupom criar(String codigo, BigDecimal desconto, TipoDesconto tipoDesconto,
-                       UUID organizadorId, UUID eventoId, int quantidadeMaxima) {
+                       UUID organizadorId, UUID eventoId, UUID parceiroId, int quantidadeMaxima) {
         Cupom cupom = new Cupom(CupomId.novo(), codigo, desconto, tipoDesconto,
-                organizadorId, eventoId, quantidadeMaxima);
+                organizadorId, eventoId, parceiroId, quantidadeMaxima);
         repositorio.salvar(cupom);
         return cupom;
     }

@@ -14,13 +14,32 @@ export default function PainelParceiro() {
   const { usuario } = useAuth()
 
   const [parceiros, setParceiros] = useState<Parceiro[]>([])
+  const [saldos, setSaldos] = useState<Record<string, number>>({})
+  const [comissoes, setComissoes] = useState<Record<string, any[]>>({})
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
 
   useEffect(() => {
     if (!usuario) return
     buscarParceiroPorParticipante(usuario.id)
-      .then(setParceiros)
+      .then(async (lista) => {
+        setParceiros(lista)
+        const novosSaldos: Record<string, number> = {}
+        const novasComissoes: Record<string, any[]> = {}
+        for (const p of lista) {
+          try {
+            const { consultarSaldoComissoes, consultarComissoes } = await import('../services/parceiroService')
+            novosSaldos[p.id] = await consultarSaldoComissoes(p.id)
+            novasComissoes[p.id] = await consultarComissoes(p.id)
+          } catch (e) {
+            console.error('Erro ao carregar comissoes para parceiro', p.id, e)
+            novosSaldos[p.id] = 0
+            novasComissoes[p.id] = []
+          }
+        }
+        setSaldos(novosSaldos)
+        setComissoes(novasComissoes)
+      })
       .catch(() => setErro('Não foi possível carregar seus dados de parceiro.'))
       .finally(() => setCarregando(false))
   }, [usuario?.id])
@@ -38,7 +57,7 @@ export default function PainelParceiro() {
       <main className="social-main social-main-curto">
         <section className="social-title">
           <h1>Painel do Parceiro</h1>
-          <p>Acompanhe suas atividades como parceiro.</p>
+          <p>Acompanhe suas atividades e comissões como parceiro.</p>
         </section>
 
         {erro && <p className="social-msg-erro">{erro}</p>}
@@ -53,39 +72,57 @@ export default function PainelParceiro() {
             </p>
           </div>
         ) : (
-          parceiros.map((p) => (
-            <div key={p.id} className="social-card" style={{ marginBottom: '1.25rem' }}>
-              <h2>Parceria com organizador</h2>
-              <span style={{ color: '#6b7280', fontSize: '0.8rem' }}>
-                Org. ID: {p.organizadorId.slice(0, 8)}...
-              </span>
+          parceiros.map((p) => {
+            const saldo = saldos[p.id] || 0
+            const historico = comissoes[p.id] || []
+            const vendas = historico.filter(c => c.status === 'CREDITADA').length
 
-              <div className="parceiro-atividades" style={{ marginTop: '0.75rem' }}>
-                {p.atividades.map((a) => (
-                  <span key={a} className="parceiro-atividade">{ATIVIDADES_LABELS[a]}</span>
-                ))}
-              </div>
+            return (
+              <div key={p.id} className="social-card" style={{ marginBottom: '1.25rem' }}>
+                <h2>Parceria com organizador</h2>
+                <span style={{ color: '#6b7280', fontSize: '0.8rem' }}>
+                  Org. ID: {p.organizadorId.slice(0, 8)}...
+                </span>
 
-              <div className="parceiro-stats">
-                <div className="parceiro-stat">
-                  <span className="parceiro-stat-valor">R$ 0,00</span>
-                  <span className="parceiro-stat-label">Comissões</span>
+                <div className="parceiro-atividades" style={{ marginTop: '0.75rem' }}>
+                  {p.atividades.map((a) => (
+                    <span key={a} className="parceiro-atividade">{ATIVIDADES_LABELS[a]}</span>
+                  ))}
                 </div>
-                <div className="parceiro-stat">
-                  <span className="parceiro-stat-valor">0</span>
-                  <span className="parceiro-stat-label">Vendas</span>
+
+                <div className="parceiro-stats">
+                  <div className="parceiro-stat">
+                    <span className="parceiro-stat-valor" style={{ color: '#10b981' }}>
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(saldo)}
+                    </span>
+                    <span className="parceiro-stat-label">Comissões Recebidas</span>
+                  </div>
+                  <div className="parceiro-stat">
+                    <span className="parceiro-stat-valor">{vendas}</span>
+                    <span className="parceiro-stat-label">Ingressos Vendidos</span>
+                  </div>
                 </div>
-              </div>
 
-              <div className="parceiro-breve">
-                💡 Funcionalidade de comissões e vendas em breve.
+                {historico.length > 0 && (
+                  <div style={{ marginTop: '1.5rem' }}>
+                    <h3 style={{ fontSize: '1rem', color: '#374151', marginBottom: '0.5rem' }}>Últimas transações</h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {historico.slice(0, 5).map(c => (
+                        <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', backgroundColor: '#f9fafb', borderRadius: '4px', fontSize: '0.85rem' }}>
+                          <span style={{ color: c.status === 'ESTORNADA' ? '#ef4444' : '#111827' }}>
+                            {c.status === 'ESTORNADA' ? 'Estorno' : 'Comissão'} (Cupom {c.cupomId.slice(0, 6)}...)
+                          </span>
+                          <span style={{ fontWeight: 600, color: c.status === 'ESTORNADA' ? '#ef4444' : '#10b981' }}>
+                            {c.status === 'ESTORNADA' ? '-' : '+'}{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(c.valor)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-
-              <div className="social-acoes" style={{ marginTop: '1rem' }}>
-                <button onClick={() => navigate('/cupons')}>🎟️ Ver Cupons</button>
-              </div>
-            </div>
-          ))
+            )
+          })
         )}
       </main>
     </div>

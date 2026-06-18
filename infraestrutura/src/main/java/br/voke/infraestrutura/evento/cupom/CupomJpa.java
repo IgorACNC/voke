@@ -43,6 +43,9 @@ public class CupomJpa {
     @Column(nullable = true)
     private UUID eventoId;
 
+    @Column(nullable = true)
+    private UUID parceiroId;
+
     @Column(nullable = false)
     private int quantidadeMaxima;
 
@@ -59,7 +62,7 @@ public class CupomJpa {
     }
 
     public CupomJpa(UUID id, String codigo, BigDecimal desconto, TipoDesconto tipoDesconto,
-                    UUID organizadorId, UUID eventoId, int quantidadeMaxima, boolean ativo,
+                    UUID organizadorId, UUID eventoId, UUID parceiroId, int quantidadeMaxima, boolean ativo,
                     Set<String> cpfsUtilizados) {
         this.id = id;
         this.codigo = codigo;
@@ -67,6 +70,7 @@ public class CupomJpa {
         this.tipoDesconto = tipoDesconto;
         this.organizadorId = organizadorId;
         this.eventoId = eventoId;
+        this.parceiroId = parceiroId;
         this.quantidadeMaxima = quantidadeMaxima;
         this.ativo = ativo;
         this.cpfsUtilizados = new HashSet<>(cpfsUtilizados);
@@ -78,6 +82,7 @@ public class CupomJpa {
     public TipoDesconto getTipoDesconto() { return tipoDesconto; }
     public UUID getOrganizadorId() { return organizadorId; }
     public UUID getEventoId() { return eventoId; }
+    public UUID getParceiroId() { return parceiroId; }
     public int getQuantidadeMaxima() { return quantidadeMaxima; }
     public boolean isAtivo() { return ativo; }
     public Set<String> getCpfsUtilizados() { return cpfsUtilizados; }
