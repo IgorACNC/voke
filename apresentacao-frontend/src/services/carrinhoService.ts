@@ -71,6 +71,16 @@ export async function aplicarCupomCarrinho(
   return data
 }
 
+export async function removerCupomCarrinho(
+  participanteId: string,
+  cpfParticipante: string,
+): Promise<CarrinhoResp> {
+  const { data } = await api.delete<CarrinhoResp>(`/carrinho/cupom/${participanteId}`, {
+    params: { cpfParticipante },
+  })
+  return data
+}
+
 export async function finalizarCompra(
   participanteId: string,
   metodoPagamento: MetodoPagamentoCarrinho,

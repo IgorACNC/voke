@@ -81,7 +81,7 @@ export default function App() {
           <Route path="/favoritos" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Favoritos /></PrivateRoute>} />
           <Route path="/eventos/:eventoId" element={<PrivateRoute><EventDetail /></PrivateRoute>} />
 
-          <Route path="/cupons" element={<PrivateRoute papelRequerido="ORGANIZADOR"><Cupons /></PrivateRoute>} />
+          <Route path="/cupons" element={<PrivateRoute><Cupons /></PrivateRoute>} />
           <Route path="/convites" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Convites /></PrivateRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />

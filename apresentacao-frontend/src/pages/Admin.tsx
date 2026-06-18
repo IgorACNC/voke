@@ -120,11 +120,20 @@ export default function Admin() {
       <main className="admin-main">
         <div className="admin-boas-vindas">
           <h1>Painel do Administrador</h1>
-          <p>Gerencie as categorias de eventos disponíveis na plataforma.</p>
+          <p>Gerencie categorias de eventos e cupons globais da plataforma.</p>
         </div>
 
         {mensagem && <p className="admin-msg-sucesso">{mensagem}</p>}
         {erro && <p className="admin-msg-erro">{erro}</p>}
+
+        <section className="admin-secao">
+          <h2>Atalhos</h2>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <button className="admin-btn-primario" onClick={() => navigate('/cupons')}>
+              🎟 Gerenciar cupons globais
+            </button>
+          </div>
+        </section>
 
         <section className="admin-secao">
           <h2>Nova categoria</h2>

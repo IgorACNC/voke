@@ -249,6 +249,27 @@
 .carrinho-cupom-btn:hover:not(:disabled) { background: #ede9fe; }
 .carrinho-cupom-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+.carrinho-cupom-aplicado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.carrinho-cupom-remover {
+  background: transparent;
+  border: 1.5px solid #fca5a5;
+  color: #b91c1c;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.carrinho-cupom-remover:hover:not(:disabled) { background: #fef2f2; }
+.carrinho-cupom-remover:disabled { opacity: 0.5; cursor: not-allowed; }
+
 .carrinho-cupom-badge {
   display: inline-flex;
   align-items: center;

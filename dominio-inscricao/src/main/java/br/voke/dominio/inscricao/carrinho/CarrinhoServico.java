@@ -42,6 +42,14 @@ public class CarrinhoServico {
         return carrinho;
     }
 
+    public Carrinho removerCupom(UUID participanteId) {
+        Carrinho carrinho = repositorio.buscarPorParticipanteId(participanteId)
+                .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
+        carrinho.removerCupom();
+        repositorio.salvar(carrinho);
+        return carrinho;
+    }
+
     public Carrinho aplicarCupom(UUID participanteId, String codigoCupom, BigDecimal desconto) {
         Carrinho carrinho = repositorio.buscarPorParticipanteId(participanteId)
                 .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));

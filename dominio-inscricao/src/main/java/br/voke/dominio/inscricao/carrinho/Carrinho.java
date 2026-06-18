@@ -53,6 +53,11 @@ public class Carrinho extends EntidadeBase<CarrinhoId> {
         itens.removeIf(i -> i.getEventoId().equals(eventoId));
     }
 
+    public void removerCupom() {
+        this.cupomAplicado = null;
+        this.estrategiaDesconto = null;
+    }
+
     public void aplicarCupom(String codigoCupom, EstrategiaDesconto estrategia) {
         Objects.requireNonNull(codigoCupom, "Código do cupom é obrigatório");
         Objects.requireNonNull(estrategia, "Estratégia de desconto é obrigatória");

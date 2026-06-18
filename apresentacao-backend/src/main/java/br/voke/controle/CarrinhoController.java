@@ -4,6 +4,7 @@ import br.voke.aplicacao.inscricao.AdicionarAoCarrinhoCasoDeUso;
 import br.voke.aplicacao.inscricao.AplicarCupomCarrinhoCasoDeUso;
 import br.voke.aplicacao.inscricao.ConsultarCarrinhoCasoDeUso;
 import br.voke.aplicacao.inscricao.FinalizarCompraCasoDeUso;
+import br.voke.aplicacao.inscricao.RemoverCupomCarrinhoCasoDeUso;
 import br.voke.aplicacao.inscricao.RemoverDoCarrinhoCasoDeUso;
 import br.voke.dominio.inscricao.carrinho.Carrinho;
 import br.voke.dominio.inscricao.carrinho.ItemCarrinho;
@@ -25,17 +26,20 @@ public class CarrinhoController {
     private final AdicionarAoCarrinhoCasoDeUso adicionarItem;
     private final RemoverDoCarrinhoCasoDeUso removerItem;
     private final AplicarCupomCarrinhoCasoDeUso aplicarCupom;
+    private final RemoverCupomCarrinhoCasoDeUso removerCupom;
     private final FinalizarCompraCasoDeUso finalizarCompra;
     private final ConsultarCarrinhoCasoDeUso consultarCarrinho;
 
     public CarrinhoController(AdicionarAoCarrinhoCasoDeUso adicionarItem,
                               RemoverDoCarrinhoCasoDeUso removerItem,
                               AplicarCupomCarrinhoCasoDeUso aplicarCupom,
+                              RemoverCupomCarrinhoCasoDeUso removerCupom,
                               FinalizarCompraCasoDeUso finalizarCompra,
                               ConsultarCarrinhoCasoDeUso consultarCarrinho) {
         this.adicionarItem = adicionarItem;
         this.removerItem = removerItem;
         this.aplicarCupom = aplicarCupom;
+        this.removerCupom = removerCupom;
         this.finalizarCompra = finalizarCompra;
         this.consultarCarrinho = consultarCarrinho;
     }
@@ -89,6 +93,17 @@ public class CarrinhoController {
     public ResponseEntity<?> aplicarCupom(@RequestBody CupomReq req) {
         try {
             Carrinho c = aplicarCupom.executar(req.participanteId(), req.codigoCupom(), req.cpfParticipante());
+            return ResponseEntity.ok(toResp(c));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/cupom/{participanteId}")
+    public ResponseEntity<?> removerCupom(@PathVariable UUID participanteId,
+                                          @RequestParam(required = false) String cpfParticipante) {
+        try {
+            Carrinho c = removerCupom.executar(participanteId, cpfParticipante);
             return ResponseEntity.ok(toResp(c));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));

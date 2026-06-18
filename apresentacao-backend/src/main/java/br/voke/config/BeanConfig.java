@@ -331,8 +331,15 @@ public class BeanConfig {
 
     @Bean
     public AplicarCupomCarrinhoCasoDeUso aplicarCupomCarrinho(CarrinhoServico s,
-            br.voke.dominio.inscricao.carrinho.CupomGateway gw) {
-        return new AplicarCupomCarrinhoCasoDeUso(s, gw);
+            br.voke.dominio.inscricao.carrinho.CupomGateway gw,
+            br.voke.dominio.evento.evento.EventoRepositorio eventoRepo) {
+        return new AplicarCupomCarrinhoCasoDeUso(s, gw, eventoRepo);
+    }
+
+    @Bean
+    public br.voke.aplicacao.inscricao.RemoverCupomCarrinhoCasoDeUso removerCupomCarrinho(
+            CarrinhoServico s, br.voke.dominio.inscricao.carrinho.CupomGateway gw) {
+        return new br.voke.aplicacao.inscricao.RemoverCupomCarrinhoCasoDeUso(s, gw);
     }
 
     @Bean

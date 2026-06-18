@@ -50,7 +50,7 @@ export default function Auth() {
     setCarregando(true)
     try {
       const resposta = modo === 'login'
-        ? await login({ email: form.email, senha: form.senha, papel })
+        ? await login({ email: form.email, senha: form.senha })
         : await cadastrar({ nome: form.nome, cpf: form.cpf, email: form.email, senha: form.senha, dataNascimento: form.dataNascimento }, papel)
       salvarSessao(resposta)
       if (resposta.papel === 'ADMIN') {

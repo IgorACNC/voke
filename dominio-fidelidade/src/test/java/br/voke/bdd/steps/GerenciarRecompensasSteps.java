@@ -26,6 +26,9 @@ public class GerenciarRecompensasSteps {
             @Override public List<Recompensa> buscarPorOrganizadorId(UUID organizadorId) {
                 return banco.values().stream().filter(r -> r.getOrganizadorId().equals(organizadorId)).toList();
             }
+            @Override public List<Recompensa> buscarAtivas() {
+                return banco.values().stream().filter(Recompensa::isAtiva).toList();
+            }
             @Override public void remover(RecompensaId id) { banco.remove(id); }
         };
     }

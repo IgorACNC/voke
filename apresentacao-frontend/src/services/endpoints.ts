@@ -16,11 +16,13 @@ export const endpoints = {
   cancelarInscricao: (inscricaoId: string) => `/inscricoes/${inscricaoId}`,
 
   // Cupons
-  listarCupons: '/cupons',
+  listarMeusCupons: '/cupons/meus',
+  listarTodosCupons: '/cupons',
   criarCupom: '/cupons',
+  criarCupomGlobal: '/cupons/global',
   editarCupom: (id: string) => `/cupons/${id}`,
+  alterarAtivoCupom: (id: string) => `/cupons/${id}/ativo`,
   excluirCupom: (id: string) => `/cupons/${id}`,
-  validarCupom: '/cupons/validar',
 
   // Participantes
   perfilParticipante: (id: string) => `/participantes/${id}`,

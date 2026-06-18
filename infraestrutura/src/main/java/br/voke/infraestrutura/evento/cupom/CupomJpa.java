@@ -3,11 +3,15 @@ package br.voke.infraestrutura.evento.cupom;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+
+import br.voke.dominio.evento.cupom.TipoDesconto;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -28,14 +32,22 @@ public class CupomJpa {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal desconto;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_desconto", nullable = false, length = 20,
+            columnDefinition = "VARCHAR(20) NOT NULL DEFAULT 'FIXO'")
+    private TipoDesconto tipoDesconto;
+
+    @Column(nullable = true)
     private UUID organizadorId;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private UUID eventoId;
 
     @Column(nullable = false)
     private int quantidadeMaxima;
+
+    @Column(nullable = false)
+    private boolean ativo;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "cupom_cpfs_utilizados",
@@ -46,22 +58,27 @@ public class CupomJpa {
     protected CupomJpa() {
     }
 
-    public CupomJpa(UUID id, String codigo, BigDecimal desconto, UUID organizadorId,
-                    UUID eventoId, int quantidadeMaxima, Set<String> cpfsUtilizados) {
+    public CupomJpa(UUID id, String codigo, BigDecimal desconto, TipoDesconto tipoDesconto,
+                    UUID organizadorId, UUID eventoId, int quantidadeMaxima, boolean ativo,
+                    Set<String> cpfsUtilizados) {
         this.id = id;
         this.codigo = codigo;
         this.desconto = desconto;
+        this.tipoDesconto = tipoDesconto;
         this.organizadorId = organizadorId;
         this.eventoId = eventoId;
         this.quantidadeMaxima = quantidadeMaxima;
+        this.ativo = ativo;
         this.cpfsUtilizados = new HashSet<>(cpfsUtilizados);
     }
 
     public UUID getId() { return id; }
     public String getCodigo() { return codigo; }
     public BigDecimal getDesconto() { return desconto; }
+    public TipoDesconto getTipoDesconto() { return tipoDesconto; }
     public UUID getOrganizadorId() { return organizadorId; }
     public UUID getEventoId() { return eventoId; }
     public int getQuantidadeMaxima() { return quantidadeMaxima; }
+    public boolean isAtivo() { return ativo; }
     public Set<String> getCpfsUtilizados() { return cpfsUtilizados; }
 }

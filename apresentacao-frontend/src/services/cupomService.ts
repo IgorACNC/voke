@@ -1,37 +1,67 @@
 import api from './api'
-import { endpoints } from './endpoints'
+
+export type TipoDescontoCupom = 'FIXO' | 'PERCENTUAL'
 
 export interface Cupom {
   id: string
   codigo: string
-  percentual: boolean
-  valor: number
-  eventoId?: string | null
-  usos: number
-  vigenciaInicio?: string | null
-  vigenciaFim?: string | null
+  desconto: number
+  tipoDesconto: TipoDescontoCupom
+  organizadorId: string | null
+  eventoId: string | null
+  quantidadeMaxima: number
+  quantidadeUtilizada: number
+  ativo: boolean
+  global: boolean
 }
 
-export async function listarCupons(): Promise<Cupom[]> {
-  const { data } = await api.get<Cupom[]>(endpoints.listarCupons)
+export interface CriarCupomPayload {
+  codigo: string
+  desconto: number
+  tipoDesconto: TipoDescontoCupom
+  organizadorId: string
+  eventoId: string | null
+  quantidadeMaxima: number
+}
+
+export interface CriarCupomGlobalPayload {
+  codigo: string
+  desconto: number
+  tipoDesconto: TipoDescontoCupom
+  quantidadeMaxima: number
+}
+
+export async function listarMeusCupons(organizadorId: string): Promise<Cupom[]> {
+  const { data } = await api.get<Cupom[]>('/cupons/meus', { params: { organizadorId } })
   return data
 }
 
-export async function criarCupom(payload: { codigo: string; percentual: boolean; valor: number; eventoId?: string | null }): Promise<Cupom> {
-  const { data } = await api.post<Cupom>(endpoints.criarCupom, payload)
+export async function listarTodosCupons(): Promise<Cupom[]> {
+  const { data } = await api.get<Cupom[]>('/cupons')
   return data
 }
 
-export async function editarCupom(id: string, payload: Partial<Cupom>): Promise<Cupom> {
-  const { data } = await api.put<Cupom>(endpoints.editarCupom(id), payload)
+export async function criarCupom(payload: CriarCupomPayload): Promise<Cupom> {
+  const { data } = await api.post<Cupom>('/cupons', payload)
   return data
+}
+
+export async function criarCupomGlobal(payload: CriarCupomGlobalPayload): Promise<Cupom> {
+  const { data } = await api.post<Cupom>('/cupons/global', payload)
+  return data
+}
+
+export async function editarCupom(
+  id: string,
+  payload: { novoDesconto: number; novaQuantidade: number },
+): Promise<void> {
+  await api.put(`/cupons/${id}`, payload)
+}
+
+export async function alterarAtivoCupom(id: string, ativo: boolean): Promise<void> {
+  await api.patch(`/cupons/${id}/ativo`, { ativo })
 }
 
 export async function excluirCupom(id: string): Promise<void> {
-  await api.delete(endpoints.excluirCupom(id))
-}
-
-export async function validarCupom(codigo: string, eventoId?: string): Promise<{ valido: boolean; cupom?: Cupom }> {
-  const { data } = await api.get(endpoints.validarCupom, { params: { codigo, eventoId } })
-  return data
+  await api.delete(`/cupons/${id}`)
 }

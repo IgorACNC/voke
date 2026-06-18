@@ -115,7 +115,7 @@ public class ParceiroController {
         String nome = "";
         try {
             nome = participanteRepositorio.buscarPorId(p.getParticipanteId())
-                    .map(Participante::getNome).orElse("");
+                    .map(part -> part.getNome().getValor()).orElse("");
         } catch (Exception ignored) {}
         return new ParceiroResp(
                 p.getId().getValor().toString(),

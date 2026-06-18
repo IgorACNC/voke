@@ -17,7 +17,13 @@ public class CupomServico {
 
     public Cupom criar(String codigo, BigDecimal desconto, UUID organizadorId,
                        UUID eventoId, int quantidadeMaxima) {
-        Cupom cupom = new Cupom(CupomId.novo(), codigo, desconto, organizadorId, eventoId, quantidadeMaxima);
+        return criar(codigo, desconto, TipoDesconto.FIXO, organizadorId, eventoId, quantidadeMaxima);
+    }
+
+    public Cupom criar(String codigo, BigDecimal desconto, TipoDesconto tipoDesconto,
+                       UUID organizadorId, UUID eventoId, int quantidadeMaxima) {
+        Cupom cupom = new Cupom(CupomId.novo(), codigo, desconto, tipoDesconto,
+                organizadorId, eventoId, quantidadeMaxima);
         repositorio.salvar(cupom);
         return cupom;
     }
@@ -32,6 +38,13 @@ public class CupomServico {
 
     public BigDecimal validarEUtilizar(String codigo, String cpf) {
         return utilizacaoCupom.validarEUtilizar(codigo, cpf);
+    }
+
+    public void alternarAtivo(CupomId id, boolean ativo) {
+        Cupom cupom = repositorio.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cupom não encontrado"));
+        if (ativo) cupom.ativar(); else cupom.desativar();
+        repositorio.salvar(cupom);
     }
 
     public void remover(CupomId id) {

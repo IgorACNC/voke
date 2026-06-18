@@ -2,6 +2,7 @@ package br.voke.aplicacao.evento;
 
 import br.voke.dominio.evento.cupom.Cupom;
 import br.voke.dominio.evento.cupom.CupomServico;
+import br.voke.dominio.evento.cupom.TipoDesconto;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -19,5 +20,10 @@ public class CriarCupomCasoDeUso {
     public Cupom executar(String codigo, BigDecimal desconto, UUID organizadorId,
                           UUID eventoId, int quantidadeMaxima) {
         return servico.criar(codigo, desconto, organizadorId, eventoId, quantidadeMaxima);
+    }
+
+    public Cupom executar(String codigo, BigDecimal desconto, TipoDesconto tipoDesconto,
+                          UUID organizadorId, UUID eventoId, int quantidadeMaxima) {
+        return servico.criar(codigo, desconto, tipoDesconto, organizadorId, eventoId, quantidadeMaxima);
     }
 }

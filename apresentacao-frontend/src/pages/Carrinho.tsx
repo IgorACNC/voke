@@ -5,6 +5,7 @@ import {
   consultarCarrinho,
   removerDoCarrinho,
   aplicarCupomCarrinho,
+  removerCupomCarrinho,
   finalizarCompra,
   calcularTotalCarrinho,
   TAXA_CARTAO_CARRINHO,
@@ -45,6 +46,7 @@ export default function Carrinho() {
 
   const [codigoCupom, setCodigoCupom] = useState('')
   const [aplicandoCupom, setAplicandoCupom] = useState(false)
+  const [removendoCupom, setRemovendoCupom] = useState(false)
 
   const [metodo, setMetodo] = useState<MetodoPagamentoCarrinho>('PIX')
   const [finalizando, setFinalizando] = useState(false)
@@ -125,6 +127,21 @@ export default function Carrinho() {
       setErro(e?.response?.data?.mensagem ?? 'Cupom inválido ou expirado.')
     } finally {
       setAplicandoCupom(false)
+    }
+  }
+
+  async function handleRemoverCupom() {
+    setErro('')
+    setMensagem('')
+    setRemovendoCupom(true)
+    try {
+      const atualizado = await removerCupomCarrinho(usuario!.id, cpf ?? '')
+      setCarrinho(atualizado)
+      setMensagem('Cupom removido.')
+    } catch (e: any) {
+      setErro(e?.response?.data?.mensagem ?? 'Erro ao remover cupom.')
+    } finally {
+      setRemovendoCupom(false)
     }
   }
 
@@ -283,9 +300,19 @@ export default function Carrinho() {
                     </div>
                   </form>
                 ) : (
-                  <span className="carrinho-cupom-badge">
-                    ✅ {carrinho!.cupomAplicado} — -{fmt(desconto)}
-                  </span>
+                  <div className="carrinho-cupom-aplicado">
+                    <span className="carrinho-cupom-badge">
+                      ✅ {carrinho!.cupomAplicado} — -{fmt(desconto)}
+                    </span>
+                    <button
+                      type="button"
+                      className="carrinho-cupom-remover"
+                      onClick={handleRemoverCupom}
+                      disabled={removendoCupom || expirado}
+                    >
+                      {removendoCupom ? 'Removendo...' : 'Remover'}
+                    </button>
+                  </div>
                 )}
               </div>
 
