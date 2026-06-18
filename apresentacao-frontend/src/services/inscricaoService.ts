@@ -9,6 +9,7 @@ export interface Inscricao {
   status: 'PENDENTE' | 'CONFIRMADA' | 'CANCELADA' | 'CHECK_IN_REALIZADO'
   dataHoraInscricao: string
   valorPago: number
+  pontosCreditados: boolean
 }
 
 export async function listarMinhasInscricoes(participanteId: string): Promise<Inscricao[]> {

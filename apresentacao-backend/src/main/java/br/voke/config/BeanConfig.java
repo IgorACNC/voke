@@ -320,6 +320,14 @@ public class BeanConfig {
     }
 
     @Bean
+    public br.voke.aplicacao.inscricao.RealizarCheckInCasoDeUso realizarCheckIn(
+            br.voke.dominio.inscricao.inscricao.InscricaoRepositorio ir,
+            br.voke.dominio.evento.evento.EventoRepositorio er,
+            CreditarPontosCasoDeUso cp) {
+        return new br.voke.aplicacao.inscricao.RealizarCheckInCasoDeUso(ir, er, cp);
+    }
+
+    @Bean
     public AdicionarAoCarrinhoCasoDeUso adicionarAoCarrinho(CarrinhoServico s) {
         return new AdicionarAoCarrinhoCasoDeUso(s);
     }
@@ -360,8 +368,11 @@ public class BeanConfig {
 
 
     @Bean
-    public ContaPontosServico contaPontosServico(ContaPontosRepositorio r) {
-        return new ContaPontosServico(r);
+    public ContaPontosServico contaPontosServico(ContaPontosRepositorio r,
+            br.voke.dominio.fidelidade.pontos.TransacaoPontosRepositorio tr) {
+        ContaPontosServico s = new ContaPontosServico(r);
+        s.setTransacaoRepositorio(tr);
+        return s;
     }
 
     @Bean
@@ -381,8 +392,13 @@ public class BeanConfig {
     }
 
     @Bean
-    public RecompensaServico recompensaServico(RecompensaRepositorio r, ContaPontosRepositorio pr) {
-        return new RecompensaServico(r, pr);
+    public RecompensaServico recompensaServico(RecompensaRepositorio r, ContaPontosRepositorio pr,
+            br.voke.dominio.fidelidade.pontos.TransacaoPontosRepositorio tr,
+            CarteiraVirtualServico carteiraServico) {
+        RecompensaServico s = new RecompensaServico(r, pr);
+        s.setTransacaoPontosRepositorio(tr);
+        s.setCarteiraServico(carteiraServico);
+        return s;
     }
 
     @Bean
@@ -418,6 +434,11 @@ public class BeanConfig {
     @Bean
     public ConsultarSaldoPontosCasoDeUso consultarSaldoPontos(ContaPontosServico s) {
         return new ConsultarSaldoPontosCasoDeUso(s);
+    }
+
+    @Bean
+    public CreditarPontosCasoDeUso creditarPontos(ContaPontosServico s) {
+        return new CreditarPontosCasoDeUso(s);
     }
 
     @Bean
@@ -690,5 +711,11 @@ public class BeanConfig {
     @Bean
     public ListarRecompensasAtivasCasoDeUso listarRecompensasAtivas(RecompensaServico s) {
         return new ListarRecompensasAtivasCasoDeUso(s);
+    }
+
+    @Bean
+    public br.voke.aplicacao.fidelidade.ListarTodasRecompensasCasoDeUso listarTodasRecompensas(
+            br.voke.dominio.fidelidade.recompensa.RecompensaRepositorio r) {
+        return new br.voke.aplicacao.fidelidade.ListarTodasRecompensasCasoDeUso(r);
     }
 }

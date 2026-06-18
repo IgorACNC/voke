@@ -1,7 +1,12 @@
 package br.voke.dominio.fidelidade.recompensa;
 
+import br.voke.dominio.fidelidade.carteira.CarteiraVirtualServico;
 import br.voke.dominio.fidelidade.pontos.ContaPontos;
 import br.voke.dominio.fidelidade.pontos.ContaPontosRepositorio;
+import br.voke.dominio.fidelidade.pontos.TipoTransacaoPontos;
+import br.voke.dominio.fidelidade.pontos.TransacaoPontos;
+import br.voke.dominio.fidelidade.pontos.TransacaoPontosId;
+import br.voke.dominio.fidelidade.pontos.TransacaoPontosRepositorio;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +19,8 @@ public class RecompensaServico {
     private final RecompensaRepositorio repositorio;
     private final ContaPontosRepositorio contaPontosRepositorio;
     private final List<RecompensaObserver> observers;
+    private TransacaoPontosRepositorio transacaoPontosRepositorio;
+    private CarteiraVirtualServico carteiraServico;
 
     public RecompensaServico(RecompensaRepositorio repositorio,
                              ContaPontosRepositorio contaPontosRepositorio) {
@@ -22,6 +29,14 @@ public class RecompensaServico {
         this.repositorio = repositorio;
         this.contaPontosRepositorio = contaPontosRepositorio;
         this.observers = new ArrayList<>();
+    }
+
+    public void setTransacaoPontosRepositorio(TransacaoPontosRepositorio transacaoPontosRepositorio) {
+        this.transacaoPontosRepositorio = transacaoPontosRepositorio;
+    }
+
+    public void setCarteiraServico(CarteiraVirtualServico carteiraServico) {
+        this.carteiraServico = carteiraServico;
     }
 
     public void adicionarObserver(RecompensaObserver observer) {
@@ -39,8 +54,20 @@ public class RecompensaServico {
 
     public Recompensa cadastrar(String nome, String descricao, int custoEmPontos,
                                 int estoqueTotal, UUID organizadorId) {
+        return cadastrar(nome, descricao, custoEmPontos, estoqueTotal, organizadorId, CategoriaRecompensa.DESCONTO);
+    }
+
+    public Recompensa cadastrar(String nome, String descricao, int custoEmPontos,
+                                int estoqueTotal, UUID organizadorId, CategoriaRecompensa categoria) {
+        return cadastrar(nome, descricao, custoEmPontos, estoqueTotal, organizadorId, categoria, null);
+    }
+
+    public Recompensa cadastrar(String nome, String descricao, int custoEmPontos,
+                                int estoqueTotal, UUID organizadorId, CategoriaRecompensa categoria,
+                                java.math.BigDecimal valor) {
         Recompensa recompensa = new Recompensa(
-                RecompensaId.novo(), nome, descricao, custoEmPontos, estoqueTotal, organizadorId);
+                RecompensaId.novo(), nome, descricao, custoEmPontos, estoqueTotal,
+                organizadorId, categoria, valor);
         repositorio.salvar(recompensa);
         return recompensa;
     }
@@ -71,6 +98,17 @@ public class RecompensaServico {
         contaPontosRepositorio.salvar(conta);
         repositorio.salvar(recompensa);
 
+        // RN5 — efeito real da recompensa por categoria
+        executarEfeitoCategoria(recompensa, participanteId);
+
+        if (transacaoPontosRepositorio != null) {
+            transacaoPontosRepositorio.salvar(new TransacaoPontos(
+                    TransacaoPontosId.novo(), participanteId, TipoTransacaoPontos.RESGATE_RECOMPENSA,
+                    recompensa.getCustoEmPontos(),
+                    "Resgate: " + recompensa.getNome(),
+                    recompensa.getId().getValor()));
+        }
+
         notificarResgatada(recompensa, participanteId);
 
         if (!recompensa.estaDisponivel()) {
@@ -97,6 +135,22 @@ public class RecompensaServico {
 
     public List<Recompensa> listarAtivas() {
         return repositorio.buscarAtivas();
+    }
+
+    private void executarEfeitoCategoria(Recompensa recompensa, UUID participanteId) {
+        switch (recompensa.getCategoria()) {
+            case CREDITO_CARTEIRA -> {
+                if (carteiraServico != null && recompensa.getValor() != null
+                        && recompensa.getValor().compareTo(java.math.BigDecimal.ZERO) > 0) {
+                    carteiraServico.creditar(participanteId, recompensa.getValor());
+                }
+            }
+            case DESCONTO, BRINDE, BENEFICIO -> {
+                // Sem efeito automático além do log/observer.
+                // DESCONTO: a entrega do código fica para um próximo incremento.
+                // BRINDE/BENEFICIO: tratativa logística externa.
+            }
+        }
     }
 
     private void notificarResgatada(Recompensa recompensa, UUID participanteId) {

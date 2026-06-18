@@ -27,17 +27,20 @@ public class FidelidadeController {
     private final AdicionarSaldoCasoDeUso adicionarSaldo;
     private final RemoverSaldoCasoDeUso removerSaldo;
     private final ConsultarExtratoCasoDeUso consultarExtrato;
+    private final br.voke.dominio.fidelidade.pontos.TransacaoPontosRepositorio transacaoPontosRepositorio;
 
     public FidelidadeController(ConsultarSaldoPontosCasoDeUso consultarPontos,
                                  ConsultarSaldoCarteiraVirtualCasoDeUso consultarCarteira,
                                  AdicionarSaldoCasoDeUso adicionarSaldo,
                                  RemoverSaldoCasoDeUso removerSaldo,
-                                 ConsultarExtratoCasoDeUso consultarExtrato) {
+                                 ConsultarExtratoCasoDeUso consultarExtrato,
+                                 br.voke.dominio.fidelidade.pontos.TransacaoPontosRepositorio transacaoPontosRepositorio) {
         this.consultarPontos = consultarPontos;
         this.consultarCarteira = consultarCarteira;
         this.adicionarSaldo = adicionarSaldo;
         this.removerSaldo = removerSaldo;
         this.consultarExtrato = consultarExtrato;
+        this.transacaoPontosRepositorio = transacaoPontosRepositorio;
     }
 
     @GetMapping("/pontos/{participanteId}")
@@ -88,10 +91,27 @@ public class FidelidadeController {
         return ResponseEntity.ok(extrato);
     }
 
+    @GetMapping("/pontos/{participanteId}/extrato")
+    public ResponseEntity<List<TransacaoPontosResp>> consultarExtratoPontos(@PathVariable UUID participanteId) {
+        List<TransacaoPontosResp> extrato = transacaoPontosRepositorio.buscarPorParticipanteId(participanteId).stream()
+                .map(t -> new TransacaoPontosResp(
+                        t.getId().getValor(),
+                        t.getTipo().name(),
+                        t.getPontos(),
+                        t.getDescricao(),
+                        t.getDataHora().format(FORMATTER),
+                        t.getDirecao(),
+                        t.getReferenciaId()))
+                .toList();
+        return ResponseEntity.ok(extrato);
+    }
+
     record SaldoReq(UUID participanteId, BigDecimal valor, String metodoPagamento) {}
     record SaldoPontosResp(UUID participanteId, int saldo) {}
     record SaldoCarteiraResp(UUID participanteId, BigDecimal saldo) {}
     record TransacaoResp(UUID id, String tipo, BigDecimal valor, String descricao,
                          String dataHora, String direcao) {}
+    record TransacaoPontosResp(UUID id, String tipo, int pontos, String descricao,
+                                String dataHora, String direcao, UUID referenciaId) {}
     record ErroResp(String mensagem) {}
 }

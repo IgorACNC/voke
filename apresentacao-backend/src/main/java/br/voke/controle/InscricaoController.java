@@ -1,6 +1,7 @@
 package br.voke.controle;
 
 import br.voke.aplicacao.inscricao.CancelarInscricaoCasoDeUso;
+import br.voke.aplicacao.inscricao.RealizarCheckInCasoDeUso;
 import br.voke.aplicacao.inscricao.RealizarInscricaoCasoDeUso;
 import br.voke.dominio.evento.evento.Evento;
 import br.voke.dominio.evento.evento.EventoId;
@@ -31,6 +32,7 @@ public class InscricaoController {
 
     private final RealizarInscricaoCasoDeUso realizarInscricao;
     private final CancelarInscricaoCasoDeUso cancelarInscricao;
+    private final RealizarCheckInCasoDeUso realizarCheckIn;
     private final EventoRepositorio eventoRepositorio;
     private final ParticipanteRepositorio participanteRepositorio;
     private final InscricaoRepositorio inscricaoRepositorio;
@@ -38,16 +40,38 @@ public class InscricaoController {
 
     public InscricaoController(RealizarInscricaoCasoDeUso realizarInscricao,
                                 CancelarInscricaoCasoDeUso cancelarInscricao,
+                                RealizarCheckInCasoDeUso realizarCheckIn,
                                 EventoRepositorio eventoRepositorio,
                                 ParticipanteRepositorio participanteRepositorio,
                                 InscricaoRepositorio inscricaoRepositorio,
                                 CarteiraVirtualServico carteiraServico) {
         this.realizarInscricao = realizarInscricao;
         this.cancelarInscricao = cancelarInscricao;
+        this.realizarCheckIn = realizarCheckIn;
         this.eventoRepositorio = eventoRepositorio;
         this.participanteRepositorio = participanteRepositorio;
         this.inscricaoRepositorio = inscricaoRepositorio;
         this.carteiraServico = carteiraServico;
+    }
+
+    record CheckInResp(String mensagem, int pontosGanhos) {}
+
+    @PostMapping("/{inscricaoId}/check-in")
+    public ResponseEntity<?> checkIn(@PathVariable UUID inscricaoId) {
+        try {
+            RealizarCheckInCasoDeUso.Resultado r = realizarCheckIn.executar(inscricaoId);
+            String msg;
+            if (r.pontos() > 0) {
+                msg = "Check-in realizado! Você ganhou " + r.pontos() + " pontos.";
+            } else if (r.pontosCreditados()) {
+                msg = "Check-in realizado! Os pontos deste evento já foram creditados.";
+            } else {
+                msg = "Check-in realizado! Os pontos serão creditados após o término do evento — clique de novo em check-in quando ele encerrar.";
+            }
+            return ResponseEntity.ok(new CheckInResp(msg, r.pontos()));
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
+        }
     }
 
     record RealizarInscricaoReq(UUID participanteId, UUID eventoId,
@@ -64,7 +88,7 @@ public class InscricaoController {
 
     record InscricaoDetalhadaResp(String id, EventoEmInscricaoResp evento, Integer loteNumero,
                                    BigDecimal valorPago, String status,
-                                   LocalDateTime dataHoraInscricao) {}
+                                   LocalDateTime dataHoraInscricao, boolean pontosCreditados) {}
 
     @GetMapping("/{inscricaoId}/estorno")
     public ResponseEntity<?> estimarEstorno(@PathVariable UUID inscricaoId) {
@@ -163,7 +187,7 @@ public class InscricaoController {
                 e.getCapacidadeMaxima(), e.getStatus().name(), e.getIdadeMinima(), lote);
         return new InscricaoDetalhadaResp(
                 i.getId().getValor().toString(), eventoResp, null,
-                i.getValorPago(), i.getStatus().name(), i.getDataInscricao());
+                i.getValorPago(), i.getStatus().name(), i.getDataInscricao(), i.isPontosCreditados());
     }
 
     record EstornoResp(double percentual, BigDecimal valor) {}

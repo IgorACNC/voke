@@ -14,6 +14,7 @@ public class Inscricao extends EntidadeBase<InscricaoId> {
     private final BigDecimal valorPago;
     private final LocalDateTime dataInscricao;
     private StatusInscricao status;
+    private boolean pontosCreditados;
 
     public Inscricao(InscricaoId id, UUID participanteId, UUID eventoId, BigDecimal valorPago) {
         super(id);
@@ -25,6 +26,19 @@ public class Inscricao extends EntidadeBase<InscricaoId> {
         this.valorPago = valorPago;
         this.dataInscricao = LocalDateTime.now();
         this.status = StatusInscricao.CONFIRMADA;
+        this.pontosCreditados = false;
+    }
+
+    public void marcarPontosCreditados() {
+        this.pontosCreditados = true;
+    }
+
+    public boolean pontosJaCreditados() {
+        return pontosCreditados;
+    }
+
+    public boolean fezCheckIn() {
+        return status == StatusInscricao.CHECK_IN_REALIZADO;
     }
 
     public BigDecimal calcularDevolucao(LocalDateTime dataEvento) {
@@ -55,4 +69,5 @@ public class Inscricao extends EntidadeBase<InscricaoId> {
     public BigDecimal getValorPago() { return valorPago; }
     public LocalDateTime getDataInscricao() { return dataInscricao; }
     public StatusInscricao getStatus() { return status; }
+    public boolean isPontosCreditados() { return pontosCreditados; }
 }

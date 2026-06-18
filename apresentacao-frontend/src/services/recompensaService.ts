@@ -1,5 +1,7 @@
 import api from './api'
 
+export type CategoriaRecompensa = 'DESCONTO' | 'BRINDE' | 'BENEFICIO' | 'CREDITO_CARTEIRA'
+
 export interface Recompensa {
   id: string
   nome: string
@@ -7,17 +9,39 @@ export interface Recompensa {
   custoEmPontos: number
   estoqueDisponivel: number
   estoqueTotal: number
+  categoria: CategoriaRecompensa
+  valor: number | null
+  organizadorId: string | null
+  global: boolean
   ativa: boolean
 }
 
-export async function criarRecompensa(payload: {
+export interface CriarRecompensaPayload {
   nome: string
   descricao: string
   custoEmPontos: number
   estoqueTotal: number
   organizadorId: string
-}): Promise<Recompensa> {
+  categoria: CategoriaRecompensa
+  valor?: number | null
+}
+
+export interface CriarRecompensaGlobalPayload {
+  nome: string
+  descricao: string
+  custoEmPontos: number
+  estoqueTotal: number
+  categoria: CategoriaRecompensa
+  valor?: number | null
+}
+
+export async function criarRecompensa(payload: CriarRecompensaPayload): Promise<Recompensa> {
   const { data } = await api.post<Recompensa>('/recompensas', payload)
+  return data
+}
+
+export async function criarRecompensaGlobal(payload: CriarRecompensaGlobalPayload): Promise<Recompensa> {
+  const { data } = await api.post<Recompensa>('/recompensas/global', payload)
   return data
 }
 
@@ -46,11 +70,11 @@ export async function listarRecompensasAtivas(): Promise<Recompensa[]> {
   return data
 }
 
-export async function resgatarRecompensa(recompensaId: string, participanteId: string): Promise<void> {
-  await api.post(`/recompensas/${recompensaId}/resgatar?participanteId=${participanteId}`)
+export async function listarTodasRecompensas(): Promise<Recompensa[]> {
+  const { data } = await api.get<Recompensa[]>('/recompensas')
+  return data
 }
 
-export async function consultarSaldoPontos(participanteId: string): Promise<number> {
-  const { data } = await api.get<{ saldo: number }>(`/recompensas/participante/${participanteId}/saldo-pontos`)
-  return data.saldo
+export async function resgatarRecompensa(recompensaId: string, participanteId: string): Promise<void> {
+  await api.post(`/recompensas/${recompensaId}/resgatar?participanteId=${participanteId}`)
 }

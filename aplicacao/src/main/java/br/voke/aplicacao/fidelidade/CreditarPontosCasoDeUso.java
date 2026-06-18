@@ -21,4 +21,12 @@ public class CreditarPontosCasoDeUso {
         servico.creditarPorPresenca(participanteId, pontosBase, eventoEncerrado,
                 checkInRealizado, estrategia);
     }
+
+    public void executarComReferencia(UUID participanteId, int pontosBase,
+                                       boolean eventoEncerrado, boolean checkInRealizado,
+                                       EstrategiaGanhoPontos estrategia,
+                                       UUID eventoIdReferencia, String descricao) {
+        servico.creditarPorPresenca(participanteId, pontosBase, eventoEncerrado,
+                checkInRealizado, estrategia, eventoIdReferencia, descricao);
+    }
 }

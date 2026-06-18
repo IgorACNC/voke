@@ -1,0 +1,141 @@
+.catalogo-saldo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.5rem;
+  background: #111827;
+  color: #fff;
+  border-radius: 12px;
+  margin-bottom: 1.25rem;
+}
+.catalogo-saldo-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #d1d5db;
+  font-weight: 600;
+}
+.catalogo-saldo-valor {
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.catalogo-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.catalogo-filtro {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.catalogo-filtro:hover { background: #f9fafb; }
+.catalogo-filtro.ativo {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
+
+.catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.catalogo-card {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  transition: box-shadow 0.15s ease;
+}
+.catalogo-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+.catalogo-card-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.catalogo-categoria {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #111827;
+}
+.categoria-desconto { border-color: #fca5a5; color: #b91c1c; background: #fef2f2; }
+.categoria-brinde   { border-color: #c4b5fd; color: #5b21b6; background: #f5f3ff; }
+.categoria-beneficio { border-color: #93c5fd; color: #1e40af; background: #eff6ff; }
+.categoria-credito_carteira { border-color: #86efac; color: #15803d; background: #f0fdf4; }
+
+.catalogo-custo {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+.catalogo-nome {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.catalogo-descricao {
+  color: #4b5563;
+  font-size: 0.88rem;
+  margin: 0;
+  line-height: 1.45;
+  flex: 1;
+}
+
+.catalogo-estoque {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #b45309;
+  font-weight: 600;
+}
+
+.catalogo-btn {
+  margin-top: 0.5rem;
+  padding: 0.85rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #111827;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.catalogo-btn.pode:hover {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
+.catalogo-btn.faltam,
+.catalogo-btn:disabled {
+  background: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+
+@media (max-width: 720px) {
+  .catalogo-grid { grid-template-columns: 1fr; }
+}

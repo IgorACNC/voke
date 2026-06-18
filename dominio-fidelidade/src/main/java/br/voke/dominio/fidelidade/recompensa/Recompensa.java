@@ -4,6 +4,7 @@ import br.voke.dominio.compartilhado.EntidadeBase;
 import br.voke.dominio.fidelidade.excecao.CongelamentoDePrecoException;
 import br.voke.dominio.fidelidade.excecao.RecompensaEsgotadaException;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -17,15 +18,31 @@ public class Recompensa extends EntidadeBase<RecompensaId> {
     private int custoEmPontos;
     private int estoqueTotal;
     private int estoqueResgatado;
-    private final UUID organizadorId;
+    private final UUID organizadorId; // null = recompensa global do admin
+    private CategoriaRecompensa categoria;
+    private BigDecimal valor; // valor para CREDITO_CARTEIRA (R$) ou DESCONTO (R$ ou %); null para BRINDE/BENEFICIO
     private LocalDateTime ultimaAlteracaoValor;
     private boolean ativa;
 
     public Recompensa(RecompensaId id, String nome, String descricao, int custoEmPontos,
                       int estoqueTotal, UUID organizadorId) {
+        this(id, nome, descricao, custoEmPontos, estoqueTotal, organizadorId, CategoriaRecompensa.DESCONTO, null);
+    }
+
+    public Recompensa(RecompensaId id, String nome, String descricao, int custoEmPontos,
+                      int estoqueTotal, UUID organizadorId, CategoriaRecompensa categoria) {
+        this(id, nome, descricao, custoEmPontos, estoqueTotal, organizadorId, categoria, null);
+    }
+
+    public Recompensa(RecompensaId id, String nome, String descricao, int custoEmPontos,
+                      int estoqueTotal, UUID organizadorId, CategoriaRecompensa categoria, BigDecimal valor) {
         super(id);
         Objects.requireNonNull(nome, "Nome é obrigatório");
-        Objects.requireNonNull(organizadorId, "Organizador é obrigatório");
+        Objects.requireNonNull(categoria, "Categoria é obrigatória");
+        if (categoria == CategoriaRecompensa.CREDITO_CARTEIRA
+                && (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0)) {
+            throw new IllegalArgumentException("Recompensa de crédito na carteira requer valor maior que zero");
+        }
         if (custoEmPontos <= 0) {
             throw new IllegalArgumentException("Custo em pontos deve ser maior que zero");
         }
@@ -38,8 +55,14 @@ public class Recompensa extends EntidadeBase<RecompensaId> {
         this.estoqueTotal = estoqueTotal;
         this.estoqueResgatado = 0;
         this.organizadorId = organizadorId;
+        this.categoria = categoria;
+        this.valor = valor;
         this.ultimaAlteracaoValor = LocalDateTime.now();
         this.ativa = true;
+    }
+
+    public boolean isGlobal() {
+        return organizadorId == null;
     }
 
     public void resgatar() {
@@ -87,6 +110,8 @@ public class Recompensa extends EntidadeBase<RecompensaId> {
     public int getEstoqueResgatado() { return estoqueResgatado; }
     public int getEstoqueRestante() { return estoqueTotal - estoqueResgatado; }
     public UUID getOrganizadorId() { return organizadorId; }
+    public CategoriaRecompensa getCategoria() { return categoria; }
+    public BigDecimal getValor() { return valor; }
     public LocalDateTime getUltimaAlteracaoValor() { return ultimaAlteracaoValor; }
     public boolean isAtiva() { return ativa; }
 }

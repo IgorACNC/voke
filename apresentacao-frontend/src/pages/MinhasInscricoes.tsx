@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { listarMinhasInscricoes, cancelarInscricao, estimarEstorno, type Inscricao } from '../services/inscricaoService'
+import { realizarCheckIn } from '../services/pontosService'
 import './Social.css'
 import './MinhasInscricoes.css'
 
@@ -44,6 +45,7 @@ export default function MinhasInscricoes() {
   const [mensagem, setMensagem] = useState('')
   const [filtro, setFiltro] = useState<StatusFiltro>('TODOS')
   const [cancelando, setCancelando] = useState<string | null>(null)
+  const [fazendoCheckIn, setFazendoCheckIn] = useState<string | null>(null)
 
   useEffect(() => {
     if (!usuario) return
@@ -59,6 +61,20 @@ export default function MinhasInscricoes() {
       setErro('Não foi possível carregar suas inscrições.')
     } finally {
       setCarregando(false)
+    }
+  }
+
+  async function handleCheckIn(id: string) {
+    setErro(''); setMensagem('')
+    setFazendoCheckIn(id)
+    try {
+      const r = await realizarCheckIn(id)
+      setMensagem(r.mensagem)
+      await carregar()
+    } catch (e: unknown) {
+      setErro((e as any)?.response?.data?.mensagem ?? 'Não foi possível fazer check-in.')
+    } finally {
+      setFazendoCheckIn(null)
     }
   }
 
@@ -180,6 +196,23 @@ export default function MinhasInscricoes() {
                     <button className="inscricao-btn-ver" onClick={() => navigate(`/eventos/${i.evento.id}`)}>
                       Ver evento
                     </button>
+                    {(() => {
+                      const eventoComecou = new Date(i.evento.dataHoraInicio).getTime() <= Date.now()
+                      const eventoEncerrou = new Date(i.evento.dataHoraFim).getTime() <= Date.now()
+                      const podeCheckIn = i.status === 'CONFIRMADA' && eventoComecou
+                      const podeResgatar = i.status === 'CHECK_IN_REALIZADO' && eventoEncerrou && !i.pontosCreditados
+                      if (!podeCheckIn && !podeResgatar) return null
+                      const label = podeResgatar ? '🏆 Receber pontos' : '✓ Check-in'
+                      return (
+                        <button
+                          className="inscricao-btn-ver"
+                          onClick={() => handleCheckIn(i.id)}
+                          disabled={fazendoCheckIn === i.id}
+                        >
+                          {fazendoCheckIn === i.id ? 'Aguarde...' : label}
+                        </button>
+                      )
+                    })()}
                     {podeAvaliar && (
                       <button
                         className="inscricao-btn-avaliar"

@@ -33,6 +33,9 @@ import NotificacoesEvento from './pages/NotificacoesEvento'
 import MinhasNotificacoes from './pages/MinhasNotificacoes'
 import Carrinho from './pages/Carrinho'
 import Convites from './pages/Convites'
+import CarteiraPontos from './pages/CarteiraPontos'
+import CatalogoRecompensas from './pages/CatalogoRecompensas'
+import Recompensas from './pages/Recompensas'
 
 export default function App() {
   return (
@@ -82,6 +85,9 @@ export default function App() {
           <Route path="/eventos/:eventoId" element={<PrivateRoute><EventDetail /></PrivateRoute>} />
 
           <Route path="/cupons" element={<PrivateRoute><Cupons /></PrivateRoute>} />
+          <Route path="/recompensas" element={<PrivateRoute><Recompensas /></PrivateRoute>} />
+          <Route path="/carteira-pontos" element={<PrivateRoute papelRequerido="PARTICIPANTE"><CarteiraPontos /></PrivateRoute>} />
+          <Route path="/catalogo-recompensas" element={<PrivateRoute papelRequerido="PARTICIPANTE"><CatalogoRecompensas /></PrivateRoute>} />
           <Route path="/convites" element={<PrivateRoute papelRequerido="PARTICIPANTE"><Convites /></PrivateRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />

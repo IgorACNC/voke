@@ -8,6 +8,8 @@ public interface RecompensaRepositorio {
     void salvar(Recompensa recompensa);
     Optional<Recompensa> buscarPorId(RecompensaId id);
     List<Recompensa> buscarPorOrganizadorId(UUID organizadorId);
+    List<Recompensa> buscarGlobais();
+    List<Recompensa> buscarTodas();
     List<Recompensa> buscarAtivas();
     void remover(RecompensaId id);
 }

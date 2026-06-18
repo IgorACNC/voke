@@ -36,17 +36,22 @@ public class InscricaoJpa {
     @Column(nullable = false, length = 20)
     private StatusInscricao status;
 
+    @Column(name = "pontos_creditados", nullable = false,
+            columnDefinition = "BIT NOT NULL DEFAULT 0")
+    private boolean pontosCreditados;
+
     protected InscricaoJpa() {
     }
 
     public InscricaoJpa(UUID id, UUID participanteId, UUID eventoId, BigDecimal valorPago,
-                        LocalDateTime dataInscricao, StatusInscricao status) {
+                        LocalDateTime dataInscricao, StatusInscricao status, boolean pontosCreditados) {
         this.id = id;
         this.participanteId = participanteId;
         this.eventoId = eventoId;
         this.valorPago = valorPago;
         this.dataInscricao = dataInscricao;
         this.status = status;
+        this.pontosCreditados = pontosCreditados;
     }
 
     public UUID getId() { return id; }
@@ -55,4 +60,5 @@ public class InscricaoJpa {
     public BigDecimal getValorPago() { return valorPago; }
     public LocalDateTime getDataInscricao() { return dataInscricao; }
     public StatusInscricao getStatus() { return status; }
+    public boolean isPontosCreditados() { return pontosCreditados; }
 }

@@ -132,6 +132,9 @@ export default function Admin() {
             <button className="admin-btn-primario" onClick={() => navigate('/cupons')}>
               🎟 Gerenciar cupons globais
             </button>
+            <button className="admin-btn-primario" onClick={() => navigate('/recompensas')}>
+              🎁 Gerenciar recompensas globais
+            </button>
           </div>
         </section>
 

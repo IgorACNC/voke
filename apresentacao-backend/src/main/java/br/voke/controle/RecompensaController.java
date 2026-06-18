@@ -1,13 +1,14 @@
 package br.voke.controle;
 
 import br.voke.aplicacao.fidelidade.*;
+import br.voke.dominio.fidelidade.recompensa.CategoriaRecompensa;
 import br.voke.dominio.fidelidade.recompensa.Recompensa;
-import br.voke.dominio.fidelidade.pontos.ContaPontosRepositorio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ public class RecompensaController {
     private final InativarRecompensaCasoDeUso inativar;
     private final ListarRecompensasOrganizadorCasoDeUso listar;
     private final ListarRecompensasAtivasCasoDeUso listarAtivas;
+    private final ListarTodasRecompensasCasoDeUso listarTodas;
     private final ResgatarRecompensaCasoDeUso resgatar;
     private final ConsultarSaldoPontosCasoDeUso consultarPontos;
 
@@ -30,6 +32,7 @@ public class RecompensaController {
                                  InativarRecompensaCasoDeUso inativar,
                                  ListarRecompensasOrganizadorCasoDeUso listar,
                                  ListarRecompensasAtivasCasoDeUso listarAtivas,
+                                 ListarTodasRecompensasCasoDeUso listarTodas,
                                  ResgatarRecompensaCasoDeUso resgatar,
                                  ConsultarSaldoPontosCasoDeUso consultarPontos) {
         this.cadastrar = cadastrar;
@@ -38,19 +41,38 @@ public class RecompensaController {
         this.inativar = inativar;
         this.listar = listar;
         this.listarAtivas = listarAtivas;
+        this.listarTodas = listarTodas;
         this.resgatar = resgatar;
         this.consultarPontos = consultarPontos;
     }
 
-    record CriarReq(String nome, String descricao, int custoEmPontos, int estoqueTotal, UUID organizadorId) {}
+    record CriarReq(String nome, String descricao, int custoEmPontos, int estoqueTotal,
+                    UUID organizadorId, String categoria, BigDecimal valor) {}
+    record CriarGlobalReq(String nome, String descricao, int custoEmPontos, int estoqueTotal,
+                          String categoria, BigDecimal valor) {}
     record EditarReq(String novaDescricao, Integer novoCusto) {}
 
     @PostMapping
     @PreAuthorize("hasRole('ORGANIZADOR')")
     public ResponseEntity<?> criar(@RequestBody CriarReq req) {
         try {
+            if (req.organizadorId() == null) {
+                return ResponseEntity.badRequest().body(new ErroResp("organizadorId é obrigatório"));
+            }
             Recompensa r = cadastrar.executar(req.nome(), req.descricao(), req.custoEmPontos(),
-                    req.estoqueTotal(), req.organizadorId());
+                    req.estoqueTotal(), req.organizadorId(), parseCategoria(req.categoria()), req.valor());
+            return ResponseEntity.status(HttpStatus.CREATED).body(toResposta(r));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/global")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> criarGlobal(@RequestBody CriarGlobalReq req) {
+        try {
+            Recompensa r = cadastrar.executar(req.nome(), req.descricao(), req.custoEmPontos(),
+                    req.estoqueTotal(), null, parseCategoria(req.categoria()), req.valor());
             return ResponseEntity.status(HttpStatus.CREATED).body(toResposta(r));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
@@ -58,7 +80,7 @@ public class RecompensaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ORGANIZADOR','ADMIN')")
     public ResponseEntity<?> editar(@PathVariable UUID id, @RequestBody EditarReq req) {
         try {
             if (req.novaDescricao() != null) editar.executarAtualizarDescricao(id, req.novaDescricao());
@@ -70,7 +92,7 @@ public class RecompensaController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ORGANIZADOR','ADMIN')")
     public ResponseEntity<?> remover(@PathVariable UUID id) {
         try {
             remover.executar(id);
@@ -81,7 +103,7 @@ public class RecompensaController {
     }
 
     @PatchMapping("/{id}/inativar")
-    @PreAuthorize("hasRole('ORGANIZADOR')")
+    @PreAuthorize("hasAnyRole('ORGANIZADOR','ADMIN')")
     public ResponseEntity<?> inativar(@PathVariable UUID id) {
         try {
             inativar.executar(id);
@@ -103,6 +125,12 @@ public class RecompensaController {
         return ResponseEntity.ok(listarAtivas.executar().stream().map(this::toResposta).toList());
     }
 
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<RecompensaResp>> listarTodas() {
+        return ResponseEntity.ok(listarTodas.executar().stream().map(this::toResposta).toList());
+    }
+
     @GetMapping("/participante/{participanteId}/saldo-pontos")
     @PreAuthorize("hasRole('PARTICIPANTE')")
     public ResponseEntity<?> saldoPontos(@PathVariable UUID participanteId) {
@@ -120,14 +148,27 @@ public class RecompensaController {
         }
     }
 
+    private static CategoriaRecompensa parseCategoria(String c) {
+        if (c == null || c.isBlank()) return CategoriaRecompensa.DESCONTO;
+        try { return CategoriaRecompensa.valueOf(c.toUpperCase()); }
+        catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Categoria inválida (DESCONTO, BRINDE, BENEFICIO, CREDITO_CARTEIRA)");
+        }
+    }
+
     private record RecompensaResp(String id, String nome, String descricao,
-                                   int custoEmPontos, int estoqueDisponivel, int estoqueTotal, boolean ativa) {}
+                                   int custoEmPontos, int estoqueDisponivel, int estoqueTotal,
+                                   String categoria, BigDecimal valor,
+                                   String organizadorId, boolean global, boolean ativa) {}
 
     private record SaldoResp(int saldo) {}
 
     private RecompensaResp toResposta(Recompensa r) {
         return new RecompensaResp(r.getId().getValor().toString(), r.getNome(), r.getDescricao(),
-                r.getCustoEmPontos(), r.getEstoqueRestante(), r.getEstoqueTotal(), r.isAtiva());
+                r.getCustoEmPontos(), r.getEstoqueRestante(), r.getEstoqueTotal(),
+                r.getCategoria().name(), r.getValor(),
+                r.getOrganizadorId() == null ? null : r.getOrganizadorId().toString(),
+                r.isGlobal(), r.isAtiva());
     }
 
     record ErroResp(String mensagem) {}
