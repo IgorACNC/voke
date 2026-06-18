@@ -4,6 +4,7 @@ import br.voke.dominio.inscricao.excecao.ConflitoDeAgendaException;
 import br.voke.dominio.inscricao.excecao.IdadeMinimaEventoException;
 import br.voke.dominio.inscricao.excecao.LimiteIngressosCpfException;
 import br.voke.dominio.inscricao.excecao.VagasEsgotadasException;
+import br.voke.aplicacao.evento.AtualizadorEstatisticaListener;
 import br.voke.dominio.inscricao.inscricao.Inscricao;
 import br.voke.dominio.inscricao.inscricao.InscricaoRepositorio;
 import br.voke.dominio.inscricao.inscricao.InscricaoServico;
@@ -32,7 +33,8 @@ class RealizarInscricaoCasoDeUsoTest {
     @BeforeEach
     void setUp() {
         repositorio = mock(InscricaoRepositorio.class);
-        casoDeUso = new RealizarInscricaoCasoDeUso(new InscricaoServico(repositorio));
+        AtualizadorEstatisticaListener listenerNoOp = mock(AtualizadorEstatisticaListener.class);
+        casoDeUso = new RealizarInscricaoCasoDeUso(new InscricaoServico(repositorio), listenerNoOp);
     }
 
     @Test

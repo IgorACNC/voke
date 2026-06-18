@@ -12,7 +12,7 @@ public final class InscricaoJpaMapper {
     public static InscricaoJpa paraJpa(Inscricao inscricao) {
         return new InscricaoJpa(inscricao.getId().getValor(), inscricao.getParticipanteId(),
                 inscricao.getEventoId(), inscricao.getValorPago(), inscricao.getDataInscricao(),
-                inscricao.getStatus(), inscricao.isPontosCreditados());
+                inscricao.getStatus(), inscricao.isPontosCreditados(), inscricao.getCodigoValidador());
     }
 
     public static Inscricao paraDominio(InscricaoJpa jpa) {
@@ -21,6 +21,9 @@ public final class InscricaoJpaMapper {
         DominioReflection.definirCampo(inscricao, "dataInscricao", jpa.getDataInscricao());
         DominioReflection.definirCampo(inscricao, "status", jpa.getStatus());
         DominioReflection.definirCampo(inscricao, "pontosCreditados", jpa.isPontosCreditados());
+        if (jpa.getCodigoValidador() != null) {
+            DominioReflection.definirCampo(inscricao, "codigoValidador", jpa.getCodigoValidador());
+        }
         return inscricao;
     }
 }

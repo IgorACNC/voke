@@ -1,5 +1,6 @@
 package br.voke.aplicacao.inscricao;
 
+import br.voke.aplicacao.evento.AtualizadorEstatisticaListener;
 import br.voke.dominio.evento.evento.Evento;
 import br.voke.dominio.evento.evento.EventoId;
 import br.voke.dominio.evento.evento.EventoRepositorio;
@@ -33,25 +34,29 @@ public class FinalizarCompraCasoDeUso {
     private final InscricaoServico inscricaoServico;
     private final EventoRepositorio eventoRepositorio;
     private final ParticipanteRepositorio participanteRepositorio;
+    private final AtualizadorEstatisticaListener atualizadorEstatistica;
 
     public FinalizarCompraCasoDeUso(CarrinhoServico carrinhoServico,
                                      CarrinhoRepositorio carrinhoRepositorio,
                                      CarteiraVirtualServico carteiraServico,
                                      InscricaoServico inscricaoServico,
                                      EventoRepositorio eventoRepositorio,
-                                     ParticipanteRepositorio participanteRepositorio) {
+                                     ParticipanteRepositorio participanteRepositorio,
+                                     AtualizadorEstatisticaListener atualizadorEstatistica) {
         Objects.requireNonNull(carrinhoServico);
         Objects.requireNonNull(carrinhoRepositorio);
         Objects.requireNonNull(carteiraServico);
         Objects.requireNonNull(inscricaoServico);
         Objects.requireNonNull(eventoRepositorio);
         Objects.requireNonNull(participanteRepositorio);
+        Objects.requireNonNull(atualizadorEstatistica);
         this.carrinhoServico = carrinhoServico;
         this.carrinhoRepositorio = carrinhoRepositorio;
         this.carteiraServico = carteiraServico;
         this.inscricaoServico = inscricaoServico;
         this.eventoRepositorio = eventoRepositorio;
         this.participanteRepositorio = participanteRepositorio;
+        this.atualizadorEstatistica = atualizadorEstatistica;
     }
 
     public Resultado executar(UUID participanteId, MetodoPagamento metodoPagamento) {
@@ -96,6 +101,8 @@ public class FinalizarCompraCasoDeUso {
                 if (evento.getLoteAtual() != null) {
                     evento.getLoteAtual().venderIngresso();
                 }
+                // F17 - RN03: atualiza snapshot apos cada inscricao confirmada
+                atualizadorEstatistica.aoConfirmarInscricao(item.getEventoId(), valorPorIngresso);
             }
             eventoRepositorio.salvar(evento);
         }

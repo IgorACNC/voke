@@ -24,6 +24,7 @@ public class Evento extends EntidadeBase<EventoId> {
     private StatusEvento status;
     private int idadeMinima;
     private Set<UUID> categoriaIds = new HashSet<>();
+    private int visualizacoes;
 
     public Evento(EventoId id, String nome, String descricao, String local,
                   LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
@@ -54,7 +55,16 @@ public class Evento extends EntidadeBase<EventoId> {
         this.loteAtual = loteInicial;
         this.status = StatusEvento.ATIVO;
         this.idadeMinima = idadeMinima;
+        this.visualizacoes = 0;
     }
+
+    public void incrementarVisualizacoes() {
+        this.visualizacoes += 1;
+    }
+
+    public int getVisualizacoes() { return visualizacoes; }
+
+    public boolean estaEncerrado() { return status == StatusEvento.ENCERRADO; }
 
     public boolean colideComHorario(String outroLocal, LocalDateTime outroInicio, LocalDateTime outroFim) {
         if (!this.local.equalsIgnoreCase(outroLocal)) return false;

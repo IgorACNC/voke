@@ -34,6 +34,14 @@ public final class Cpf {
 
     public String getValor() { return valor; }
 
+    /**
+     * Retorna CPF mascarado para conformidade com LGPD (RN04 Funcionalidade 17).
+     * Exemplo: "12345678901" -> "***.***.***-01"
+     */
+    public String mascarado() {
+        return "***.***.***-" + valor.substring(9);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

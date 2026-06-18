@@ -15,6 +15,7 @@ public class Inscricao extends EntidadeBase<InscricaoId> {
     private final LocalDateTime dataInscricao;
     private StatusInscricao status;
     private boolean pontosCreditados;
+    private final String codigoValidador;
 
     public Inscricao(InscricaoId id, UUID participanteId, UUID eventoId, BigDecimal valorPago) {
         super(id);
@@ -27,6 +28,7 @@ public class Inscricao extends EntidadeBase<InscricaoId> {
         this.dataInscricao = LocalDateTime.now();
         this.status = StatusInscricao.CONFIRMADA;
         this.pontosCreditados = false;
+        this.codigoValidador = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     public void marcarPontosCreditados() {
@@ -70,4 +72,5 @@ public class Inscricao extends EntidadeBase<InscricaoId> {
     public LocalDateTime getDataInscricao() { return dataInscricao; }
     public StatusInscricao getStatus() { return status; }
     public boolean isPontosCreditados() { return pontosCreditados; }
+    public String getCodigoValidador() { return codigoValidador; }
 }

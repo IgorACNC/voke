@@ -22,6 +22,7 @@ import br.voke.dominio.evento.evento.EventoServico;
 import br.voke.dominio.evento.notificacao.NotificacaoRepositorio;
 import br.voke.dominio.evento.notificacao.NotificacaoServico;
 import br.voke.dominio.evento.chat.*;
+import br.voke.dominio.evento.estatistica.*;
 import br.voke.dominio.evento.grupo.*;
 import br.voke.dominio.evento.subgrupo.*;
 import br.voke.dominio.evento.subgrupo.solicitacao.SolicitacaoSubgrupoRepositorio;
@@ -264,13 +265,17 @@ public class BeanConfig {
     }
 
     @Bean
-    public CancelarEventoCasoDeUso cancelarEvento(EventoServico s) {
-        return new CancelarEventoCasoDeUso(s);
+    public CancelarEventoCasoDeUso cancelarEvento(EventoServico s,
+                                                  InscricaoRepositorio ir,
+                                                  CarteiraVirtualServico cs,
+                                                  AtualizadorEstatisticaListener l) {
+        return new CancelarEventoCasoDeUso(s, ir, cs, l);
     }
 
     @Bean
-    public EncerrarEventosExpiradosCasoDeUso encerrarEventosExpirados(EventoServico s) {
-        return new EncerrarEventosExpiradosCasoDeUso(s);
+    public EncerrarEventosExpiradosCasoDeUso encerrarEventosExpirados(
+            EventoServico s, EventoRepositorio er, AtualizadorEstatisticaListener l) {
+        return new EncerrarEventosExpiradosCasoDeUso(s, er, l);
     }
 
     @Bean
@@ -310,21 +315,31 @@ public class BeanConfig {
     }
 
     @Bean
-    public RealizarInscricaoCasoDeUso realizarInscricao(InscricaoServico s) {
-        return new RealizarInscricaoCasoDeUso(s);
+    public RealizarInscricaoCasoDeUso realizarInscricao(InscricaoServico s,
+                                                        AtualizadorEstatisticaListener l) {
+        return new RealizarInscricaoCasoDeUso(s, l);
     }
 
     @Bean
-    public CancelarInscricaoCasoDeUso cancelarInscricao(InscricaoServico s) {
-        return new CancelarInscricaoCasoDeUso(s);
+    public CancelarInscricaoCasoDeUso cancelarInscricao(InscricaoServico s,
+                                                        InscricaoRepositorio ir,
+                                                        AtualizadorEstatisticaListener l) {
+        return new CancelarInscricaoCasoDeUso(s, ir, l);
     }
 
     @Bean
     public br.voke.aplicacao.inscricao.RealizarCheckInCasoDeUso realizarCheckIn(
             br.voke.dominio.inscricao.inscricao.InscricaoRepositorio ir,
             br.voke.dominio.evento.evento.EventoRepositorio er,
-            CreditarPontosCasoDeUso cp) {
-        return new br.voke.aplicacao.inscricao.RealizarCheckInCasoDeUso(ir, er, cp);
+            CreditarPontosCasoDeUso cp,
+            AtualizadorEstatisticaListener l) {
+        return new br.voke.aplicacao.inscricao.RealizarCheckInCasoDeUso(ir, er, cp, l);
+    }
+
+    @Bean
+    public AtualizadorEstatisticaListener atualizadorEstatistica(
+            EstatisticaEventoRepositorio er, EventoRepositorio evr) {
+        return new AtualizadorEstatisticaListener(er, evr);
     }
 
     @Bean
@@ -361,9 +376,11 @@ public class BeanConfig {
                                                      CarteiraVirtualServico carteiraServico,
                                                      InscricaoServico inscricaoServico,
                                                      EventoRepositorio eventoRepositorio,
-                                                     ParticipanteRepositorio participanteRepositorio) {
+                                                     ParticipanteRepositorio participanteRepositorio,
+                                                     AtualizadorEstatisticaListener atualizadorEstatistica) {
         return new FinalizarCompraCasoDeUso(carrinhoServico, carrinhoRepositorio,
-                carteiraServico, inscricaoServico, eventoRepositorio, participanteRepositorio);
+                carteiraServico, inscricaoServico, eventoRepositorio, participanteRepositorio,
+                atualizadorEstatistica);
     }
 
 
@@ -717,5 +734,43 @@ public class BeanConfig {
     public br.voke.aplicacao.fidelidade.ListarTodasRecompensasCasoDeUso listarTodasRecompensas(
             br.voke.dominio.fidelidade.recompensa.RecompensaRepositorio r) {
         return new br.voke.aplicacao.fidelidade.ListarTodasRecompensasCasoDeUso(r);
+    }
+
+    // ======================== Dashboard / Estatistica (F17) ========================
+
+    @Bean
+    public DashboardServicoInterface dashboardServico(EstatisticaEventoRepositorio r) {
+        return new PrivilegioOrganizadorDashboardDecorator(new DashboardServico(r));
+    }
+
+    @Bean
+    public ConsultarOverviewOrganizadorCasoDeUso consultarOverviewOrganizador(DashboardServicoInterface s) {
+        return new ConsultarOverviewOrganizadorCasoDeUso(s);
+    }
+
+    @Bean
+    public ConsultarEstatisticaEventoCasoDeUso consultarEstatisticaEvento(DashboardServicoInterface s) {
+        return new ConsultarEstatisticaEventoCasoDeUso(s);
+    }
+
+    @Bean
+    public IncrementarVisualizacaoEventoCasoDeUso incrementarVisualizacaoEvento(
+            EventoRepositorio er, EstatisticaEventoRepositorio str) {
+        return new IncrementarVisualizacaoEventoCasoDeUso(er, str);
+    }
+
+    @Bean
+    public ConsultarCurvaVendasCasoDeUso consultarCurvaVendas(CurvaVendasConsulta c) {
+        return new ConsultarCurvaVendasCasoDeUso(c);
+    }
+
+    @Bean
+    public ExportarListaPresencaCasoDeUso exportarListaPresenca(ExportacaoConsulta c) {
+        return new ExportarListaPresencaCasoDeUso(c);
+    }
+
+    @Bean
+    public ExportarRelatorioFinanceiroCasoDeUso exportarRelatorioFinanceiro(ExportacaoConsulta c) {
+        return new ExportarRelatorioFinanceiroCasoDeUso(c);
     }
 }

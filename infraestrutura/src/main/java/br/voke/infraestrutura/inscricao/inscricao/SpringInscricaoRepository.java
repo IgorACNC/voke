@@ -28,4 +28,11 @@ public interface SpringInscricaoRepository extends JpaRepository<InscricaoJpa, U
                                 @Param("inicio") LocalDateTime inicio,
                                 @Param("fim") LocalDateTime fim,
                                 @Param("cancelada") StatusInscricao cancelada);
+
+    @Query("SELECT CAST(i.dataInscricao AS date) AS d, COUNT(i), SUM(i.valorPago) " +
+           "FROM InscricaoJpa i " +
+           "WHERE i.eventoId = :eventoId AND i.status <> :cancelada " +
+           "GROUP BY CAST(i.dataInscricao AS date) ORDER BY CAST(i.dataInscricao AS date)")
+    List<Object[]> curvaVendas(@Param("eventoId") UUID eventoId,
+                               @Param("cancelada") StatusInscricao cancelada);
 }

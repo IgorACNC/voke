@@ -1,5 +1,6 @@
 package br.voke.aplicacao.inscricao;
 
+import br.voke.aplicacao.evento.AtualizadorEstatisticaListener;
 import br.voke.aplicacao.fidelidade.CreditarPontosCasoDeUso;
 import br.voke.dominio.evento.evento.Evento;
 import br.voke.dominio.evento.evento.EventoId;
@@ -18,16 +19,20 @@ public class RealizarCheckInCasoDeUso {
     private final InscricaoRepositorio inscricaoRepositorio;
     private final EventoRepositorio eventoRepositorio;
     private final CreditarPontosCasoDeUso creditarPontos;
+    private final AtualizadorEstatisticaListener atualizadorEstatistica;
 
     public RealizarCheckInCasoDeUso(InscricaoRepositorio inscricaoRepositorio,
                                      EventoRepositorio eventoRepositorio,
-                                     CreditarPontosCasoDeUso creditarPontos) {
+                                     CreditarPontosCasoDeUso creditarPontos,
+                                     AtualizadorEstatisticaListener atualizadorEstatistica) {
         Objects.requireNonNull(inscricaoRepositorio);
         Objects.requireNonNull(eventoRepositorio);
         Objects.requireNonNull(creditarPontos);
+        Objects.requireNonNull(atualizadorEstatistica);
         this.inscricaoRepositorio = inscricaoRepositorio;
         this.eventoRepositorio = eventoRepositorio;
         this.creditarPontos = creditarPontos;
+        this.atualizadorEstatistica = atualizadorEstatistica;
     }
 
     public Resultado executar(UUID inscricaoId) {
@@ -37,15 +42,14 @@ public class RealizarCheckInCasoDeUso {
         Evento evento = eventoRepositorio.buscarPorId(new EventoId(inscricao.getEventoId()))
                 .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado"));
 
-        if (!inscricao.fezCheckIn()) {
+        boolean novoCheckIn = !inscricao.fezCheckIn();
+        if (novoCheckIn) {
             inscricao.realizarCheckIn();
         }
 
         boolean eventoEncerrado = evento.getDataHoraFim().isBefore(LocalDateTime.now());
         int pontosGanhos = 0;
         if (eventoEncerrado && !inscricao.pontosJaCreditados()) {
-            // RN1: gatilho de validação dupla — evento encerrado E check-in realizado.
-            // Regra: 30% do valor pago vira pontos (arredondado pra cima).
             int pontosBase = inscricao.getValorPago()
                     .multiply(new java.math.BigDecimal("0.30"))
                     .setScale(0, java.math.RoundingMode.CEILING)
@@ -60,6 +64,9 @@ public class RealizarCheckInCasoDeUso {
         }
 
         inscricaoRepositorio.salvar(inscricao);
+        if (novoCheckIn) {
+            atualizadorEstatistica.aoRealizarCheckIn(inscricao.getEventoId());
+        }
         return new Resultado(eventoEncerrado, pontosGanhos);
     }
 

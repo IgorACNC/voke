@@ -228,6 +228,8 @@ BoundedContext Evento implements Evento {
 
             int idadeMinima
 
+            int visualizacoes
+
         }
 
         Entity Lote {
@@ -433,6 +435,133 @@ BoundedContext Evento implements Evento {
 
     }
 
+    Aggregate Subgrupo {
+
+        Entity Subgrupo {
+
+            aggregateRoot
+
+            -SubgrupoId id
+
+            String nome
+
+            String descricao
+
+            String regras
+
+            -GrupoEventoId grupoEventoId
+
+            -CategoriaSubgrupo categoria
+
+            -TipoSubgrupo tipo
+
+            int limiteMembros
+
+            -List<ParticipanteId> membrosIds
+
+            -ParticipanteId moderadorId nullable
+
+        }
+
+        ValueObject SubgrupoId {
+
+            String valor
+
+        }
+
+        ValueObject CategoriaSubgrupo {
+
+            String valor
+
+        }
+
+        ValueObject TipoSubgrupo {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate SolicitacaoSubgrupo {
+
+        Entity SolicitacaoSubgrupo {
+
+            aggregateRoot
+
+            -SolicitacaoSubgrupoId id
+
+            -SubgrupoId subgrupoId
+
+            -ParticipanteId participanteId
+
+            String mensagem
+
+            String status
+
+            Date solicitadaEm
+
+            Date decididaEm nullable
+
+            -ParticipanteId decididoPorId nullable
+
+        }
+
+        ValueObject SolicitacaoSubgrupoId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate EstatisticaEvento {
+
+        Entity EstatisticaEvento {
+
+            aggregateRoot
+
+            -EstatisticaEventoId id
+
+            -EventoId eventoId
+
+            -OrganizadorId organizadorId
+
+            int ingressosVendidos
+
+            Double receitaConsolidada
+
+            int checkInsRealizados
+
+            int ausencias
+
+            int cuponsUtilizados
+
+            Double descontoAcumulado
+
+            int visualizacoes
+
+            boolean congelado
+
+            Date atualizadoEm
+
+        }
+
+        ValueObject EstatisticaEventoId {
+
+            String valor
+
+        }
+
+        Service DashboardServico {
+
+            EstatisticaEvento consultarPorEvento(String eventoId, String solicitanteId, boolean podeAcessar);
+            List consultarOverview(String organizadorId);
+
+        }
+
+    }
+
 }
 
 BoundedContext Inscricao implements Inscricao {
@@ -454,6 +583,8 @@ BoundedContext Inscricao implements Inscricao {
             Date dataInscricao
 
             String status
+
+            String codigoValidador
 
         }
 

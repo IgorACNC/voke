@@ -92,6 +92,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErroResp(ex.getMessage()));
     }
 
+    @ExceptionHandler(br.voke.dominio.evento.estatistica.AcessoDashboardNegadoException.class)
+    public ResponseEntity<ErroResp> handleAcessoDashboard(
+            br.voke.dominio.evento.estatistica.AcessoDashboardNegadoException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErroResp(ex.getMessage()));
+    }
+
+    @ExceptionHandler(br.voke.dominio.evento.estatistica.EstatisticaCongeladaException.class)
+    public ResponseEntity<ErroResp> handleEstatisticaCongelada(
+            br.voke.dominio.evento.estatistica.EstatisticaCongeladaException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErroResp(ex.getMessage()));
+    }
+
     @ExceptionHandler(ColecaoNaoEncontradaException.class)
     public ResponseEntity<ErroResp> handleColecaoNaoEncontrada(ColecaoNaoEncontradaException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErroResp(ex.getMessage()));
