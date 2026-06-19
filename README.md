@@ -67,14 +67,3 @@ mvn test
  ## Links do Projeto
 
 **Mapa das Histórias de Usuários (Miro):** https://miro.com/app/board/uXjVG1wbDB4=/?share_link_id=839589694420
-
-# Mapeamento de Padrões de Projeto
-
-| Padrão de Projeto | Responsável Designado | Arquivo(s) .java Identificado(s) |
-| :--- | :--- | :--- |
-| **Decorator** | leal | • `dominio-evento/.../grupo/GrupoEventoServicoDecorator.java` + `RestricaoEtariaGrupoDecorator.java` + `VerificacaoInscritoGrupoDecorator.java` + `PrivilegioOrganizadorGrupoDecorator.java`<br>• `dominio-evento/.../subgrupo/SubgrupoServicoDecorator.java` + `TipoFechadoSubgrupoDecorator.java` + `MembroDoGrupoPrincipalSubgrupoDecorator.java` + `PrivilegioGestorSubgrupoDecorator.java`<br>• `dominio-evento/.../chat/ChatCanalServicoDecorator.java` + `AcessoCanalDecorator.java` + `ConteudoValidoDecorator.java`<br>• `dominio-evento/.../estatistica/DashboardServicoDecorator.java` + `PrivilegioOrganizadorDashboardDecorator.java` |
-| **Observer** | Igor e Júlio | • `dominio-fidelidade/.../sugestao/SugestaoObserver.java` + `NotificarParticipanteObserver.java`<br>• `dominio-fidelidade/.../recompensa/RecompensaObserver.java` + `LogRecompensaObserver.java` |
-| **Proxy** | Bia | • `dominio-pessoa/.../amizade/ComunidadeAmigosProtecaoProxy.java` |
-| **Strategy** | Messi e Will | • `dominio-inscricao/.../carrinho/EstrategiaTaxa.java` + `TaxaCartaoCredito.java` + `SemTaxa.java`<br>• `dominio-inscricao/.../carrinho/EstrategiaDesconto.java` + `DescontoFixo.java`<br>• `dominio-fidelidade/.../carteira/EstrategiaInsercaoSaldo.java` + `InsercaoSaldoPadrao.java` + `InsercaoSaldoVip.java`<br>• `dominio-fidelidade/.../pontos/EstrategiaGanhoPontos.java` + `GanhoPontosRegular.java` + `GanhoPontosCheckInBonus.java` + `GanhoPontosEventoEspecial.java` |
-| **Template Method** | guila | • `dominio-evento/.../cupom/UtilizacaoCupomTemplate.java` + `UtilizacaoCupomPadrao.java` |
-| **Iterator** | Thigas | • `dominio-inscricao/.../inscricao/InscricoesAtivasIterador.java` |
