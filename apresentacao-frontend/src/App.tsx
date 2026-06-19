@@ -42,6 +42,7 @@ import Recompensas from './pages/Recompensas'
 import ListaParceiros from './pages/ListaParceiros'
 import CadastrarParceiro from './pages/CadastrarParceiro'
 import PainelParceiro from './pages/PainelParceiro'
+import FaqEvento from './pages/FaqEvento'
 
 export default function App() {
   return (
@@ -67,6 +68,7 @@ export default function App() {
           <Route path="/meus-eventos/novo" element={<PrivateRoute papelRequerido="ORGANIZADOR"><CriarEvento /></PrivateRoute>} />
           <Route path="/meus-eventos/:id/editar" element={<PrivateRoute papelRequerido="ORGANIZADOR"><EditarEvento /></PrivateRoute>} />
           <Route path="/eventos/:eventoId/grupo/criar" element={<PrivateRoute papelRequerido="ORGANIZADOR"><CriarGrupo /></PrivateRoute>} />
+          <Route path="/eventos/:eventoId/faq" element={<PrivateRoute papelRequerido="ORGANIZADOR"><FaqEvento /></PrivateRoute>} />
 
           {/* Grupo acessível por Organizador e Participante */}
           <Route path="/eventos/:eventoId/grupo" element={<PrivateRoute><GrupoEvento /></PrivateRoute>} />

@@ -1,4 +1,11 @@
 export const endpoints = {
+  // FAQ
+  listarFaq: (eventoId: string) => `/eventos/${eventoId}/faq`,
+  criarPerguntaFaq: (eventoId: string) => `/eventos/${eventoId}/faq`,
+  editarPerguntaFaq: (eventoId: string, id: string) => `/eventos/${eventoId}/faq/${id}`,
+  excluirPerguntaFaq: (eventoId: string, id: string) => `/eventos/${eventoId}/faq/${id}`,
+  reordenarFaq: (eventoId: string) => `/eventos/${eventoId}/faq/ordem`,
+
   // Eventos
   listarEventos: '/eventos',
   listarMeusEventos: '/eventos/meus',

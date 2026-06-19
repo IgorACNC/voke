@@ -19,6 +19,8 @@ import br.voke.dominio.evento.categoria.CategoriaRepositorio;
 import br.voke.dominio.evento.categoria.CategoriaServico;
 import br.voke.dominio.evento.evento.EventoRepositorio;
 import br.voke.dominio.evento.evento.EventoServico;
+import br.voke.dominio.evento.faq.PerguntaFrequenteRepositorio;
+import br.voke.dominio.evento.faq.PerguntaFrequenteServico;
 import br.voke.dominio.evento.notificacao.NotificacaoRepositorio;
 import br.voke.dominio.evento.notificacao.NotificacaoServico;
 import br.voke.dominio.evento.chat.*;
@@ -792,5 +794,35 @@ public FinalizarCompraCasoDeUso finalizarCompra(CarrinhoServico carrinhoServico,
     @Bean
     public ExportarRelatorioFinanceiroCasoDeUso exportarRelatorioFinanceiro(ExportacaoConsulta c) {
         return new ExportarRelatorioFinanceiroCasoDeUso(c);
+    }
+
+    @Bean
+    public PerguntaFrequenteServico perguntaFrequenteServico(PerguntaFrequenteRepositorio r) {
+        return new PerguntaFrequenteServico(r);
+    }
+
+    @Bean
+    public CriarPerguntaFaqCasoDeUso criarPerguntaFaq(PerguntaFrequenteServico s) {
+        return new CriarPerguntaFaqCasoDeUso(s);
+    }
+
+    @Bean
+    public EditarPerguntaFaqCasoDeUso editarPerguntaFaq(PerguntaFrequenteServico s) {
+        return new EditarPerguntaFaqCasoDeUso(s);
+    }
+
+    @Bean
+    public ExcluirPerguntaFaqCasoDeUso excluirPerguntaFaq(PerguntaFrequenteServico s) {
+        return new ExcluirPerguntaFaqCasoDeUso(s);
+    }
+
+    @Bean
+    public ReordenarFaqCasoDeUso reordenarFaq(PerguntaFrequenteServico s) {
+        return new ReordenarFaqCasoDeUso(s);
+    }
+
+    @Bean
+    public ListarFaqDoEventoCasoDeUso listarFaq(PerguntaFrequenteServico s) {
+        return new ListarFaqDoEventoCasoDeUso(s);
     }
 }

@@ -6,6 +6,7 @@ import { listarMinhasInscricoes, type Inscricao } from '../services/inscricaoSer
 import { buscarPerfil, type PerfilParticipante } from '../services/participanteService'
 import { adicionarAoCarrinho } from '../services/carrinhoService'
 import { registrarVisualizacao } from '../services/dashboardService'
+import FaqPublico from '../components/FaqPublico'
 import './Social.css'
 
 function calcularIdade(dataNascimento: string, referencia: string) {
@@ -143,6 +144,8 @@ export default function EventDetail() {
               </button>
             </div>
           )}
+
+          {eventoId && <FaqPublico eventoId={eventoId} />}
         </div>
       </main>
     </div>

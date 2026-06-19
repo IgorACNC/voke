@@ -177,6 +177,9 @@ export default function MeusEventos() {
                     <button className="mev-btn-grupo" onClick={() => navigate(`/eventos/${ev.id}/notificacoes`)}>
                       🔔 Notificações
                     </button>
+                    <button className="mev-btn-grupo" onClick={() => navigate(`/eventos/${ev.id}/faq`)}>
+                      ❓ FAQ
+                    </button>
                     <button className="mev-btn-cancelar" onClick={() => setConfirmarCancelId(ev.id)}>
                       Cancelar Evento
                     </button>
