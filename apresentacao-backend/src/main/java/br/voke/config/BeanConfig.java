@@ -42,6 +42,7 @@ import br.voke.dominio.fidelidade.pontos.ContaPontosServico;
 import br.voke.dominio.fidelidade.recompensa.RecompensaRepositorio;
 import br.voke.dominio.fidelidade.recompensa.RecompensaServico;
 import br.voke.dominio.fidelidade.sugestao.EventoConsultaGateway;
+import br.voke.dominio.fidelidade.sugestao.FavoritoConsultaGateway;
 import br.voke.dominio.fidelidade.sugestao.InscricaoConsultaGateway;
 import br.voke.dominio.fidelidade.sugestao.MotorSugestoes;
 import br.voke.dominio.fidelidade.sugestao.NotificarParticipanteObserver;
@@ -481,8 +482,10 @@ public FinalizarCompraCasoDeUso finalizarCompra(CarrinhoServico carrinhoServico,
     }
 
     @Bean
-    public MotorSugestoes motorSugestoes(EventoConsultaGateway eg, InscricaoConsultaGateway ig) {
-        return new MotorSugestoes(eg, ig);
+    public MotorSugestoes motorSugestoes(EventoConsultaGateway eg,
+                                          InscricaoConsultaGateway ig,
+                                          FavoritoConsultaGateway fg) {
+        return new MotorSugestoes(eg, ig, fg);
     }
 
     @Bean

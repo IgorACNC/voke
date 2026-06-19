@@ -1,6 +1,7 @@
 package br.voke.aplicacao.fidelidade;
 
 import br.voke.dominio.fidelidade.sugestao.EventoConsultaGateway;
+import br.voke.dominio.fidelidade.sugestao.FavoritoConsultaGateway;
 import br.voke.dominio.fidelidade.sugestao.InscricaoConsultaGateway;
 import br.voke.dominio.fidelidade.sugestao.MotorSugestoes;
 import br.voke.dominio.fidelidade.sugestao.PreferenciaParticipante;
@@ -36,7 +37,8 @@ class CadastrarSugestaoCasoDeUsoTest {
         InMemoryPreferenciaRepositorio prefRepo = new InMemoryPreferenciaRepositorio();
         StubEventoConsultaGateway eventoGateway = new StubEventoConsultaGateway();
         StubInscricaoConsultaGateway inscricaoGateway = new StubInscricaoConsultaGateway();
-        MotorSugestoes motor = new MotorSugestoes(eventoGateway, inscricaoGateway);
+        StubFavoritoConsultaGateway favoritoGateway = new StubFavoritoConsultaGateway();
+        MotorSugestoes motor = new MotorSugestoes(eventoGateway, inscricaoGateway, favoritoGateway);
         casoDeUso = new CadastrarSugestaoCasoDeUso(
                 new SugestaoServico(sugestaoRepositorio, prefRepo, motor, eventoGateway));
     }
@@ -101,6 +103,15 @@ class CadastrarSugestaoCasoDeUsoTest {
     private static final class StubInscricaoConsultaGateway implements InscricaoConsultaGateway {
         @Override public boolean participanteJaInscritoOuAguardando(UUID participanteId, UUID eventoId) {
             return false;
+        }
+        @Override public Set<UUID> buscarHistoricoEventosDoParticipante(UUID participanteId) {
+            return Set.of();
+        }
+    }
+
+    private static final class StubFavoritoConsultaGateway implements FavoritoConsultaGateway {
+        @Override public Set<UUID> buscarFavoritosDoParticipante(UUID participanteId) {
+            return Set.of();
         }
     }
 }

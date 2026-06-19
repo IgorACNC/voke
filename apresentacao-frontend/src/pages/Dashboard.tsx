@@ -49,6 +49,7 @@ export default function Dashboard() {
     { icon: '💬', label: 'Chat Privado', rota: '/chat-privado' },
     { icon: '✉️', label: 'Convites', rota: '/convites' },
     { icon: '🔔', label: 'Notificações', rota: '/notificacoes' },
+    { icon: '💡', label: 'Sugestões pra Você', rota: '/sugestoes' },
     { icon: '👤', label: 'Minha Conta', rota: '/meu-perfil' },
   ]
 

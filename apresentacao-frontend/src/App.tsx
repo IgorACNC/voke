@@ -33,6 +33,7 @@ import PerfilOrganizador from './pages/PerfilOrganizador'
 import MeuPerfilOrganizador from './pages/MeuPerfilOrganizador'
 import NotificacoesEvento from './pages/NotificacoesEvento'
 import MinhasNotificacoes from './pages/MinhasNotificacoes'
+import MinhasSugestoes from './pages/MinhasSugestoes'
 import Carrinho from './pages/Carrinho'
 import Convites from './pages/Convites'
 import CarteiraPontos from './pages/CarteiraPontos'
@@ -62,6 +63,7 @@ export default function App() {
           <Route path="/meus-eventos" element={<PrivateRoute papelRequerido="ORGANIZADOR"><MeusEventos /></PrivateRoute>} />
           <Route path="/eventos/:eventoId/notificacoes" element={<PrivateRoute papelRequerido="ORGANIZADOR"><NotificacoesEvento /></PrivateRoute>} />
           <Route path="/notificacoes" element={<PrivateRoute papelRequerido="PARTICIPANTE"><MinhasNotificacoes /></PrivateRoute>} />
+          <Route path="/sugestoes" element={<PrivateRoute papelRequerido="PARTICIPANTE"><MinhasSugestoes /></PrivateRoute>} />
           <Route path="/meus-eventos/novo" element={<PrivateRoute papelRequerido="ORGANIZADOR"><CriarEvento /></PrivateRoute>} />
           <Route path="/meus-eventos/:id/editar" element={<PrivateRoute papelRequerido="ORGANIZADOR"><EditarEvento /></PrivateRoute>} />
           <Route path="/eventos/:eventoId/grupo/criar" element={<PrivateRoute papelRequerido="ORGANIZADOR"><CriarGrupo /></PrivateRoute>} />

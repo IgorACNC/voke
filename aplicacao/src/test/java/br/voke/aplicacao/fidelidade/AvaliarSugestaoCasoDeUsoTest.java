@@ -1,6 +1,7 @@
 package br.voke.aplicacao.fidelidade;
 
 import br.voke.dominio.fidelidade.sugestao.EventoConsultaGateway;
+import br.voke.dominio.fidelidade.sugestao.FavoritoConsultaGateway;
 import br.voke.dominio.fidelidade.sugestao.InscricaoConsultaGateway;
 import br.voke.dominio.fidelidade.sugestao.MotorSugestoes;
 import br.voke.dominio.fidelidade.sugestao.PreferenciaParticipante;
@@ -42,8 +43,16 @@ class AvaliarSugestaoCasoDeUsoTest {
         sugestaoRepositorio = new InMemorySugestaoRepositorio();
         preferenciaRepositorio = new InMemoryPreferenciaRepositorio();
         eventoGateway = new StubEventoConsultaGateway();
-        InscricaoConsultaGateway inscricaoGateway = (p, e) -> false;
-        MotorSugestoes motor = new MotorSugestoes(eventoGateway, inscricaoGateway);
+        InscricaoConsultaGateway inscricaoGateway = new InscricaoConsultaGateway() {
+            @Override public boolean participanteJaInscritoOuAguardando(UUID participanteId, UUID eventoId) {
+                return false;
+            }
+            @Override public Set<UUID> buscarHistoricoEventosDoParticipante(UUID participanteId) {
+                return Set.of();
+            }
+        };
+        FavoritoConsultaGateway favoritoGateway = participanteId -> Set.of();
+        MotorSugestoes motor = new MotorSugestoes(eventoGateway, inscricaoGateway, favoritoGateway);
         servico = new SugestaoServico(sugestaoRepositorio, preferenciaRepositorio, motor, eventoGateway);
         casoDeUso = new AvaliarSugestaoCasoDeUso(servico);
     }
