@@ -78,6 +78,81 @@ parceiros. Suas regras controlam saldo, limites diarios, frequencia de saques,
 resgate de recompensas, estoque, congelamento de preco e pontuacao por
 participacao.
 
+## Como Rodar o Projeto
+
+### Pre-requisitos
+
+- **Java 17** (JDK).
+- **Maven 3.9+** no PATH.
+- **Node.js 18+** e **npm**.
+- **MySQL 8** rodando em `localhost:3306`.
+
+### 1. Banco de Dados
+
+O backend conecta em `jdbc:mysql://localhost:3306/voke` e usa
+`createDatabaseIfNotExist=true`, entao a base `voke` e criada automaticamente no
+primeiro start. As tabelas sao geradas pelo Hibernate (`ddl-auto=update`).
+
+Credenciais padrao em `apresentacao-backend/src/main/resources/application.properties`:
+
+```
+spring.datasource.username=root
+spring.datasource.password=mOu9Wpsa322%p7
+```
+
+Se suas credenciais locais forem diferentes, crie o arquivo
+`apresentacao-backend/src/main/resources/application-local.properties`
+(ja referenciado via `spring.config.import`) com:
+
+```
+spring.datasource.username=SEU_USUARIO
+spring.datasource.password=SUA_SENHA
+```
+
+### 2. Backend (Spring Boot)
+
+A partir da raiz do projeto:
+
+```bash
+mvn -pl apresentacao-backend -am spring-boot:run
+```
+
+Sobe em `http://localhost:8080`. Endpoints REST sob `/api/...`.
+
+Para gerar e rodar o jar:
+
+```bash
+mvn clean package -DskipTests
+java -jar apresentacao-backend/target/apresentacao-backend-0.0.1-SNAPSHOT.jar
+```
+
+### 3. Frontend (React + Vite)
+
+Em outro terminal:
+
+```bash
+cd apresentacao-frontend
+npm install        # apenas na primeira vez
+npm run dev
+```
+
+Sobe em `http://localhost:5173`. O Vite faz proxy de `/api` para
+`http://localhost:8080`, entao o backend precisa estar rodando.
+
+Para build de producao:
+
+```bash
+npm run build
+npm run preview
+```
+
+### 4. Acessar a Aplicacao
+
+- Catalogo publico: `http://localhost:5173/`
+- Login: `http://localhost:5173/login`
+- Cadastre uma conta de **PARTICIPANTE** ou **ORGANIZADOR** pela tela de login
+  (aba "Criar conta").
+
 ## Como Executar os Testes
 
 Requisitos:
@@ -89,6 +164,12 @@ Com Maven disponivel, execute:
 
 ```bash
 mvn test
+```
+
+Para rodar testes de um modulo especifico:
+
+```bash
+mvn -pl aplicacao -am test
 ```
 
 ## Artefatos Principais
