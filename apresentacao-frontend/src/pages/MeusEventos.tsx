@@ -2,7 +2,18 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { listarMeusEventos, cancelarEvento, type Evento } from '../services/eventoService'
+import {
+  listarAvaliacoesEvento,
+  resumoAvaliacoesEvento,
+  type AvaliacaoPublica,
+  type ResumoAvaliacao,
+} from '../services/avaliacaoService'
 import './MeusEventos.css'
+
+function estrelas(media: number) {
+  const cheias = Math.round(media)
+  return '★'.repeat(cheias) + '☆'.repeat(5 - cheias)
+}
 
 function statusLabel(s: string) {
   if (s === 'ATIVO') return 'ATIVO'
@@ -18,6 +29,10 @@ export default function MeusEventos() {
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState('')
   const [confirmarCancelId, setConfirmarCancelId] = useState<string | null>(null)
+  const [resumos, setResumos] = useState<Record<string, ResumoAvaliacao>>({})
+  const [verFeedbacksEv, setVerFeedbacksEv] = useState<Evento | null>(null)
+  const [feedbacks, setFeedbacks] = useState<AvaliacaoPublica[]>([])
+  const [carregandoFeedbacks, setCarregandoFeedbacks] = useState(false)
 
   useEffect(() => { carregar() }, [])
 
@@ -25,11 +40,29 @@ export default function MeusEventos() {
     setCarregando(true)
     setErro('')
     try {
-      setEventos(await listarMeusEventos())
+      const lista = await listarMeusEventos()
+      setEventos(lista)
+      const encerrados = lista.filter((e) => e.status === 'ENCERRADO')
+      const entradas = await Promise.all(
+        encerrados.map(async (e) => [e.id, await resumoAvaliacoesEvento(e.id).catch(() => ({ media: 0, quantidade: 0 }))] as const),
+      )
+      setResumos(Object.fromEntries(entradas))
     } catch {
       setErro('Erro ao carregar eventos.')
     } finally {
       setCarregando(false)
+    }
+  }
+
+  async function abrirFeedbacks(ev: Evento) {
+    setVerFeedbacksEv(ev)
+    setCarregandoFeedbacks(true)
+    try {
+      setFeedbacks(await listarAvaliacoesEvento(ev.id))
+    } catch {
+      setFeedbacks([])
+    } finally {
+      setCarregandoFeedbacks(false)
     }
   }
 
@@ -96,6 +129,34 @@ export default function MeusEventos() {
                 </span>
               </div>
 
+              {ev.status === 'ENCERRADO' && resumos[ev.id] && (
+                <div style={{
+                  marginTop: 6,
+                  padding: '0.55rem 0.85rem',
+                  background: '#fffbeb',
+                  border: '1px solid #fde68a',
+                  borderRadius: 10,
+                  fontSize: '0.9rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: 8,
+                }}>
+                  <span>
+                    <span style={{ color: '#f59e0b', fontWeight: 700 }}>{estrelas(resumos[ev.id].media)}</span>
+                    <strong style={{ marginLeft: 6 }}>{resumos[ev.id].media.toFixed(1)}</strong>
+                    <span style={{ marginLeft: 6, color: '#92400e' }}>
+                      ({resumos[ev.id].quantidade} {resumos[ev.id].quantidade === 1 ? 'avaliação' : 'avaliações'})
+                    </span>
+                  </span>
+                  {resumos[ev.id].quantidade > 0 && (
+                    <button className="mev-btn-editar" onClick={() => abrirFeedbacks(ev)}>
+                      Ver feedbacks
+                    </button>
+                  )}
+                </div>
+              )}
+
               {ev.loteAtual && (
                 <p className="mev-card-lote">
                   Lote {ev.loteAtual.numero} &bull; R$&nbsp;{ev.loteAtual.preco.toFixed(2)} &bull;&nbsp;
@@ -136,6 +197,47 @@ export default function MeusEventos() {
           ))}
         </div>
       </main>
+
+      {verFeedbacksEv && (
+        <div className="mev-modal-bg" onClick={() => setVerFeedbacksEv(null)}>
+          <div className="mev-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560, maxHeight: '80vh', overflowY: 'auto' }}>
+            <h2 style={{ marginBottom: 4 }}>Feedbacks — {verFeedbacksEv.nome}</h2>
+            {resumos[verFeedbacksEv.id] && (
+              <p style={{ color: '#92400e', marginTop: 0 }}>
+                <span style={{ color: '#f59e0b' }}>{estrelas(resumos[verFeedbacksEv.id].media)}</span>{' '}
+                <strong>{resumos[verFeedbacksEv.id].media.toFixed(1)}</strong>
+                {' · '}
+                {resumos[verFeedbacksEv.id].quantidade} {resumos[verFeedbacksEv.id].quantidade === 1 ? 'avaliação' : 'avaliações'}
+              </p>
+            )}
+            {carregandoFeedbacks ? (
+              <p>Carregando...</p>
+            ) : feedbacks.length === 0 ? (
+              <p>Nenhum feedback ainda.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.75rem' }}>
+                {feedbacks.map((a) => (
+                  <div key={a.id} style={{
+                    padding: '0.85rem 1rem',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: 10,
+                    background: '#fafafa',
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <strong>{a.nomeParticipante}</strong>
+                      <span style={{ color: '#f59e0b', fontWeight: 700 }}>{estrelas(a.nota)} {a.nota}</span>
+                    </div>
+                    {a.comentario && <p style={{ margin: '0.4rem 0 0', color: '#4b5563' }}>{a.comentario}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mev-modal-acoes" style={{ marginTop: '1rem' }}>
+              <button className="mev-btn-editar" onClick={() => setVerFeedbacksEv(null)}>Fechar</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {confirmarCancelId && (
         <div className="mev-modal-bg" onClick={() => setConfirmarCancelId(null)}>

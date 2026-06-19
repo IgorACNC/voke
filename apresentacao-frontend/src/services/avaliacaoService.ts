@@ -14,6 +14,21 @@ export interface EventoAvaliavel {
   local: string
   dataHoraFim: string
   avaliado: boolean
+  media: number
+  quantidade: number
+}
+
+export interface AvaliacaoPublica {
+  id: string
+  participanteId: string
+  nomeParticipante: string
+  nota: number
+  comentario: string
+}
+
+export interface ResumoAvaliacao {
+  media: number
+  quantidade: number
 }
 
 export interface AvaliarPayload {
@@ -49,4 +64,14 @@ export async function editarAvaliacao(id: string, nota: number, comentario: stri
 
 export async function removerAvaliacao(id: string): Promise<void> {
   await api.delete(`/avaliacoes/${id}`)
+}
+
+export async function listarAvaliacoesEvento(eventoId: string): Promise<AvaliacaoPublica[]> {
+  const { data } = await api.get<AvaliacaoPublica[]>(`/avaliacoes/evento/${eventoId}`)
+  return data
+}
+
+export async function resumoAvaliacoesEvento(eventoId: string): Promise<ResumoAvaliacao> {
+  const { data } = await api.get<ResumoAvaliacao>(`/avaliacoes/evento/${eventoId}/resumo`)
+  return data
 }

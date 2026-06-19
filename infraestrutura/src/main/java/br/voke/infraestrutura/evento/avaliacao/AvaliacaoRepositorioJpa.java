@@ -5,6 +5,7 @@ import br.voke.dominio.evento.avaliacao.Avaliacao;
 import br.voke.dominio.evento.avaliacao.AvaliacaoId;
 import br.voke.dominio.evento.avaliacao.AvaliacaoRepositorio;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,5 +36,11 @@ public class AvaliacaoRepositorioJpa implements AvaliacaoRepositorio {
 
     public boolean existePorParticipanteEEvento(UUID participanteId, UUID eventoId) {
         return repository.existsByParticipanteIdAndEventoId(participanteId, eventoId);
+    }
+
+    public List<Avaliacao> buscarPorEventoId(UUID eventoId) {
+        return repository.findByEventoId(eventoId).stream()
+                .map(AvaliacaoJpaMapper::paraDominio)
+                .toList();
     }
 }

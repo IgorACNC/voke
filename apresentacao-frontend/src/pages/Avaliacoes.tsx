@@ -7,11 +7,18 @@ import {
   buscarAvaliacao,
   editarAvaliacao,
   listarEventosAvaliaveis,
+  listarAvaliacoesEvento,
   removerAvaliacao,
   type Avaliacao,
+  type AvaliacaoPublica,
   type EventoAvaliavel,
 } from '../services/avaliacaoService'
 import './Social.css'
+
+function estrelas(media: number) {
+  const cheias = Math.round(media)
+  return '★'.repeat(cheias) + '☆'.repeat(5 - cheias)
+}
 
 export default function Avaliacoes() {
   const navigate = useNavigate()
@@ -23,6 +30,7 @@ export default function Avaliacoes() {
   const [nota, setNota] = useState(5)
   const [comentario, setComentario] = useState('')
   const [avaliacao, setAvaliacao] = useState<Avaliacao | null>(null)
+  const [outrasAvaliacoes, setOutrasAvaliacoes] = useState<AvaliacaoPublica[]>([])
   const [mensagem, setMensagem] = useState('')
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
@@ -59,6 +67,10 @@ export default function Avaliacoes() {
         setComentario(encontrada?.comentario ?? '')
       })
       .catch(() => setErro('Nao foi possivel carregar a avaliacao deste evento.'))
+
+    listarAvaliacoesEvento(eventoId)
+      .then(setOutrasAvaliacoes)
+      .catch(() => setOutrasAvaliacoes([]))
   }, [usuario?.id, eventoId])
 
   if (!usuario) return null
@@ -138,8 +150,20 @@ export default function Avaliacoes() {
                   key={evento.id}
                   onClick={() => navigate(`/avaliacoes/${evento.id}`)}
                 >
-                  <div>
-                    <strong>{evento.nome}</strong>
+                  <div style={{ flex: 1 }}>
+                    <strong>
+                      {evento.nome}
+                      {evento.quantidade > 0 && (
+                        <span style={{ marginLeft: 10, color: '#f59e0b', fontWeight: 600, fontSize: '0.9rem' }}>
+                          {estrelas(evento.media)} {evento.media.toFixed(1)}
+                        </span>
+                      )}
+                      {evento.quantidade > 0 && (
+                        <span style={{ marginLeft: 6, color: '#6b7280', fontWeight: 500, fontSize: '0.85rem' }}>
+                          ({evento.quantidade} {evento.quantidade === 1 ? 'comentário' : 'comentários'})
+                        </span>
+                      )}
+                    </strong>
                     <span>{evento.local} - terminou em {new Date(evento.dataHoraFim).toLocaleString()}</span>
                   </div>
                   <span className={evento.avaliado ? 'social-tag feita' : 'social-tag'}>{evento.avaliado ? 'Editavel' : 'Avaliar'}</span>
@@ -176,6 +200,57 @@ export default function Avaliacoes() {
                 {avaliacao && <button type="button" className="social-btn-perigo" onClick={handleRemover}>Remover</button>}
               </div>
             </form>
+
+            <hr style={{ margin: '1.5rem 0', border: 0, borderTop: '1px solid #e5e7eb' }} />
+
+            <h3 style={{ margin: '0 0 0.5rem' }}>
+              O que outros participantes disseram
+              {outrasAvaliacoes.length > 0 && (
+                <span style={{ marginLeft: 8, color: '#6b7280', fontWeight: 500, fontSize: '0.9rem' }}>
+                  ({outrasAvaliacoes.length})
+                </span>
+              )}
+            </h3>
+
+            {outrasAvaliacoes.length === 0 ? (
+              <p className="social-vazio">Ainda não há avaliações registradas para este evento.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {outrasAvaliacoes.map((a) => {
+                  const ehVoce = a.participanteId === usuario!.id
+                  return (
+                    <div key={a.id} style={{
+                      padding: '0.85rem 1rem',
+                      border: ehVoce ? '1.5px solid #c4b5fd' : '1px solid #e5e7eb',
+                      borderRadius: 10,
+                      background: ehVoce ? '#f5f3ff' : '#fafafa',
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <strong>
+                          {a.nomeParticipante}
+                          {ehVoce && (
+                            <span style={{
+                              marginLeft: 8,
+                              padding: '2px 8px',
+                              borderRadius: 999,
+                              background: '#7c6af7',
+                              color: '#fff',
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              letterSpacing: '0.04em',
+                            }}>VOCÊ</span>
+                          )}
+                        </strong>
+                        <span style={{ color: '#f59e0b', fontWeight: 700 }}>
+                          {estrelas(a.nota)} {a.nota}
+                        </span>
+                      </div>
+                      {a.comentario && <p style={{ margin: '0.4rem 0 0', color: '#4b5563' }}>{a.comentario}</p>}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </section>
         )}
       </main>
