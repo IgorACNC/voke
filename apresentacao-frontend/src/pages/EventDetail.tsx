@@ -70,9 +70,12 @@ export default function EventDetail() {
     (i) => i.evento.id === ev.id && (i.status === 'CONFIRMADA' || i.status === 'CHECK_IN_REALIZADO'),
   )
 
+  const eventoJaIniciado = new Date(ev.dataHoraInicio).getTime() <= Date.now()
+
   async function handleAdicionarCarrinho() {
     setErro('')
     if (!usuario) return setErro('Usuário não autenticado.')
+    if (eventoJaIniciado) return setErro('Inscrições encerradas: o evento já começou.')
     if (!ev.loteAtual || !ev.loteAtual.ativo) return setErro('Não há lote ativo para este evento.')
     if (vagas <= 0) return setErro('Lote esgotado.')
     if (bloqueadoPorIdade) return setErro('Você não atende à idade mínima do evento.')
@@ -133,12 +136,15 @@ export default function EventDetail() {
           {jaInscrito && (
             <p className="social-msg-sucesso">Você já está inscrito neste evento.</p>
           )}
+          {eventoJaIniciado && !jaInscrito && (
+            <p className="social-msg-erro">Inscrições encerradas: o evento já começou.</p>
+          )}
 
           {usuario?.papel === 'PARTICIPANTE' && !jaInscrito && (
             <div style={{ marginTop: '1rem' }}>
               <button
                 onClick={handleAdicionarCarrinho}
-                disabled={carregando || bloqueadoPorIdade || conflito || vagas <= 0}
+                disabled={carregando || bloqueadoPorIdade || conflito || vagas <= 0 || eventoJaIniciado}
               >
                 {carregando ? 'Adicionando...' : '🛒 Adicionar ao Carrinho'}
               </button>
