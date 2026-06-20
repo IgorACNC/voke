@@ -1,12 +1,35 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import Header from '../components/Header'
 import { consultarOverview, type OverviewResp } from '../services/dashboardService'
-import KpiCard from '../components/KpiCard'
 import './DashboardOrganizador.css'
 
+function fmtBRL(n: number) {
+  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+function fmtInt(n: number) {
+  return n.toLocaleString('pt-BR')
+}
+
+interface Status {
+  label: string
+  modifier: 'live' | 'closed' | 'cancelled'
+}
+
+function classifyStatus(status: string): Status {
+  switch (status) {
+    case 'CANCELADO':
+    case 'REMOVIDO':
+      return { label: 'cancelado', modifier: 'cancelled' }
+    case 'ENCERRADO':
+      return { label: 'encerrado', modifier: 'closed' }
+    default:
+      return { label: 'ao vivo', modifier: 'live' }
+  }
+}
+
 export default function DashboardOrganizador() {
-  const { usuario, sair } = useAuth()
   const navigate = useNavigate()
   const [overview, setOverview] = useState<OverviewResp | null>(null)
   const [carregando, setCarregando] = useState(true)
@@ -15,99 +38,150 @@ export default function DashboardOrganizador() {
   useEffect(() => {
     consultarOverview()
       .then(setOverview)
-      .catch(() => setErro('Erro ao carregar overview.'))
+      .catch(() => setErro('Não foi possível carregar o painel.'))
       .finally(() => setCarregando(false))
   }, [])
 
-  function handleSair() { sair(); navigate('/login') }
+  const ativos = useMemo(
+    () => overview?.porEvento.filter((e) => e.statusEvento === 'ATIVO').length ?? 0,
+    [overview],
+  )
 
-  const fmtBRL = (n: number) =>
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n)
+  const eyebrow = overview ? (
+    <span className="t-time">
+      {ativos.toString().padStart(2, '0')} AO VIVO ·{' '}
+      {overview.totalEventos.toString().padStart(2, '0')} TOTAIS
+    </span>
+  ) : (
+    <span className="t-time tone-on-ink-soft">PAINEL</span>
+  )
 
   return (
-    <div className="dor-bg">
-      <header className="dor-header">
-        <span className="dor-logo" onClick={() => navigate('/dashboard')}>Voke</span>
-        <div className="dor-header-right">
-          <span className="dor-papel">{usuario?.papel}</span>
-          <span className="dor-nome">{usuario?.nome}</span>
-          <button className="dor-sair" onClick={handleSair}>Sair</button>
-        </div>
-      </header>
+    <div className="dor">
+      <Header eyebrow={eyebrow} />
 
-      <main className="dor-main">
-        <div className="dor-topo">
-          <h1 className="dor-titulo">Dashboard & Estatísticas</h1>
-          <p className="dor-sub">Visão analítica dos seus eventos</p>
-        </div>
+      <main className="dor-main container--wide">
+        <header className="dor-head">
+          <p className="t-eyebrow tone-hush">Dashboard & Estatísticas</p>
+          <h1 className="t-display">Visão geral dos eventos</h1>
+          <p className="t-body tone-hush dor-head__sub">
+            Acompanhe vendas, presença e receita em tempo real.
+          </p>
+        </header>
 
-        {erro && <div className="dor-erro">{erro}</div>}
-        {carregando && <p className="dor-info">Carregando...</p>}
+        {erro && <p className="t-body tone-ember dor-erro">{erro}</p>}
+        {carregando && <p className="t-body tone-hush dor-info">Carregando painel…</p>}
 
         {overview && (
           <>
-            <div className="dor-kpis">
-              <KpiCard icon="📅" label="Eventos" value={overview.totalEventos} />
-              <KpiCard icon="🎫" label="Ingressos vendidos"
-                       value={overview.totalIngressosVendidos}
-                       hint="Inscrições pagas" />
-              <KpiCard icon="💰" label="Receita total" value={fmtBRL(overview.receitaTotal)} />
-              <KpiCard icon="✅" label="Check-ins" value={overview.totalCheckIns}
-                       hint="Compareceram ao evento" />
-              <KpiCard icon="👁️" label="Visualizações"
-                       value={overview.totalVisualizacoes}
-                       hint="Páginas vistas" />
-            </div>
+            {/* Régua de KPIs — tipografia carrega o peso */}
+            <section className="dor-rail" aria-label="Indicadores gerais">
+              <KpiBig
+                kicker="Eventos publicados"
+                value={fmtInt(overview.totalEventos)}
+                hint={`${ativos} ativos`}
+              />
+              <KpiBig
+                kicker="Ingressos vendidos"
+                value={fmtInt(overview.totalIngressosVendidos)}
+                hint="Inscrições pagas"
+              />
+              <KpiBig
+                kicker="Receita acumulada"
+                value={fmtBRL(overview.receitaTotal)}
+                hint="Líquida"
+                tone="spot"
+              />
+              <KpiBig
+                kicker="Check-ins"
+                value={fmtInt(overview.totalCheckIns)}
+                hint="Compareceram"
+              />
+              <KpiBig
+                kicker="Visualizações"
+                value={fmtInt(overview.totalVisualizacoes)}
+                hint="Página pública"
+              />
+            </section>
 
-            <div className="dor-secao">
-              <h2 className="dor-secao-titulo">Por evento</h2>
+            <section className="dor-eventos">
+              <div className="dor-eventos__head">
+                <div>
+                  <p className="t-eyebrow tone-hush">Eventos</p>
+                  <h2 className="t-h2">Por evento</h2>
+                </div>
+                <span className="t-time tone-hush">
+                  {overview.porEvento.length.toString().padStart(2, '0')} registrados
+                </span>
+              </div>
+
               {overview.porEvento.length === 0 ? (
-                <p className="dor-info">Nenhuma estatística ainda. Publique um evento e venda ingressos!</p>
+                <div className="dor-empty">
+                  <p className="t-h3">Sem eventos publicados ainda</p>
+                  <p className="t-body tone-hush">Crie seu primeiro evento e os indicadores aparecem aqui.</p>
+                  <button
+                    type="button"
+                    className="btn btn--primary"
+                    onClick={() => navigate('/meus-eventos/novo')}
+                  >
+                    Criar evento
+                  </button>
+                </div>
               ) : (
-                <table className="dor-tabela">
-                  <thead>
-                    <tr>
-                      <th>Evento</th>
-                      <th>Vendidos</th>
-                      <th>Receita</th>
-                      <th>Check-ins</th>
-                      <th>Visualizações</th>
-                      <th>Status</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {overview.porEvento.map((e) => (
-                      <tr key={e.eventoId}>
-                        <td>{e.nomeEvento}</td>
-                        <td>{e.ingressosVendidos}</td>
-                        <td>{fmtBRL(e.receitaConsolidada)}</td>
-                        <td>{e.checkInsRealizados}</td>
-                        <td>{e.visualizacoes}</td>
-                        <td>
-                          {e.statusEvento === 'ATIVO' && <span className="dor-tag dor-tag--ativo">ATIVO</span>}
-                          {e.statusEvento === 'ENCERRADO' && <span className="dor-tag dor-tag--encerrado">ENCERRADO</span>}
-                          {e.statusEvento === 'CANCELADO' && <span className="dor-tag dor-tag--cancelado">CANCELADO</span>}
-                          {(e.statusEvento === 'RASCUNHO' || e.statusEvento === 'PUBLICADO') &&
-                            <span className="dor-tag dor-tag--ativo">{e.statusEvento}</span>}
-                          {e.statusEvento === 'REMOVIDO' &&
-                            <span className="dor-tag dor-tag--cancelado">REMOVIDO</span>}
-                        </td>
-                        <td>
-                          <button className="dor-btn-ver"
-                                  onClick={() => navigate(`/dashboard-organizador/eventos/${e.eventoId}`)}>
+                <ul className="dor-lista">
+                  {overview.porEvento.map((e) => {
+                    const st = classifyStatus(e.statusEvento)
+                    return (
+                      <li key={e.eventoId} className={`dor-linha dor-linha--${st.modifier}`}>
+                        <div className="dor-linha__nome">
+                          <p className="t-h3">{e.nomeEvento}</p>
+                          <p className="t-time tone-hush">{st.label.toUpperCase()}</p>
+                        </div>
+
+                        <Stat label="Vendidos" value={fmtInt(e.ingressosVendidos)} />
+                        <Stat label="Receita" value={fmtBRL(e.receitaConsolidada)} highlight />
+                        <Stat label="Check-ins" value={fmtInt(e.checkInsRealizados)} />
+                        <Stat label="Views" value={fmtInt(e.visualizacoes)} />
+
+                        <div className="dor-linha__cta">
+                          <button
+                            type="button"
+                            className="btn btn--ghost btn--sm"
+                            onClick={() => navigate(`/dashboard-organizador/eventos/${e.eventoId}`)}
+                          >
                             Detalhar
                           </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
               )}
-            </div>
+            </section>
           </>
         )}
       </main>
+    </div>
+  )
+}
+
+function KpiBig({
+  kicker, value, hint, tone,
+}: { kicker: string; value: string; hint?: string; tone?: 'spot' }) {
+  return (
+    <div className="dor-kpi">
+      <p className="t-eyebrow tone-hush dor-kpi__kicker">{kicker}</p>
+      <p className={`t-mega dor-kpi__value ${tone === 'spot' ? 'tone-spot' : ''}`}>{value}</p>
+      {hint && <p className="t-meta tone-hush">{hint}</p>}
+    </div>
+  )
+}
+
+function Stat({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+  return (
+    <div className="dor-stat">
+      <p className="t-eyebrow tone-hush">{label}</p>
+      <p className={`t-time-lg ${highlight ? 'tone-spot' : 'tone-ink'} dor-stat__value`}>{value}</p>
     </div>
   )
 }

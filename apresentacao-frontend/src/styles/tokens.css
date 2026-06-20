@@ -1,0 +1,109 @@
+/* =========================================================================
+   VOKE — Design tokens
+   Identidade: sala antes do show. O tempo como valor de produto.
+   ========================================================================= */
+
+:root {
+  /* ---- Color ---------------------------------------------------------- */
+  --ink:       #0F0E17;  /* Background escuro do header e hero. Não preto. */
+  --vellum:    #F4EFE6;  /* Surface clara primária. Papel de programa.     */
+  --paper:    #FBF8F2;   /* Surface acima do vellum. Hierarquia silenciosa.*/
+  --spotlight: #FFC857;  /* Acento único. Holofote. CTA, agora, hot.       */
+  --ember:     #E0413E;  /* Crítico/destrutivo. Saída de emergência.       */
+  --moss:      #4F6B4A;  /* Confirmação sóbria. Quando spotlight não couber.*/
+  --hush:      #605C6E;  /* Texto secundário. Substitui #9ca3af.           */
+
+  /* Alpha derivados (use raramente) */
+  --ink-08:   rgba(15, 14, 23, 0.08);
+  --ink-12:   rgba(15, 14, 23, 0.12);
+  --ink-24:   rgba(15, 14, 23, 0.24);
+  --vellum-92: rgba(244, 239, 230, 0.92);
+
+  /* Tonalidades de tinta para texto sobre superfícies claras */
+  --ink-strong: #0F0E17;
+  --ink-soft:   #2A2733;
+
+  /* Tonalidades de papel para texto sobre superfícies escuras */
+  --on-ink-strong: #FBF8F2;
+  --on-ink-soft:   #C9C3B7;
+
+  /* ---- Typography ----------------------------------------------------- */
+  --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body:    "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-time:    "JetBrains Mono", "SF Mono", Consolas, ui-monospace, monospace;
+
+  /* Escala (font-size / line-height / letter-spacing) */
+  --type-mega-size:     3.5rem;
+  --type-mega-lh:       1.05;
+  --type-mega-tracking: -0.02em;
+
+  --type-display-size:     2.25rem;
+  --type-display-lh:       1.1;
+  --type-display-tracking: -0.015em;
+
+  --type-h2-size:     1.5rem;
+  --type-h2-lh:       1.2;
+  --type-h2-tracking: -0.01em;
+
+  --type-h3-size:     1.125rem;
+  --type-h3-lh:       1.3;
+  --type-h3-tracking: 0;
+
+  --type-body-size:     0.9375rem;
+  --type-body-lh:       1.55;
+  --type-body-tracking: 0;
+
+  --type-meta-size:     0.8125rem;
+  --type-meta-lh:       1.45;
+  --type-meta-tracking: 0.01em;
+
+  --type-time-size:     0.875rem;
+  --type-time-lh:       1;
+  --type-time-tracking: 0.04em;
+
+  --type-time-lg-size:     2rem;
+  --type-time-lg-lh:       1;
+  --type-time-lg-tracking: -0.01em;
+
+  /* ---- Spacing scale -------------------------------------------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* ---- Radius --------------------------------------------------------- */
+  --radius-sm: 4px;   /* tiras tipográficas, badges */
+  --radius-md: 8px;   /* cards padrão */
+  --radius-lg: 16px;  /* modais, hero card */
+  --radius-pill: 999px;
+
+  /* ---- Shadows (use com restrição) ------------------------------------ */
+  --shadow-quiet: 0 1px 0 var(--ink-08);
+  --shadow-rise:  0 1px 2px var(--ink-08), 0 8px 24px var(--ink-12);
+  --shadow-modal: 0 24px 64px rgba(15, 14, 23, 0.32);
+
+  /* ---- Motion --------------------------------------------------------- */
+  --motion-quick:   120ms;
+  --motion-base:    200ms;
+  --motion-stage:   320ms;
+  --ease-out:       cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in-out:    cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ---- Layout --------------------------------------------------------- */
+  --maxw-text:    62ch;
+  --maxw-content: 1120px;
+  --maxw-wide:    1320px;
+
+  --header-h:     64px;
+
+  /* ---- Breakpoints (referência para @media) --------------------------- */
+  /* sm: 480px / md: 768px / lg: 1024px / xl: 1280px */
+}
+
+/* Color-scheme: indica ao browser nossos modos. Header é dark, restante claro. */
+:root { color-scheme: light dark; }

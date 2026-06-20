@@ -3,15 +3,15 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.85rem 1.5rem;
-  background: #111827;
-  color: #fff;
+  background: var(--ink-strong);
+  color: var(--on-ink-strong);
   border-radius: 12px;
   margin-bottom: 1.25rem;
 }
 .catalogo-saldo-label {
   font-size: 0.75rem;
   letter-spacing: 0.05em;
-  color: #d1d5db;
+  color: var(--ink-12);
   font-weight: 600;
 }
 .catalogo-saldo-valor {
@@ -26,21 +26,21 @@
   margin-bottom: 1.5rem;
 }
 .catalogo-filtro {
-  background: #fff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--paper);
+  border: 1.5px solid var(--ink-12);
   border-radius: 999px;
   padding: 0.5rem 1.1rem;
   font-weight: 600;
   font-size: 0.85rem;
-  color: #4b5563;
+  color: var(--ink-soft);
   cursor: pointer;
   transition: all 0.15s ease;
 }
-.catalogo-filtro:hover { background: #f9fafb; }
+.catalogo-filtro:hover { background: var(--vellum); }
 .catalogo-filtro.ativo {
-  background: #111827;
-  color: #fff;
-  border-color: #111827;
+  background: var(--ink-strong);
+  color: var(--on-ink-strong);
+  border-color: var(--ink-strong);
 }
 
 .catalogo-grid {
@@ -50,8 +50,8 @@
 }
 
 .catalogo-card {
-  background: #fff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--paper);
+  border: 1.5px solid var(--ink-12);
   border-radius: 14px;
   padding: 1.25rem;
   display: flex;
@@ -73,30 +73,30 @@
   letter-spacing: 0.06em;
   padding: 0.3rem 0.7rem;
   border-radius: 6px;
-  border: 1.5px solid #e5e7eb;
-  background: #fff;
-  color: #111827;
+  border: 1.5px solid var(--ink-12);
+  background: var(--paper);
+  color: var(--ink-strong);
 }
-.categoria-desconto { border-color: #fca5a5; color: #b91c1c; background: #fef2f2; }
-.categoria-brinde   { border-color: #c4b5fd; color: #5b21b6; background: #f5f3ff; }
-.categoria-beneficio { border-color: #93c5fd; color: #1e40af; background: #eff6ff; }
-.categoria-credito_carteira { border-color: #86efac; color: #15803d; background: #f0fdf4; }
+.categoria-desconto { border-color: rgba(224, 65, 62, 0.40); color: var(--ember); background: rgba(224, 65, 62, 0.08); }
+.categoria-brinde   { border-color: var(--spotlight); color: var(--ink-strong); background: rgba(255, 200, 87, 0.10); }
+.categoria-beneficio { border-color: var(--ink-soft); color: #1e40af; background: var(--vellum); }
+.categoria-credito_carteira { border-color: rgba(79, 107, 74, 0.45); color: var(--moss); background: rgba(79, 107, 74, 0.10); }
 
 .catalogo-custo {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--hush);
 }
 
 .catalogo-nome {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--ink-strong);
   margin: 0;
 }
 
 .catalogo-descricao {
-  color: #4b5563;
+  color: var(--ink-soft);
   font-size: 0.88rem;
   margin: 0;
   line-height: 1.45;
@@ -106,17 +106,17 @@
 .catalogo-estoque {
   margin: 0;
   font-size: 0.8rem;
-  color: #b45309;
+  color: var(--ember);
   font-weight: 600;
 }
 
 .catalogo-btn {
   margin-top: 0.5rem;
   padding: 0.85rem;
-  border: 1.5px solid #d1d5db;
+  border: 1.5px solid var(--ink-12);
   border-radius: 8px;
-  background: #fff;
-  color: #111827;
+  background: var(--paper);
+  color: var(--ink-strong);
   font-weight: 700;
   font-size: 0.85rem;
   letter-spacing: 0.04em;
@@ -124,16 +124,16 @@
   transition: all 0.15s ease;
 }
 .catalogo-btn.pode:hover {
-  background: #111827;
-  color: #fff;
-  border-color: #111827;
+  background: var(--ink-strong);
+  color: var(--on-ink-strong);
+  border-color: var(--ink-strong);
 }
 .catalogo-btn.faltam,
 .catalogo-btn:disabled {
-  background: #f9fafb;
-  color: #9ca3af;
+  background: var(--vellum);
+  color: var(--hush);
   cursor: not-allowed;
-  border-color: #e5e7eb;
+  border-color: var(--ink-12);
 }
 
 @media (max-width: 720px) {

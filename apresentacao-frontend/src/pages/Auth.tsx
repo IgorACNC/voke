@@ -63,96 +63,165 @@ export default function Auth() {
       }
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { mensagem?: string } } })?.response?.data?.mensagem
-        ?? 'Ocorreu um erro. Tente novamente.'
+        ?? 'Não foi possível entrar. Confira o e-mail e a senha.'
       setErro(msg)
     } finally {
       setCarregando(false)
     }
   }
 
+  const ctaLabel = carregando
+    ? 'Aguarde…'
+    : modo === 'login'
+      ? 'Entrar'
+      : papel === 'PARTICIPANTE' ? 'Criar conta de participante' : 'Criar conta de organizador'
+
   return (
-    <div className="auth-bg">
-      <div className="auth-card">
-        <div className="auth-logo">
-          <span className="auth-logo-text">Voke</span>
-          <span className="auth-logo-sub">Eventos &amp; Experiências</span>
+    <div className="auth">
+      <aside className="auth-stage" aria-hidden="true">
+        <Link to="/" className="auth-stage__brand t-mega tone-on-ink">VOKE</Link>
+        <p className="auth-stage__line t-h2 tone-on-ink-soft">
+          Onde o tempo do evento começa a contar.
+        </p>
+        <span className="auth-stage__time t-time tone-on-ink-soft">
+          ABRINDO PORTAS
+        </span>
+      </aside>
+
+      <section className="auth-form-wrap">
+        <header className="auth-formhead">
+          <p className="t-eyebrow tone-hush">{modo === 'login' ? 'Bem-vindo de volta' : 'Comece agora'}</p>
+          <h1 className="t-display">{modo === 'login' ? 'Entrar' : 'Criar conta'}</h1>
+        </header>
+
+        <div className="auth-tabs" role="tablist" aria-label="Modo de acesso">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={modo === 'login'}
+            className={`auth-tabs__tab ${modo === 'login' ? 'is-active' : ''}`}
+            onClick={() => trocarModo('login')}
+          >
+            Entrar
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={modo === 'cadastro'}
+            className={`auth-tabs__tab ${modo === 'cadastro' ? 'is-active' : ''}`}
+            onClick={() => trocarModo('cadastro')}
+          >
+            Criar conta
+          </button>
         </div>
 
-        <div className="auth-tabs">
-          <button className={modo === 'login' ? 'active' : ''} onClick={() => trocarModo('login')} type="button">Entrar</button>
-          <button className={modo === 'cadastro' ? 'active' : ''} onClick={() => trocarModo('cadastro')} type="button">Criar conta</button>
-        </div>
+        {modo === 'cadastro' && (
+          <fieldset className="auth-papel" aria-label="Tipo de conta">
+            <legend className="sr-only">Tipo de conta</legend>
+            <label className={`auth-papel__opt ${papel === 'PARTICIPANTE' ? 'is-active' : ''}`}>
+              <input
+                type="radio"
+                name="papel"
+                value="PARTICIPANTE"
+                checked={papel === 'PARTICIPANTE'}
+                onChange={() => setPapel('PARTICIPANTE')}
+              />
+              <span className="t-h3">Participante</span>
+              <span className="t-meta tone-hush">Inscrever-se em eventos.</span>
+            </label>
+            <label className={`auth-papel__opt ${papel === 'ORGANIZADOR' ? 'is-active' : ''}`}>
+              <input
+                type="radio"
+                name="papel"
+                value="ORGANIZADOR"
+                checked={papel === 'ORGANIZADOR'}
+                onChange={() => setPapel('ORGANIZADOR')}
+              />
+              <span className="t-h3">Organizador</span>
+              <span className="t-meta tone-hush">Publicar e gerir eventos.</span>
+            </label>
+          </fieldset>
+        )}
 
-        <div className="auth-papel-toggle">
-          <button type="button" className={papel === 'PARTICIPANTE' ? 'active' : ''} onClick={() => setPapel('PARTICIPANTE')}>Participante</button>
-          <button type="button" className={papel === 'ORGANIZADOR' ? 'active' : ''} onClick={() => setPapel('ORGANIZADOR')}>Organizador</button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           {modo === 'cadastro' && (
             <>
               <div className="auth-field">
-                <label>Nome completo</label>
-                <input type="text" placeholder="Seu nome completo" value={form.nome} onChange={(e) => atualizar('nome', e.target.value)} required />
+                <label htmlFor="f-nome" className="t-meta">Nome completo</label>
+                <input
+                  id="f-nome" type="text" placeholder="Como aparece no seu documento"
+                  value={form.nome} onChange={(e) => atualizar('nome', e.target.value)} required
+                />
               </div>
               <div className="auth-field">
-                <label>CPF</label>
-                <input type="text" placeholder="000.000.000-00" value={form.cpf} onChange={(e) => atualizar('cpf', e.target.value)} required />
+                <label htmlFor="f-cpf" className="t-meta">CPF</label>
+                <input
+                  id="f-cpf" type="text" placeholder="000.000.000-00"
+                  value={form.cpf} onChange={(e) => atualizar('cpf', e.target.value)} required
+                  inputMode="numeric"
+                />
               </div>
             </>
           )}
 
           <div className="auth-field">
-            <label>E-mail</label>
-            <input type="email" placeholder="seu@email.com" value={form.email} onChange={(e) => atualizar('email', e.target.value)} required />
+            <label htmlFor="f-email" className="t-meta">E-mail</label>
+            <input
+              id="f-email" type="email" placeholder="seu@email.com"
+              value={form.email} onChange={(e) => atualizar('email', e.target.value)} required
+              autoComplete="email"
+            />
           </div>
 
           <div className="auth-field">
-            <label>Senha</label>
-            <input type="password" placeholder={modo === 'cadastro' ? 'Mín. 8 caracteres, letra e número' : '••••••••'} value={form.senha} onChange={(e) => atualizar('senha', e.target.value)} required />
+            <label htmlFor="f-senha" className="t-meta">Senha</label>
+            <input
+              id="f-senha" type="password"
+              placeholder={modo === 'cadastro' ? 'Mín. 8 caracteres, letra e número' : '••••••••'}
+              value={form.senha} onChange={(e) => atualizar('senha', e.target.value)} required
+              autoComplete={modo === 'login' ? 'current-password' : 'new-password'}
+            />
           </div>
 
           {modo === 'cadastro' && (
             <>
               <div className="auth-field">
-                <label>Confirmar senha</label>
-                <input type="password" placeholder="Repita a senha" value={form.confirmarSenha} onChange={(e) => atualizar('confirmarSenha', e.target.value)} required />
+                <label htmlFor="f-confirma" className="t-meta">Confirmar senha</label>
+                <input
+                  id="f-confirma" type="password" placeholder="Repita a senha"
+                  value={form.confirmarSenha} onChange={(e) => atualizar('confirmarSenha', e.target.value)} required
+                  autoComplete="new-password"
+                />
               </div>
               <div className="auth-field">
-                <label>Data de nascimento</label>
-                <input type="date" value={form.dataNascimento} onChange={(e) => atualizar('dataNascimento', e.target.value)} required />
+                <label htmlFor="f-nasc" className="t-meta">Data de nascimento</label>
+                <input
+                  id="f-nasc" type="date"
+                  value={form.dataNascimento} onChange={(e) => atualizar('dataNascimento', e.target.value)} required
+                />
               </div>
             </>
           )}
 
-          {erro && <p className="auth-erro">{erro}</p>}
+          {erro && (
+            <p className="auth-erro t-meta" role="alert">{erro}</p>
+          )}
 
-          <button type="submit" className="auth-btn-submit" disabled={carregando}>
-            {carregando ? 'Aguarde...' : modo === 'login' ? 'Entrar' : papel === 'PARTICIPANTE' ? 'Criar conta de Participante' : 'Criar conta de Organizador'}
+          <button type="submit" className="btn btn--primary btn--lg auth-submit" disabled={carregando}>
+            {ctaLabel}
           </button>
 
           {modo === 'login' && (
-            <p className="auth-hint" style={{ textAlign: 'center', marginTop: '0.5rem' }}>
-              <Link to="/esqueci-senha" style={{ color: '#9333ea', textDecoration: 'none', fontWeight: 500 }}>
-                Esqueci minha senha
-              </Link>
+            <p className="t-meta auth-hint">
+              <Link to="/esqueci-senha" className="auth-link">Esqueci minha senha</Link>
             </p>
           )}
         </form>
 
-        <p className="auth-hint">
-          {papel === 'ORGANIZADOR' ? 'Organizadores criam e gerenciam eventos.' : 'Participantes se inscrevem e curtem eventos.'}
+        <p className="auth-foot t-meta tone-hush">
+          <Link to="/catalogo" className="auth-link">Explorar eventos sem fazer login →</Link>
         </p>
-
-        <div style={{ textAlign: 'center', marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
-          <Link
-            to="/catalogo"
-            style={{ color: '#7c6af7', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}
-          >
-            Ver eventos sem fazer login →
-          </Link>
-        </div>
-      </div>
+      </section>
     </div>
   )
 }

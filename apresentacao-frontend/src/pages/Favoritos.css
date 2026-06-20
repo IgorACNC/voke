@@ -1,22 +1,22 @@
 .fav-bg {
   min-height: 100vh;
-  background: #f4f6fb;
-  font-family: 'Inter', sans-serif;
+  background: var(--vellum);
+  
 }
 
 .fav-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #1a1a2e;
+  background: var(--ink);
   padding: 1rem 2rem;
-  color: #fff;
+  color: var(--on-ink-strong);
 }
 
 .fav-logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #7c6af7;
+  color: var(--spotlight);
   cursor: pointer;
 }
 
@@ -27,8 +27,8 @@
 }
 
 .fav-papel {
-  background: #7c6af7;
-  color: #fff;
+  background: var(--spotlight);
+  color: var(--on-ink-strong);
   border-radius: 12px;
   padding: 0.2rem 0.7rem;
   font-size: 0.75rem;
@@ -36,18 +36,18 @@
   text-transform: uppercase;
 }
 
-.fav-nome { font-size: 0.9rem; color: #ccc; }
+.fav-nome { font-size: 0.9rem; color: var(--hush); }
 
 .fav-sair {
   background: transparent;
   border: 1px solid #555;
-  color: #ccc;
+  color: var(--hush);
   padding: 0.3rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
 }
-.fav-sair:hover { border-color: #7c6af7; color: #7c6af7; }
+.fav-sair:hover { border-color: var(--spotlight); color: var(--spotlight); }
 
 .fav-main {
   max-width: 960px;
@@ -72,34 +72,34 @@
 .fav-titulo {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--ink);
   margin: 0;
 }
 
 .fav-sub {
-  color: #666;
+  color: var(--hush);
   margin: 0.3rem 0 0;
   font-size: 0.95rem;
 }
 
 .fav-erro {
-  background: #fef2f2;
-  color: #dc2626;
+  background: rgba(224, 65, 62, 0.08);
+  color: var(--ember);
   padding: 0.75rem 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
 }
 
-.fav-info { color: #888; text-align: center; padding: 2rem; }
+.fav-info { color: var(--hush); text-align: center; padding: 2rem; }
 
 /* Empty state */
 .fav-empty {
   text-align: center;
   padding: 4rem 2rem;
-  color: #666;
+  color: var(--hush);
 }
 .fav-empty-icon { font-size: 3rem; margin-bottom: 1rem; }
-.fav-empty h2 { color: #1a1a2e; margin-bottom: 0.5rem; }
+.fav-empty h2 { color: var(--ink); margin-bottom: 0.5rem; }
 .fav-empty p { margin-bottom: 1.5rem; }
 
 /* Grid de coleções */
@@ -110,7 +110,7 @@
 }
 
 .fav-card {
-  background: #fff;
+  background: var(--paper);
   border-radius: 12px;
   padding: 1.2rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -129,9 +129,9 @@
   gap: 0.5rem;
 }
 
-.fav-card-nome { font-size: 1.05rem; font-weight: 700; color: #1a1a2e; margin: 0; }
-.fav-card-qtd { font-size: 0.88rem; color: #7c6af7; font-weight: 600; margin: 0; }
-.fav-card-data { font-size: 0.8rem; color: #999; margin: 0; }
+.fav-card-nome { font-size: 1.05rem; font-weight: 700; color: var(--ink); margin: 0; }
+.fav-card-qtd { font-size: 0.88rem; color: var(--spotlight); font-weight: 600; margin: 0; }
+.fav-card-data { font-size: 0.8rem; color: var(--hush); margin: 0; }
 
 
 .fav-card-acoes {
@@ -149,7 +149,7 @@
 }
 
 .fav-item-card {
-  background: #fff;
+  background: var(--paper);
   border-radius: 12px;
   padding: 1rem 1.2rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
@@ -166,14 +166,14 @@
   flex: 1;
 }
 
-.fav-item-nome { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin: 0; }
-.fav-item-local { font-size: 0.85rem; color: #666; margin: 0.15rem 0 0; }
-.fav-item-data { font-size: 0.8rem; color: #999; margin: 0.1rem 0 0; }
+.fav-item-nome { font-size: 1rem; font-weight: 700; color: var(--ink); margin: 0; }
+.fav-item-local { font-size: 0.85rem; color: var(--hush); margin: 0.15rem 0 0; }
+.fav-item-data { font-size: 0.8rem; color: var(--hush); margin: 0.1rem 0 0; }
 
 .fav-item-ordem {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #bbb;
+  color: var(--hush);
   white-space: nowrap;
 }
 
@@ -181,8 +181,8 @@
 
 /* Botões comuns */
 .fav-btn-criar {
-  background: #7c6af7;
-  color: #fff;
+  background: var(--spotlight);
+  color: var(--on-ink-strong);
   border: none;
   padding: 0.65rem 1.2rem;
   border-radius: 8px;
@@ -192,12 +192,12 @@
   white-space: nowrap;
   transition: background 0.2s;
 }
-.fav-btn-criar:hover { background: #6250e0; }
+.fav-btn-criar:hover { background: var(--spotlight); }
 
 .fav-btn-voltar {
   background: transparent;
-  border: 1.5px solid #7c6af7;
-  color: #7c6af7;
+  border: 1.5px solid var(--spotlight);
+  color: var(--spotlight);
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.9rem;
@@ -209,8 +209,8 @@
 
 .fav-btn-editar {
   background: transparent;
-  border: 1px solid #7c6af7;
-  color: #7c6af7;
+  border: 1px solid var(--spotlight);
+  color: var(--spotlight);
   padding: 0.4rem 0.75rem;
   border-radius: 6px;
   font-size: 0.82rem;
@@ -222,8 +222,8 @@
 
 .fav-btn-duplicar {
   background: transparent;
-  border: 1px solid #6b7280;
-  color: #6b7280;
+  border: 1px solid var(--hush);
+  color: var(--hush);
   padding: 0.4rem 0.75rem;
   border-radius: 6px;
   font-size: 0.82rem;
@@ -231,23 +231,23 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.fav-btn-duplicar:hover { background: #f3f4f6; }
+.fav-btn-duplicar:hover { background: var(--ink-08); }
 
 .fav-btn-excluir {
   background: transparent;
-  border: 1px solid #ef4444;
-  color: #ef4444;
+  border: 1px solid var(--ember);
+  color: var(--ember);
   padding: 0.4rem 0.75rem;
   border-radius: 6px;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
 }
-.fav-btn-excluir:hover { background: #fef2f2; }
+.fav-btn-excluir:hover { background: rgba(224, 65, 62, 0.08); }
 
 .fav-btn-ver {
-  background: #7c6af7;
-  color: #fff;
+  background: var(--spotlight);
+  color: var(--on-ink-strong);
   border: none;
   padding: 0.4rem 0.75rem;
   border-radius: 6px;
@@ -256,31 +256,31 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.fav-btn-ver:hover { background: #6250e0; }
+.fav-btn-ver:hover { background: var(--spotlight); }
 
 .fav-btn-mover {
   background: transparent;
-  border: 1px solid #6b7280;
-  color: #6b7280;
+  border: 1px solid var(--hush);
+  color: var(--hush);
   padding: 0.4rem 0.75rem;
   border-radius: 6px;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
 }
-.fav-btn-mover:hover { background: #f3f4f6; }
+.fav-btn-mover:hover { background: var(--ink-08); }
 
 .fav-btn-remover-item {
   background: transparent;
-  border: 1px solid #ef4444;
-  color: #ef4444;
+  border: 1px solid var(--ember);
+  color: var(--ember);
   padding: 0.4rem 0.75rem;
   border-radius: 6px;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
 }
-.fav-btn-remover-item:hover { background: #fef2f2; }
+.fav-btn-remover-item:hover { background: rgba(224, 65, 62, 0.08); }
 
 /* Modal overlay */
 .fav-overlay {
@@ -295,7 +295,7 @@
 }
 
 .fav-modal {
-  background: #fff;
+  background: var(--paper);
   border-radius: 16px;
   padding: 2rem;
   width: 100%;
@@ -308,41 +308,41 @@
 .fav-modal-titulo {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--ink);
   margin: 0;
 }
 
 .fav-label {
   font-size: 0.88rem;
   font-weight: 600;
-  color: #444;
+  color: var(--ink-soft);
   margin-bottom: -0.5rem;
 }
 
 .fav-input {
   padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--ink-12);
   border-radius: 8px;
   font-size: 0.95rem;
   outline: none;
   width: 100%;
   box-sizing: border-box;
 }
-.fav-input:focus { border-color: #7c6af7; }
+.fav-input:focus { border-color: var(--spotlight); }
 
 .fav-select {
   padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--ink-12);
   border-radius: 8px;
   font-size: 0.95rem;
   outline: none;
   width: 100%;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--paper);
 }
-.fav-select:focus { border-color: #7c6af7; }
+.fav-select:focus { border-color: var(--spotlight); }
 
-.fav-erro-modal { color: #dc2626; font-size: 0.85rem; margin: 0; }
+.fav-erro-modal { color: var(--ember); font-size: 0.85rem; margin: 0; }
 
 .fav-modal-acoes {
   display: flex;
@@ -352,19 +352,19 @@
 
 .fav-btn-cancelar {
   background: transparent;
-  border: 1px solid #ddd;
-  color: #666;
+  border: 1px solid var(--ink-12);
+  color: var(--hush);
   padding: 0.6rem 1.2rem;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
 }
-.fav-btn-cancelar:hover { background: #f3f4f6; }
+.fav-btn-cancelar:hover { background: var(--ink-08); }
 
 .fav-btn-salvar {
-  background: #7c6af7;
-  color: #fff;
+  background: var(--spotlight);
+  color: var(--on-ink-strong);
   border: none;
   padding: 0.6rem 1.4rem;
   border-radius: 8px;
@@ -373,5 +373,5 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.fav-btn-salvar:hover:not(:disabled) { background: #6250e0; }
+.fav-btn-salvar:hover:not(:disabled) { background: var(--spotlight); }
 .fav-btn-salvar:disabled { opacity: 0.6; cursor: not-allowed; }

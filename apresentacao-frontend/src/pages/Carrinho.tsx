@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import {
   consultarCarrinho,
   decrementarItemCarrinho,
+  removerDoCarrinho,
   aplicarCupomCarrinho,
   removerCupomCarrinho,
   finalizarCompra,
@@ -106,6 +107,19 @@ export default function Carrinho() {
       await carregar()
     } catch (e: any) {
       setErro(e?.response?.data?.mensagem ?? 'Erro ao remover unidade do item.')
+    } finally {
+      setRemovendo(null)
+    }
+  }
+
+  async function handleRemoverTudo(eventoId: string) {
+    setErro('')
+    setRemovendo(eventoId)
+    try {
+      await removerDoCarrinho(usuario!.id, eventoId)
+      await carregar()
+    } catch (e: any) {
+      setErro(e?.response?.data?.mensagem ?? 'Erro ao remover item.')
     } finally {
       setRemovendo(null)
     }
@@ -271,14 +285,29 @@ export default function Carrinho() {
                       </p>
                     </div>
                     <span className="carrinho-item-subtotal">{fmt(item.subtotal)}</span>
-                    <button
-                      className="carrinho-item-remover"
-                      title={item.quantidade > 1 ? 'Remover 1 unidade' : 'Remover do carrinho'}
-                      onClick={() => handleDecrementar(item.eventoId)}
-                      disabled={expirado || removendo === item.eventoId}
-                    >
-                      {removendo === item.eventoId ? '...' : 'Remover'}
-                    </button>
+                    <div className="carrinho-item-acoes">
+                      {item.quantidade > 1 && (
+                        <button
+                          type="button"
+                          className="carrinho-item-decrementar"
+                          aria-label="Remover 1 unidade"
+                          title="Remover 1 unidade"
+                          onClick={() => handleDecrementar(item.eventoId)}
+                          disabled={expirado || removendo === item.eventoId}
+                        >
+                          −
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="carrinho-item-remover"
+                        title="Remover do carrinho"
+                        onClick={() => handleRemoverTudo(item.eventoId)}
+                        disabled={expirado || removendo === item.eventoId}
+                      >
+                        {removendo === item.eventoId ? '...' : 'Remover'}
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

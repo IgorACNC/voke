@@ -1,44 +1,44 @@
-.gev-bg { min-height: 100vh; background: #f8f9fb; }
-.gev-loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #6b7280; }
+.gev-bg { min-height: 100vh; background: var(--vellum); }
+.gev-loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; color: var(--hush); }
 
 .gev-header {
-  background: linear-gradient(135deg, #302b63, #9333ea);
+  background: linear-gradient(135deg, var(--ink), var(--spotlight));
   padding: 1rem 2rem; display: flex; align-items: center;
   justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.2);
 }
-.gev-logo { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; cursor: pointer; }
+.gev-logo { font-size: 1.6rem; font-weight: 800; color: var(--on-ink-strong); letter-spacing: -0.5px; cursor: pointer; }
 .gev-header-right { display: flex; align-items: center; gap: 1rem; }
 .gev-papel {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
-  background: rgba(255,255,255,0.2); color: #fff;
+  background: rgba(255,255,255,0.2); color: var(--on-ink-strong);
   padding: 0.25rem 0.6rem; border-radius: 20px; text-transform: uppercase;
 }
 .gev-nome { font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 500; }
 .gev-sair {
   background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-  color: #fff; padding: 0.4rem 0.9rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer;
+  color: var(--on-ink-strong); padding: 0.4rem 0.9rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer;
 }
 .gev-sair:hover { background: rgba(255,255,255,0.25); }
 
 .gev-main { padding: 2rem; max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.25rem; }
 
 .gev-voltar {
-  background: none; border: none; color: #6b7280; cursor: pointer;
+  background: none; border: none; color: var(--hush); cursor: pointer;
   font-size: 0.9rem; padding: 0; align-self: flex-start;
 }
-.gev-voltar:hover { color: #302b63; }
+.gev-voltar:hover { color: var(--ink); }
 
 .gev-erro {
-  background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;
+  background: rgba(224, 65, 62, 0.08); color: var(--ember); border: 1px solid rgba(224, 65, 62, 0.18);
   padding: 0.7rem 1rem; border-radius: 10px; font-size: 0.9rem;
 }
 .gev-sucesso {
-  background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;
+  background: rgba(79, 107, 74, 0.12); color: var(--moss); border: 1px solid var(--moss);
   padding: 0.7rem 1rem; border-radius: 10px; font-size: 0.9rem;
 }
 
 .gev-card {
-  background: #fff; border-radius: 16px; padding: 1.6rem;
+  background: var(--paper); border-radius: 16px; padding: 1.6rem;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   display: flex; flex-direction: column; gap: 0.9rem;
 }
@@ -46,49 +46,49 @@
 .gev-card--acoes-org { flex-direction: row; gap: 0.75rem; padding: 1.1rem 1.4rem; }
 
 .gev-card-topo { display: flex; align-items: flex-start; justify-content: space-between; }
-.gev-titulo { font-size: 1.2rem; font-weight: 700; color: #302b63; margin: 0; }
-.gev-membros-info { font-size: 0.85rem; color: #6b7280; margin: 0.2rem 0 0; }
+.gev-titulo { font-size: 1.2rem; font-weight: 700; color: var(--ink); margin: 0; }
+.gev-membros-info { font-size: 0.85rem; color: var(--hush); margin: 0.2rem 0 0; }
 .gev-status-badge {
   font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.7rem;
-  border-radius: 20px; background: #dcfce7; color: #166534; white-space: nowrap;
+  border-radius: 20px; background: rgba(79, 107, 74, 0.18); color: var(--moss); white-space: nowrap;
 }
 
-.gev-vazio-desc { font-size: 0.95rem; color: #6b7280; margin: 0; }
-.gev-vazio-info { font-size: 0.85rem; color: #9ca3af; margin: 0; }
+.gev-vazio-desc { font-size: 0.95rem; color: var(--hush); margin: 0; }
+.gev-vazio-info { font-size: 0.85rem; color: var(--hush); margin: 0; }
 
 .gev-regras-box {
-  background: #faf9ff; border: 1px solid #ede9fe; border-radius: 10px; padding: 0.9rem 1rem;
+  background: var(--vellum); border: 1px solid rgba(255, 200, 87, 0.18); border-radius: 10px; padding: 0.9rem 1rem;
 }
-.gev-regras-titulo { font-size: 0.78rem; font-weight: 700; color: #6d28d9; text-transform: uppercase; letter-spacing: 0.05em; }
-.gev-regras-texto { font-size: 0.9rem; color: #374151; margin: 0.3rem 0 0; line-height: 1.5; }
+.gev-regras-titulo { font-size: 0.78rem; font-weight: 700; color: var(--ink-strong); text-transform: uppercase; letter-spacing: 0.05em; }
+.gev-regras-texto { font-size: 0.9rem; color: var(--ink-strong); margin: 0.3rem 0 0; line-height: 1.5; }
 
 .gev-form-regras { display: flex; flex-direction: column; gap: 0.6rem; }
-.gev-label { font-size: 0.85rem; font-weight: 600; color: #374151; }
+.gev-label { font-size: 0.85rem; font-weight: 600; color: var(--ink-strong); }
 .gev-textarea {
   width: 100%; padding: 0.7rem 0.9rem; font-size: 0.95rem;
-  border: 1.5px solid #e5e7eb; border-radius: 10px; outline: none;
+  border: 1.5px solid var(--ink-12); border-radius: 10px; outline: none;
   box-sizing: border-box; resize: vertical; font-family: inherit; transition: border-color 0.2s;
 }
-.gev-textarea:focus { border-color: #9333ea; }
+.gev-textarea:focus { border-color: var(--spotlight); }
 .gev-regras-acoes { display: flex; gap: 0.6rem; }
 
 .gev-secao-titulo {
-  font-size: 0.9rem; font-weight: 700; color: #302b63;
+  font-size: 0.9rem; font-weight: 700; color: var(--ink);
   text-transform: uppercase; letter-spacing: 0.04em; margin: 0;
 }
 .gev-membros-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
 .gev-membro-item {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0.65rem 0.9rem; background: #f9fafb; border-radius: 8px;
-  border: 1px solid #f3f4f6;
+  padding: 0.65rem 0.9rem; background: var(--vellum); border-radius: 8px;
+  border: 1px solid var(--ink-08);
 }
-.gev-membro-id { font-size: 0.85rem; color: #374151; font-family: monospace; }
+.gev-membro-id { font-size: 0.85rem; color: var(--ink-strong); font-family: monospace; }
 
-.gev-ja-membro { font-size: 0.9rem; color: #065f46; margin: 0; font-weight: 600; }
+.gev-ja-membro { font-size: 0.9rem; color: var(--moss); margin: 0; font-weight: 600; }
 
 .gev-btn-primario {
-  background: linear-gradient(135deg, #302b63, #9333ea);
-  color: #fff; border: none; padding: 0.65rem 1.4rem;
+  background: linear-gradient(135deg, var(--ink), var(--spotlight));
+  color: var(--on-ink-strong); border: none; padding: 0.65rem 1.4rem;
   border-radius: 10px; font-size: 0.95rem; font-weight: 700;
   cursor: pointer; transition: opacity 0.2s; align-self: flex-start;
 }
@@ -96,41 +96,41 @@
 .gev-btn-primario:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .gev-btn-sec {
-  background: #f3f4f6; color: #374151; border: none;
+  background: var(--ink-08); color: var(--ink-strong); border: none;
   padding: 0.6rem 1.1rem; border-radius: 8px;
   font-size: 0.85rem; font-weight: 600; cursor: pointer;
 }
-.gev-btn-sec:hover { background: #e5e7eb; }
+.gev-btn-sec:hover { background: var(--ink-12); }
 
 .gev-btn-regras {
-  background: #ede9fe; color: #5b21b6; border: none;
+  background: rgba(255, 200, 87, 0.18); color: var(--ink-strong); border: none;
   padding: 0.6rem 1.1rem; border-radius: 8px;
   font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
 }
-.gev-btn-regras:hover { background: #ddd6fe; }
+.gev-btn-regras:hover { background: rgba(255, 200, 87, 0.30); }
 
 .gev-btn-remover {
-  background: none; color: #dc2626; border: none; font-size: 0.8rem;
+  background: none; color: var(--ember); border: none; font-size: 0.8rem;
   font-weight: 600; cursor: pointer; padding: 0.2rem 0.5rem;
   border-radius: 6px; transition: background 0.15s;
 }
-.gev-btn-remover:hover { background: #fef2f2; }
+.gev-btn-remover:hover { background: rgba(224, 65, 62, 0.08); }
 
 .gev-btn-excluir {
-  background: #fff; color: #dc2626; border: 1.5px solid #fecaca;
+  background: var(--paper); color: var(--ember); border: 1.5px solid rgba(224, 65, 62, 0.18);
   padding: 0.6rem 1.1rem; border-radius: 8px;
   font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
 }
-.gev-btn-excluir:hover { background: #fef2f2; }
+.gev-btn-excluir:hover { background: rgba(224, 65, 62, 0.08); }
 
 .gev-modal-bg {
   position: fixed; inset: 0; background: rgba(0,0,0,0.5);
   display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem;
 }
 .gev-modal {
-  background: #fff; border-radius: 16px; padding: 2rem;
+  background: var(--paper); border-radius: 16px; padding: 2rem;
   max-width: 400px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.2);
 }
-.gev-modal h2 { font-size: 1.2rem; font-weight: 700; color: #dc2626; margin: 0 0 0.5rem; }
-.gev-modal p { color: #6b7280; font-size: 0.9rem; margin: 0 0 1.3rem; line-height: 1.5; }
+.gev-modal h2 { font-size: 1.2rem; font-weight: 700; color: var(--ember); margin: 0 0 0.5rem; }
+.gev-modal p { color: var(--hush); font-size: 0.9rem; margin: 0 0 1.3rem; line-height: 1.5; }
 .gev-modal-acoes { display: flex; gap: 0.6rem; justify-content: flex-end; }

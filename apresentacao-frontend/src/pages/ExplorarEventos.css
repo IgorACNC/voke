@@ -1,22 +1,22 @@
 .exp-bg {
   min-height: 100vh;
-  background: #f4f6fb;
-  font-family: 'Inter', sans-serif;
+  background: var(--vellum);
+  
 }
 
 .exp-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #1a1a2e;
+  background: var(--ink);
   padding: 1rem 2rem;
-  color: #fff;
+  color: var(--on-ink-strong);
 }
 
 .exp-logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #7c6af7;
+  color: var(--spotlight);
   cursor: pointer;
 }
 
@@ -27,8 +27,8 @@
 }
 
 .exp-papel {
-  background: #7c6af7;
-  color: #fff;
+  background: var(--spotlight);
+  color: var(--on-ink-strong);
   border-radius: 12px;
   padding: 0.2rem 0.7rem;
   font-size: 0.75rem;
@@ -38,20 +38,20 @@
 
 .exp-nome {
   font-size: 0.9rem;
-  color: #ccc;
+  color: var(--hush);
 }
 
 .exp-sair {
   background: transparent;
   border: 1px solid #555;
-  color: #ccc;
+  color: var(--hush);
   padding: 0.3rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
   font-size: 0.85rem;
 }
 
-.exp-sair:hover { border-color: #7c6af7; color: #7c6af7; }
+.exp-sair:hover { border-color: var(--spotlight); color: var(--spotlight); }
 
 .exp-main {
   max-width: 960px;
@@ -69,12 +69,12 @@
 .exp-titulo {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--ink);
   margin: 0;
 }
 
 .exp-sub {
-  color: #666;
+  color: var(--hush);
   margin: 0.3rem 0 0;
   font-size: 0.95rem;
 }
@@ -82,7 +82,7 @@
 .exp-busca {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--ink-12);
   border-radius: 8px;
   font-size: 0.95rem;
   outline: none;
@@ -90,18 +90,18 @@
   box-sizing: border-box;
 }
 
-.exp-busca:focus { border-color: #7c6af7; }
+.exp-busca:focus { border-color: var(--spotlight); }
 
 .exp-erro {
-  background: #fef2f2;
-  color: #dc2626;
+  background: rgba(224, 65, 62, 0.08);
+  color: var(--ember);
   padding: 0.75rem 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
 }
 
 .exp-info {
-  color: #888;
+  color: var(--hush);
   text-align: center;
   padding: 2rem;
 }
@@ -113,7 +113,7 @@
 }
 
 .exp-card {
-  background: #fff;
+  background: var(--paper);
   border-radius: 12px;
   padding: 1.2rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -131,19 +131,19 @@
 .exp-card-nome {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--ink);
   margin: 0;
 }
 
 .exp-card-local {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--hush);
   margin: 0.15rem 0 0;
 }
 
 .exp-card-organizador {
   font-size: 0.8rem;
-  color: #9333ea;
+  color: var(--spotlight);
   margin: 0.25rem 0 0;
   cursor: pointer;
   font-weight: 500;
@@ -151,8 +151,8 @@
 .exp-card-organizador:hover { text-decoration: underline; }
 
 .exp-badge-idade {
-  background: #fef3c7;
-  color: #92400e;
+  background: rgba(255, 200, 87, 0.18);
+  color: var(--ember);
   font-size: 0.72rem;
   font-weight: 700;
   border-radius: 10px;
@@ -162,7 +162,7 @@
 
 .exp-card-desc {
   font-size: 0.88rem;
-  color: #555;
+  color: var(--ink-soft);
   margin: 0;
   line-height: 1.4;
   display: -webkit-box;
@@ -176,18 +176,18 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.85rem;
-  color: #555;
+  color: var(--ink-soft);
 }
 
 .exp-preco {
   font-weight: 700;
-  color: #7c6af7;
+  color: var(--spotlight);
   font-size: 0.95rem;
 }
 
 .exp-vagas {
   font-size: 0.8rem;
-  color: #059669;
+  color: var(--moss);
   margin: 0;
   font-weight: 500;
 }
@@ -212,17 +212,17 @@
 
 .exp-btn-grupo {
   background: transparent;
-  color: #7c6af7;
-  border: 1.5px solid #7c6af7;
+  color: var(--spotlight);
+  border: 1.5px solid var(--spotlight);
 }
 .exp-btn-grupo:hover { background: rgba(124,106,247,0.1); }
 
 .exp-btn-comprar {
-  background: #7c6af7;
-  color: #fff;
+  background: var(--spotlight);
+  color: var(--on-ink-strong);
   border: none;
 }
-.exp-btn-comprar:hover { background: #6250e0; }
+.exp-btn-comprar:hover { background: var(--spotlight); }
 
 .exp-card-topo-right {
   display: flex;
@@ -241,7 +241,7 @@
   transition: background 0.15s, transform 0.15s;
   line-height: 1;
 }
-.exp-btn-fav:hover { background: #fffbeb; transform: scale(1.2); }
+.exp-btn-fav:hover { background: rgba(255, 200, 87, 0.10); transform: scale(1.2); }
 
 /* Modal Favoritar */
 .exp-overlay {
@@ -256,7 +256,7 @@
 }
 
 .exp-modal {
-  background: #fff;
+  background: var(--paper);
   border-radius: 16px;
   padding: 2rem;
   width: 100%;
@@ -269,20 +269,20 @@
 .exp-modal-titulo {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--ink);
   margin: 0;
 }
 
 .exp-modal-evento {
   font-size: 0.9rem;
-  color: #7c6af7;
+  color: var(--spotlight);
   font-weight: 600;
   margin: 0;
   font-style: italic;
 }
 
 .exp-modal-sucesso {
-  color: #059669;
+  color: var(--moss);
   font-weight: 600;
   text-align: center;
   padding: 1rem 0;
@@ -292,26 +292,26 @@
 .exp-label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #444;
+  color: var(--ink-soft);
   margin-bottom: -0.4rem;
 }
 
 .exp-select, .exp-input {
   padding: 0.7rem 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--ink-12);
   border-radius: 8px;
   font-size: 0.9rem;
   outline: none;
   width: 100%;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--paper);
 }
-.exp-select:focus, .exp-input:focus { border-color: #7c6af7; }
+.exp-select:focus, .exp-input:focus { border-color: var(--spotlight); }
 
 .exp-btn-nova-colecao {
   background: transparent;
   border: none;
-  color: #7c6af7;
+  color: var(--spotlight);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -320,7 +320,7 @@
 }
 .exp-btn-nova-colecao:hover { text-decoration: underline; }
 
-.exp-erro-modal { color: #dc2626; font-size: 0.85rem; margin: 0; }
+.exp-erro-modal { color: var(--ember); font-size: 0.85rem; margin: 0; }
 
 .exp-modal-acoes {
   display: flex;
@@ -330,19 +330,19 @@
 
 .exp-btn-cancelar {
   background: transparent;
-  border: 1px solid #ddd;
-  color: #666;
+  border: 1px solid var(--ink-12);
+  color: var(--hush);
   padding: 0.6rem 1.1rem;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
 }
-.exp-btn-cancelar:hover { background: #f3f4f6; }
+.exp-btn-cancelar:hover { background: var(--ink-08); }
 
 .exp-btn-salvar {
-  background: #7c6af7;
-  color: #fff;
+  background: var(--spotlight);
+  color: var(--on-ink-strong);
   border: none;
   padding: 0.6rem 1.3rem;
   border-radius: 8px;
@@ -351,5 +351,5 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.exp-btn-salvar:hover:not(:disabled) { background: #6250e0; }
+.exp-btn-salvar:hover:not(:disabled) { background: var(--spotlight); }
 .exp-btn-salvar:disabled { opacity: 0.6; cursor: not-allowed; }

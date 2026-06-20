@@ -1,0 +1,97 @@
+/* =========================================================================
+   Header global — sempre em --ink, três zonas tipográficas.
+   ========================================================================= */
+
+.v-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--ink);
+  color: var(--on-ink-strong);
+  border-bottom: 1px solid rgba(251, 248, 242, 0.08);
+}
+
+.v-header--transparent {
+  background: transparent;
+  border-bottom: 0;
+}
+
+.v-header__inner {
+  max-width: var(--maxw-wide);
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+  min-height: var(--header-h);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+/* Logo */
+.v-header__logo {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+  color: inherit;
+}
+.v-header__logo-mark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.125rem;
+  letter-spacing: 0.08em;
+  color: var(--on-ink-strong);
+}
+.v-header__logo:hover .v-header__logo-mark { color: var(--spotlight); }
+
+/* Eyebrow central — espaço para EventClock ou string */
+.v-header__eyebrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--on-ink-soft);
+  min-width: 0;
+  overflow: hidden;
+}
+.v-header__eyebrow > * { color: inherit; }
+/* Override de tones quando dentro do header escuro */
+.v-header__eyebrow .tone-hush { color: rgba(251, 248, 242, 0.55); }
+.v-header__eyebrow .tone-ink  { color: var(--on-ink-strong); }
+
+/* Perfil */
+.v-header__profile {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--on-ink-soft);
+}
+.v-header__role {
+  color: var(--spotlight);
+}
+.v-header__name {
+  color: var(--on-ink-soft);
+  max-width: 16ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Override do .btn--ghost para contrastar no fundo --ink */
+.v-header .btn--ghost {
+  color: var(--on-ink-strong);
+  border-color: rgba(251, 248, 242, 0.32);
+}
+.v-header .btn--ghost:hover:not(:disabled) {
+  border-color: var(--spotlight);
+  color: var(--spotlight);
+}
+
+/* Mobile: oculta eyebrow e nome para abrir espaço */
+@media (max-width: 767px) {
+  .v-header__inner { gap: var(--space-3); }
+  .v-header__eyebrow { display: none; }
+  .v-header__name    { display: none; }
+}
+@media (max-width: 479px) {
+  .v-header__role { display: none; }
+}

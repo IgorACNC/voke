@@ -1,65 +1,65 @@
-.eev-bg { min-height: 100vh; background: #f8f9fb; }
-.eev-loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; color: #6b7280; }
+.eev-bg { min-height: 100vh; background: var(--vellum); }
+.eev-loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; color: var(--hush); }
 
 .eev-header {
-  background: linear-gradient(135deg, #302b63, #9333ea);
+  background: linear-gradient(135deg, var(--ink), var(--spotlight));
   padding: 1rem 2rem; display: flex; align-items: center;
   justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.2);
 }
-.eev-logo { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; cursor: pointer; }
+.eev-logo { font-size: 1.6rem; font-weight: 800; color: var(--on-ink-strong); letter-spacing: -0.5px; cursor: pointer; }
 .eev-header-right { display: flex; align-items: center; gap: 1rem; }
 .eev-papel {
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
-  background: rgba(255,255,255,0.2); color: #fff;
+  background: rgba(255,255,255,0.2); color: var(--on-ink-strong);
   padding: 0.25rem 0.6rem; border-radius: 20px; text-transform: uppercase;
 }
 .eev-nome { font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 500; }
 .eev-sair {
   background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-  color: #fff; padding: 0.4rem 0.9rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer;
+  color: var(--on-ink-strong); padding: 0.4rem 0.9rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer;
 }
 .eev-sair:hover { background: rgba(255,255,255,0.25); }
 
 .eev-main { padding: 2rem; max-width: 680px; margin: 0 auto; }
 
 .eev-voltar {
-  background: none; border: none; color: #6b7280; cursor: pointer;
+  background: none; border: none; color: var(--hush); cursor: pointer;
   font-size: 0.9rem; padding: 0; margin-bottom: 1.25rem; display: block;
 }
-.eev-voltar:hover { color: #302b63; }
+.eev-voltar:hover { color: var(--ink); }
 
 .eev-erro {
-  background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;
+  background: rgba(224, 65, 62, 0.08); color: var(--ember); border: 1px solid rgba(224, 65, 62, 0.18);
   padding: 0.7rem 1rem; border-radius: 10px; font-size: 0.9rem; margin-bottom: 1rem;
 }
 .eev-sucesso {
-  background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;
+  background: rgba(79, 107, 74, 0.12); color: var(--moss); border: 1px solid var(--moss);
   padding: 0.7rem 1rem; border-radius: 10px; font-size: 0.9rem; margin-bottom: 1rem;
 }
 
 .eev-card {
-  background: #fff; border-radius: 16px; padding: 1.75rem;
+  background: var(--paper); border-radius: 16px; padding: 1.75rem;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.25rem;
 }
 .eev-card--lotes { gap: 1rem; }
 .eev-card--grupo { gap: 0.6rem; }
 
-.eev-titulo { font-size: 1.4rem; font-weight: 700; color: #302b63; margin: 0; }
-.eev-label { font-size: 0.85rem; font-weight: 600; color: #374151; }
+.eev-titulo { font-size: 1.4rem; font-weight: 700; color: var(--ink); margin: 0; }
+.eev-label { font-size: 0.85rem; font-weight: 600; color: var(--ink-strong); }
 .eev-input {
   width: 100%; padding: 0.7rem 0.9rem; font-size: 0.95rem;
-  border: 1.5px solid #e5e7eb; border-radius: 10px; outline: none;
+  border: 1.5px solid var(--ink-12); border-radius: 10px; outline: none;
   box-sizing: border-box; transition: border-color 0.2s;
 }
-.eev-input:focus { border-color: #9333ea; }
-.eev-input:disabled { background: #f3f4f6; color: #9ca3af; }
+.eev-input:focus { border-color: var(--spotlight); }
+.eev-input:disabled { background: var(--ink-08); color: var(--hush); }
 .eev-row { display: flex; gap: 0.9rem; }
 .eev-col { flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
 
 .eev-btn-primario {
-  background: linear-gradient(135deg, #302b63, #9333ea);
-  color: #fff; border: none; padding: 0.7rem 1.4rem;
+  background: linear-gradient(135deg, var(--ink), var(--spotlight));
+  color: var(--on-ink-strong); border: none; padding: 0.7rem 1.4rem;
   border-radius: 10px; font-size: 0.95rem; font-weight: 700;
   cursor: pointer; transition: opacity 0.2s; align-self: flex-start;
 }
@@ -67,55 +67,55 @@
 .eev-btn-primario:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .eev-btn-sec {
-  background: #f3f4f6; color: #374151; border: none;
+  background: var(--ink-08); color: var(--ink-strong); border: none;
   padding: 0.6rem 1.2rem; border-radius: 10px;
   font-size: 0.9rem; font-weight: 600; cursor: pointer;
 }
-.eev-btn-sec:hover { background: #e5e7eb; }
+.eev-btn-sec:hover { background: var(--ink-12); }
 
 /* Lotes */
 .eev-lotes-header { display: flex; align-items: center; justify-content: space-between; }
-.eev-lotes-titulo { font-size: 1rem; font-weight: 700; color: #302b63; margin: 0; text-transform: uppercase; letter-spacing: 0.04em; }
-.eev-cap-info { font-size: 0.85rem; color: #6b7280; }
+.eev-lotes-titulo { font-size: 1rem; font-weight: 700; color: var(--ink); margin: 0; text-transform: uppercase; letter-spacing: 0.04em; }
+.eev-cap-info { font-size: 0.85rem; color: var(--hush); }
 
 .eev-lote {
-  border: 1.5px solid #e5e7eb; border-radius: 10px; padding: 1rem 1.1rem;
+  border: 1.5px solid var(--ink-12); border-radius: 10px; padding: 1rem 1.1rem;
 }
-.eev-lote--ativo { border-color: #a7f3d0; background: #f0fdf4; }
-.eev-lote--encerrado { border-color: #e5e7eb; background: #f9fafb; }
+.eev-lote--ativo { border-color: var(--moss); background: rgba(79, 107, 74, 0.10); }
+.eev-lote--encerrado { border-color: var(--ink-12); background: var(--vellum); }
 
 .eev-lote-linha { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem; }
-.eev-lote-nome { font-size: 0.9rem; font-weight: 700; color: #1f1b4b; }
+.eev-lote-nome { font-size: 0.9rem; font-weight: 700; color: var(--ink-strong); }
 .eev-lote-badge {
   font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.6rem;
-  border-radius: 20px; background: #dcfce7; color: #166534;
+  border-radius: 20px; background: rgba(79, 107, 74, 0.18); color: var(--moss);
 }
-.eev-lote-badge--bloq { background: #f3f4f6; color: #6b7280; }
-.eev-lote-detalhe { display: flex; gap: 1.5rem; font-size: 0.85rem; color: #374151; }
-.eev-lote-aviso { font-size: 0.8rem; color: #9ca3af; margin: 0.3rem 0 0; }
-.eev-lote-info-aviso { font-size: 0.82rem; color: #9ca3af; margin: 0; }
+.eev-lote-badge--bloq { background: var(--ink-08); color: var(--hush); }
+.eev-lote-detalhe { display: flex; gap: 1.5rem; font-size: 0.85rem; color: var(--ink-strong); }
+.eev-lote-aviso { font-size: 0.8rem; color: var(--hush); margin: 0.3rem 0 0; }
+.eev-lote-info-aviso { font-size: 0.82rem; color: var(--hush); margin: 0; }
 
 .eev-btn-lote {
-  background: #ede9fe; color: #5b21b6; border: 1.5px dashed #c4b5fd;
+  background: rgba(255, 200, 87, 0.18); color: var(--ink-strong); border: 1.5px dashed var(--spotlight);
   padding: 0.65rem 1.2rem; border-radius: 10px;
   font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
   align-self: flex-start;
 }
-.eev-btn-lote:hover { background: #ddd6fe; }
+.eev-btn-lote:hover { background: rgba(255, 200, 87, 0.30); }
 
 .eev-form-lote {
-  border: 1.5px solid #ede9fe; border-radius: 12px; padding: 1rem 1.2rem;
-  display: flex; flex-direction: column; gap: 0.7rem; background: #faf9ff;
+  border: 1.5px solid rgba(255, 200, 87, 0.18); border-radius: 12px; padding: 1rem 1.2rem;
+  display: flex; flex-direction: column; gap: 0.7rem; background: var(--vellum);
 }
-.eev-form-lote-titulo { font-size: 0.95rem; font-weight: 700; color: #302b63; margin: 0; }
+.eev-form-lote-titulo { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin: 0; }
 .eev-form-lote-acoes { display: flex; gap: 0.6rem; }
 
 /* Grupo */
-.eev-grupo-desc { font-size: 0.9rem; color: #6b7280; margin: 0; }
+.eev-grupo-desc { font-size: 0.9rem; color: var(--hush); margin: 0; }
 .eev-btn-grupo {
-  background: #ede9fe; color: #5b21b6; border: none;
+  background: rgba(255, 200, 87, 0.18); color: var(--ink-strong); border: none;
   padding: 0.6rem 1.2rem; border-radius: 10px;
   font-size: 0.9rem; font-weight: 600; cursor: pointer; align-self: flex-start;
   transition: background 0.2s;
 }
-.eev-btn-grupo:hover { background: #ddd6fe; }
+.eev-btn-grupo:hover { background: rgba(255, 200, 87, 0.30); }

@@ -1,5 +1,5 @@
 .kpi-card {
-  background: #fff;
+  background: var(--paper);
   border-radius: 12px;
   padding: 1.2rem;
   display: flex;
@@ -9,6 +9,6 @@
 }
 .kpi-icon { font-size: 2rem; }
 .kpi-body { display: flex; flex-direction: column; }
-.kpi-label { font-size: 0.78rem; color: #777; text-transform: uppercase; letter-spacing: 0.5px; }
-.kpi-value { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; margin-top: 0.2rem; }
-.kpi-hint { font-size: 0.75rem; color: #999; margin-top: 0.2rem; }
+.kpi-label { font-size: 0.78rem; color: var(--hush); text-transform: uppercase; letter-spacing: 0.5px; }
+.kpi-value { font-size: 1.5rem; font-weight: 700; color: var(--ink); margin-top: 0.2rem; }
+.kpi-hint { font-size: 0.75rem; color: var(--hush); margin-top: 0.2rem; }

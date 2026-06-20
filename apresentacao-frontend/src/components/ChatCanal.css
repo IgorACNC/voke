@@ -23,7 +23,7 @@
 }
 
 .chat-canal-mensagens::-webkit-scrollbar-thumb {
-  background: #c4b5fd;
+  background: var(--spotlight);
   border-radius: 4px;
 }
 
@@ -34,14 +34,14 @@
   font-size: 0.92rem;
   position: relative;
   word-wrap: break-word;
-  background: #e9e5f5;
+  background: rgba(255, 200, 87, 0.18);
   color: #1e1b4b;
   align-self: flex-start;
 }
 
 .chat-canal-bolha.minha {
-  background: linear-gradient(135deg, #6b21a8, #7c3aed);
-  color: #fff;
+  background: linear-gradient(135deg, var(--ink-strong), var(--spotlight));
+  color: var(--on-ink-strong);
   align-self: flex-end;
 }
 
@@ -49,7 +49,7 @@
   display: block;
   font-size: 0.72rem;
   font-weight: 600;
-  color: #6b21a8;
+  color: var(--ink-strong);
   margin-bottom: 0.2rem;
 }
 
@@ -72,7 +72,7 @@
 
 .chat-canal-vazio {
   text-align: center;
-  color: #9ca3af;
+  color: var(--hush);
   font-style: italic;
   padding: 2rem 0;
   font-size: 0.9rem;
@@ -82,33 +82,33 @@
   display: flex;
   gap: 0.5rem;
   padding: 0.8rem 1rem;
-  border-top: 1px solid #ede9fe;
-  background: #faf8ff;
+  border-top: 1px solid rgba(255, 200, 87, 0.18);
+  background: var(--vellum);
 }
 
 .chat-canal-form input {
   flex: 1;
   padding: 0.6rem 0.9rem;
   border-radius: 8px;
-  border: 1px solid #d4d0e8;
+  border: 1px solid var(--ink-12);
   font-size: 0.9rem;
   outline: none;
   transition: border-color 0.2s;
 }
 
 .chat-canal-form input:focus {
-  border-color: #7c3aed;
+  border-color: var(--spotlight);
 }
 
 .chat-canal-form input:disabled {
-  background: #f1f0f9;
+  background: var(--vellum);
   cursor: not-allowed;
 }
 
 .chat-canal-form button {
   padding: 0.6rem 1.2rem;
-  background: linear-gradient(135deg, #6b21a8, #7c3aed);
-  color: #fff;
+  background: linear-gradient(135deg, var(--ink-strong), var(--spotlight));
+  color: var(--on-ink-strong);
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -129,8 +129,8 @@
 
 .chat-canal-erro {
   padding: 0.5rem 1rem;
-  color: #b91c1c;
+  color: var(--ember);
   font-size: 0.85rem;
-  background: #fef2f2;
+  background: rgba(224, 65, 62, 0.08);
   text-align: center;
 }

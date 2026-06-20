@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Header from '../components/Header'
+import EventClock from '../components/EventClock'
 import { buscarEvento, type Evento } from '../services/eventoService'
 import { listarMinhasInscricoes, type Inscricao } from '../services/inscricaoService'
 import { buscarPerfil, type PerfilParticipante } from '../services/participanteService'
@@ -8,7 +10,7 @@ import { adicionarAoCarrinho } from '../services/carrinhoService'
 import { registrarVisualizacao } from '../services/dashboardService'
 import { listarCategorias, type Categoria } from '../services/categoriaService'
 import FaqPublico from '../components/FaqPublico'
-import './Social.css'
+import './EventDetail.css'
 
 function calcularIdade(dataNascimento: string, referencia: string) {
   const dob = new Date(dataNascimento)
@@ -27,6 +29,17 @@ function periodoSobrepoe(aStart: string, aEnd: string, bStart: string, bEnd: str
   return as < be && bs < ae
 }
 
+function fmtBRL(n: number) {
+  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+function fmtData(iso: string) {
+  return new Date(iso).toLocaleString('pt-BR', {
+    weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  })
+}
+
 export default function EventDetail() {
   const { eventoId } = useParams()
   const navigate = useNavigate()
@@ -41,9 +54,8 @@ export default function EventDetail() {
 
   useEffect(() => {
     if (!eventoId) return
-    buscarEvento(eventoId).then(setEvento).catch(() => setErro('Erro ao carregar evento.'))
+    buscarEvento(eventoId).then(setEvento).catch(() => setErro('Não conseguimos carregar este evento.'))
     listarCategorias().then(setCategorias).catch(() => {})
-    // F17 - RN03/visualizacoes: incrementa contador (silencioso em caso de erro)
     registrarVisualizacao(eventoId).catch(() => {})
     if (usuario?.papel === 'PARTICIPANTE') {
       buscarPerfil(usuario.id).then(setPerfil).catch(() => {})
@@ -51,119 +63,200 @@ export default function EventDetail() {
     }
   }, [eventoId, usuario?.id])
 
-  if (!evento) return null
   const ev = evento
+  const precoBase = ev?.loteAtual?.preco ?? 0
+  const vagas = ev?.loteAtual ? ev.loteAtual.quantidadeTotal - ev.loteAtual.quantidadeVendida : 0
 
-  const precoBase = ev.loteAtual?.preco ?? 0
-  const vagas = ev.loteAtual ? ev.loteAtual.quantidadeTotal - ev.loteAtual.quantidadeVendida : 0
-
-  const idadeParticipante = perfil?.dataNascimento
+  const idadeParticipante = ev && perfil?.dataNascimento
     ? calcularIdade(perfil.dataNascimento, ev.dataHoraInicio)
     : null
   const bloqueadoPorIdade =
-    ev.idadeMinima > 0 && (idadeParticipante === null || idadeParticipante < ev.idadeMinima)
+    !!ev && ev.idadeMinima > 0 && (idadeParticipante === null || idadeParticipante < ev.idadeMinima)
 
-  const conflito = minhas.some(
+  const conflito = !!ev && minhas.some(
     (i) =>
       i.status === 'CONFIRMADA' &&
       periodoSobrepoe(i.evento.dataHoraInicio, i.evento.dataHoraFim, ev.dataHoraInicio, ev.dataHoraFim),
   )
 
-  const jaInscrito = minhas.some(
+  const jaInscrito = !!ev && minhas.some(
     (i) => i.evento.id === ev.id && (i.status === 'CONFIRMADA' || i.status === 'CHECK_IN_REALIZADO'),
   )
 
-  const eventoJaIniciado = new Date(ev.dataHoraInicio).getTime() <= Date.now()
+  const eventoJaIniciado = !!ev && new Date(ev.dataHoraInicio).getTime() <= Date.now()
+  const eventoEncerrado = ev?.status === 'ENCERRADO' || ev?.status === 'CANCELADO'
+
+  const categoriasDoEvento = useMemo(() => {
+    if (!ev) return [] as string[]
+    return ev.categoriaIds
+      .map((id) => categorias.find((c) => c.id === id)?.nome)
+      .filter(Boolean) as string[]
+  }, [ev, categorias])
 
   async function handleAdicionarCarrinho() {
     setErro('')
-    if (!usuario) return setErro('Usuário não autenticado.')
+    if (!ev || !usuario) return setErro('Usuário não autenticado.')
     if (eventoJaIniciado) return setErro('Inscrições encerradas: o evento já começou.')
-    if (!ev.loteAtual || !ev.loteAtual.ativo) return setErro('Não há lote ativo para este evento.')
+    if (!ev.loteAtual || !ev.loteAtual.ativo) return setErro('Não há lote ativo neste evento.')
     if (vagas <= 0) return setErro('Lote esgotado.')
     if (bloqueadoPorIdade) return setErro('Você não atende à idade mínima do evento.')
     if (conflito) return setErro('Conflito de agenda com outra inscrição confirmada.')
     if (jaInscrito) return setErro('Você já está inscrito neste evento.')
-
     setCarregando(true)
     try {
       await adicionarAoCarrinho(usuario.id, ev.id, ev.nome, 1, precoBase)
       navigate('/carrinho')
     } catch (e: any) {
-      setErro(e?.response?.data?.mensagem ?? 'Erro ao adicionar ao carrinho.')
+      setErro(e?.response?.data?.mensagem ?? 'Não foi possível adicionar ao carrinho.')
     } finally {
       setCarregando(false)
     }
   }
 
+  if (!ev) {
+    return (
+      <div className="evd">
+        <Header />
+        <main className="evd-main container">
+          {erro ? (
+            <p className="t-body tone-ember">{erro}</p>
+          ) : (
+            <p className="t-body tone-hush">Carregando evento…</p>
+          )}
+        </main>
+      </div>
+    )
+  }
+
+  const ctaDisabled =
+    carregando || bloqueadoPorIdade || conflito || vagas <= 0 || eventoJaIniciado || eventoEncerrado
+
   return (
-    <div className="social-bg">
-      <header className="social-header">
-        <button className="social-voltar" onClick={() => navigate(-1)}>Voltar</button>
-        <span className="social-logo">Voke</span>
-        <div style={{ width: 90 }} />
-      </header>
+    <div className="evd">
+      <Header
+        eyebrow={
+          <EventClock
+            targetDate={ev.dataHoraInicio}
+            variant="compact"
+            label="Começa em"
+            closed={eventoEncerrado}
+          />
+        }
+      />
 
-      <main className="social-main">
-        <section className="social-title">
-          <h1>{ev.nome}</h1>
-          <p>{ev.descricao}</p>
-        </section>
+      <main className="evd-main container--wide">
+        <button type="button" className="evd-back t-meta tone-hush" onClick={() => navigate(-1)}>
+          ← Voltar
+        </button>
 
-        {erro && <p className="social-msg-erro">{erro}</p>}
+        <div className="evd-grid">
+          {/* Programação */}
+          <article className="evd-program">
+            <header className="evd-program__head">
+              <p className="t-eyebrow tone-hush">Evento</p>
+              <h1 className="t-display evd-program__title">{ev.nome}</h1>
+              {categoriasDoEvento.length > 0 && (
+                <ul className="evd-tags" aria-label="Categorias">
+                  {categoriasDoEvento.map((c) => (
+                    <li key={c} className="badge">{c}</li>
+                  ))}
+                </ul>
+              )}
+            </header>
 
-        <div className="social-card">
-          <p><strong>Local:</strong> {ev.local}</p>
-          <p>
-            <strong>Data:</strong>{' '}
-            {new Date(ev.dataHoraInicio).toLocaleString('pt-BR')} –{' '}
-            {new Date(ev.dataHoraFim).toLocaleString('pt-BR')}
-          </p>
-          {ev.idadeMinima > 0 && (
-            <p><strong>Idade mínima:</strong> {ev.idadeMinima} anos</p>
-          )}
-          {ev.categoriaIds.length > 0 && categorias.length > 0 && (
-            <p>
-              <strong>Categorias:</strong>{' '}
-              {ev.categoriaIds
-                .map((id) => categorias.find((c) => c.id === id)?.nome)
-                .filter(Boolean)
-                .join(', ') || '—'}
-            </p>
-          )}
-          {ev.loteAtual && (
-            <p>
-              <strong>Lote:</strong> #{ev.loteAtual.numero} — {vagas > 0 ? `${vagas} vagas disponíveis` : 'Esgotado'}{' '}
-              — <strong>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(precoBase)}</strong>
-            </p>
-          )}
+            {ev.descricao && (
+              <section className="evd-section">
+                <p className="t-eyebrow tone-hush">Sobre</p>
+                <p className="t-body evd-desc">{ev.descricao}</p>
+              </section>
+            )}
 
-          {/* Alertas de validação */}
-          {bloqueadoPorIdade && (
-            <p className="social-msg-erro">Você não atende à idade mínima ({ev.idadeMinima} anos) deste evento.</p>
-          )}
-          {conflito && (
-            <p className="social-msg-erro">Você já tem uma inscrição confirmada no mesmo horário.</p>
-          )}
-          {jaInscrito && (
-            <p className="social-msg-sucesso">Você já está inscrito neste evento.</p>
-          )}
-          {eventoJaIniciado && !jaInscrito && (
-            <p className="social-msg-erro">Inscrições encerradas: o evento já começou.</p>
-          )}
+            <section className="evd-section">
+              <p className="t-eyebrow tone-hush">Quando</p>
+              <p className="t-h3 evd-when">{fmtData(ev.dataHoraInicio)}</p>
+              <p className="t-meta tone-hush">até {fmtData(ev.dataHoraFim)}</p>
+            </section>
 
-          {usuario?.papel === 'PARTICIPANTE' && !jaInscrito && (
-            <div style={{ marginTop: '1rem' }}>
-              <button
-                onClick={handleAdicionarCarrinho}
-                disabled={carregando || bloqueadoPorIdade || conflito || vagas <= 0 || eventoJaIniciado}
-              >
-                {carregando ? 'Adicionando...' : '🛒 Adicionar ao Carrinho'}
-              </button>
+            <section className="evd-section">
+              <p className="t-eyebrow tone-hush">Onde</p>
+              <p className="t-h3">{ev.local}</p>
+              {ev.idadeMinima > 0 && (
+                <p className="t-meta tone-hush">Classificação: {ev.idadeMinima}+</p>
+              )}
+            </section>
+
+            {eventoId && (
+              <section className="evd-section">
+                <FaqPublico eventoId={eventoId} />
+              </section>
+            )}
+          </article>
+
+          {/* Guichê (ticket office) */}
+          <aside className="evd-box">
+            <div className="evd-box__inner">
+              <p className="t-eyebrow tone-hush">Guichê</p>
+              <div className="evd-box__clock">
+                <EventClock
+                  targetDate={ev.dataHoraInicio}
+                  variant="large"
+                  closed={eventoEncerrado}
+                />
+              </div>
+
+              {ev.loteAtual && (
+                <div className="evd-box__lote">
+                  <p className="t-meta tone-hush">Lote em venda</p>
+                  <p className="t-mega evd-box__preco">{fmtBRL(precoBase)}</p>
+                  <p className="t-meta tone-hush">
+                    Lote {ev.loteAtual.numero} ·{' '}
+                    {vagas > 0 ? `${vagas} de ${ev.loteAtual.quantidadeTotal} vagas` : 'esgotado'}
+                  </p>
+                </div>
+              )}
+
+              {erro && (
+                <p className="t-meta evd-box__erro" role="alert">{erro}</p>
+              )}
+
+              {jaInscrito && (
+                <p className="badge badge--moss evd-box__badge">Você já está inscrito</p>
+              )}
+              {!jaInscrito && bloqueadoPorIdade && (
+                <p className="t-meta tone-ember">Você não atende à idade mínima ({ev.idadeMinima}+).</p>
+              )}
+              {!jaInscrito && conflito && (
+                <p className="t-meta tone-ember">Conflito de agenda com outra inscrição confirmada.</p>
+              )}
+              {!jaInscrito && eventoJaIniciado && (
+                <p className="t-meta tone-ember">Inscrições encerradas: o evento já começou.</p>
+              )}
+              {eventoEncerrado && (
+                <p className="t-meta tone-hush">Este evento foi {ev.status === 'CANCELADO' ? 'cancelado' : 'encerrado'}.</p>
+              )}
+
+              {usuario?.papel === 'PARTICIPANTE' && !jaInscrito && (
+                <button
+                  type="button"
+                  className="btn btn--primary btn--lg evd-box__cta"
+                  onClick={handleAdicionarCarrinho}
+                  disabled={ctaDisabled}
+                >
+                  {carregando ? 'Adicionando…' : 'Adicionar ao carrinho'}
+                </button>
+              )}
+
+              {!usuario && (
+                <button
+                  type="button"
+                  className="btn btn--primary btn--lg evd-box__cta"
+                  onClick={() => navigate('/login')}
+                >
+                  Entrar para se inscrever
+                </button>
+              )}
             </div>
-          )}
-
-          {eventoId && <FaqPublico eventoId={eventoId} />}
+          </aside>
         </div>
       </main>
     </div>

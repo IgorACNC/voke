@@ -54,9 +54,9 @@ public class EventoServico {
         }
         if (!evento.getLocal().equals(novoLocal) || !evento.getDataHoraInicio().equals(novoInicio)
                 || !evento.getDataHoraFim().equals(novoFim)) {
-            List<Evento> conflitos = repositorio.buscarPorLocalEPeriodo(novoLocal, novoInicio, novoFim);
-            conflitos.removeIf(e -> e.getId().equals(id));
-            if (!conflitos.isEmpty()) {
+            boolean colisao = repositorio.buscarPorLocalEPeriodo(novoLocal, novoInicio, novoFim).stream()
+                    .anyMatch(e -> !e.getId().equals(id));
+            if (colisao) {
                 throw new ColisaoDeEspacoException();
             }
         }

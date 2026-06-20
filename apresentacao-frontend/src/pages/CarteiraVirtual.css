@@ -1,8 +1,8 @@
 .carteira-saldo-card {
-  background: linear-gradient(135deg, #302b63, #9333ea);
+  background: linear-gradient(135deg, var(--ink), var(--spotlight));
   border-radius: 20px;
   padding: 2rem 2.5rem;
-  color: #fff;
+  color: var(--on-ink-strong);
   margin-bottom: 1.5rem;
   box-shadow: 0 8px 32px rgba(147, 51, 234, 0.3);
 }
@@ -39,15 +39,15 @@
 }
 
 .carteira-taxa-aviso {
-  background: #fef9c3;
-  border: 1px solid #fde68a;
+  background: rgba(255, 200, 87, 0.15);
+  border: 1px solid rgba(255, 200, 87, 0.55);
   border-radius: 10px;
   padding: 0.7rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   font-size: 0.84rem;
-  color: #92400e;
+  color: var(--ember);
 }
 
 .carteira-taxa-aviso strong {
@@ -56,31 +56,31 @@
 }
 
 .carteira-limites-info {
-  background: #f9fafb;
-  border: 1px solid #f3f4f6;
+  background: var(--vellum);
+  border: 1px solid var(--ink-08);
   border-radius: 10px;
   padding: 0.75rem 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
   font-size: 0.82rem;
-  color: #6b7280;
+  color: var(--hush);
 }
 
 .carteira-limites-info .carteira-aviso-promo {
-  color: #d97706;
+  color: var(--ember);
   font-style: italic;
   margin-top: 0.1rem;
 }
 
 .carteira-btn-saque {
-  background: #fff !important;
-  color: #302b63 !important;
-  border: 2px solid #302b63 !important;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  border: 2px solid var(--ink) !important;
 }
 
 .carteira-btn-saque:hover:not(:disabled) {
-  background: #f5f3ff !important;
+  background: rgba(255, 200, 87, 0.10) !important;
 }
 
 .carteira-extrato-lista {
@@ -96,19 +96,19 @@
   align-items: center;
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  border: 1px solid #f3f4f6;
-  background: #fafafa;
+  border: 1px solid var(--ink-08);
+  background: var(--paper);
 }
 
 .carteira-extrato-item .carteira-extrato-desc {
   font-size: 0.9rem;
-  color: #1f1b4b;
+  color: var(--ink-strong);
   font-weight: 500;
 }
 
 .carteira-extrato-item .carteira-extrato-data {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--hush);
   margin-top: 0.15rem;
 }
 
@@ -117,8 +117,8 @@
   font-weight: 700;
 }
 
-.carteira-extrato-valor.entrada { color: #059669; }
-.carteira-extrato-valor.saida { color: #dc2626; }
+.carteira-extrato-valor.entrada { color: var(--moss); }
+.carteira-extrato-valor.saida { color: var(--ember); }
 
 .carteira-extrato-topo {
   display: flex;
@@ -140,21 +140,21 @@
 
 .carteira-extrato-filtro input[type='date'] {
   padding: 0.45rem 0.7rem;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--ink-12);
   border-radius: 8px;
   font: inherit;
   font-size: 0.84rem;
   outline: none;
-  color: #374151;
+  color: var(--ink-strong);
 }
 
 .carteira-extrato-filtro input[type='date']:focus {
-  border-color: #9333ea;
+  border-color: var(--spotlight);
 }
 
 .carteira-extrato-resumo {
   font-size: 0.82rem;
-  color: #6b7280;
+  color: var(--hush);
   margin: 0 0 0.75rem;
 }
 
@@ -163,9 +163,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #9ca3af;
+  color: var(--hush);
   font-size: 0.88rem;
-  border: 1.5px dashed #e5e7eb;
+  border: 1.5px dashed var(--ink-12);
   border-radius: 10px;
   margin-top: 0.5rem;
 }

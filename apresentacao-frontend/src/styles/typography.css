@@ -1,0 +1,89 @@
+/* =========================================================================
+   VOKE — Typography utilities
+   Use estas classes ao invés de inventar font-size/weight em cada arquivo.
+   ========================================================================= */
+
+.t-mega {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--type-mega-size);
+  line-height: var(--type-mega-lh);
+  letter-spacing: var(--type-mega-tracking);
+}
+
+.t-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--type-display-size);
+  line-height: var(--type-display-lh);
+  letter-spacing: var(--type-display-tracking);
+}
+
+.t-h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-lh);
+  letter-spacing: var(--type-h2-tracking);
+}
+
+.t-h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--type-h3-size);
+  line-height: var(--type-h3-lh);
+  letter-spacing: var(--type-h3-tracking);
+}
+
+.t-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-lh);
+  letter-spacing: var(--type-body-tracking);
+}
+
+.t-meta {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-lh);
+  letter-spacing: var(--type-meta-tracking);
+}
+
+.t-time {
+  font-family: var(--font-time);
+  font-weight: 500;
+  font-size: var(--type-time-size);
+  line-height: var(--type-time-lh);
+  letter-spacing: var(--type-time-tracking);
+  text-transform: uppercase;
+  font-feature-settings: "tnum" 1;
+}
+
+.t-time-lg {
+  font-family: var(--font-time);
+  font-weight: 500;
+  font-size: var(--type-time-lg-size);
+  line-height: var(--type-time-lg-lh);
+  letter-spacing: var(--type-time-lg-tracking);
+  font-feature-settings: "tnum" 1;
+}
+
+.t-eyebrow {
+  font-family: var(--font-time);
+  font-weight: 500;
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Tone classes — combinam com qualquer t-* */
+.tone-ink     { color: var(--ink-strong); }
+.tone-soft    { color: var(--ink-soft); }
+.tone-hush    { color: var(--hush); }
+.tone-spot    { color: var(--spotlight); }
+.tone-ember   { color: var(--ember); }
+.tone-on-ink  { color: var(--on-ink-strong); }
+.tone-on-ink-soft { color: var(--on-ink-soft); }

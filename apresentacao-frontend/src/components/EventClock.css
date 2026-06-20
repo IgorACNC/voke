@@ -1,0 +1,38 @@
+/* =========================================================================
+   EventClock — signature element
+   Aparece como índice tipográfico em todo contexto temporal.
+   ========================================================================= */
+
+.event-clock {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.event-clock__label,
+.event-clock__trailing {
+  opacity: 0.78;
+}
+
+.event-clock__sep {
+  display: inline-block;
+  color: var(--hush);
+  opacity: 0.5;
+  font-family: var(--font-time);
+}
+
+/* Variantes — diferenças de tamanho ficam por conta das classes t-time / t-time-lg */
+.event-clock--meta     { gap: var(--space-1); }
+.event-clock--compact  { gap: var(--space-2); }
+.event-clock--large    { gap: var(--space-3); }
+
+/* Pulse para estados críticos (T-<1h). Respeita prefers-reduced-motion via :hover do reset global. */
+.event-clock.is-critical .event-clock__time {
+  animation: event-clock-pulse 1s steps(2, end) infinite;
+}
+
+@keyframes event-clock-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}

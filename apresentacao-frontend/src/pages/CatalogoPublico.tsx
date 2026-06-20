@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Header from '../components/Header'
+import EventClock from '../components/EventClock'
+import EventoTira from '../components/EventoTira'
 import { listarEventosAtivos, type Evento } from '../services/eventoService'
 import './CatalogoPublico.css'
 
@@ -13,99 +16,147 @@ export default function CatalogoPublico() {
   useEffect(() => {
     listarEventosAtivos()
       .then(setEventos)
-      .catch(() => setErro('Erro ao carregar eventos.'))
+      .catch(() => setErro('Não foi possível carregar os eventos.'))
       .finally(() => setCarregando(false))
   }, [])
 
-  const eventosFiltrados = eventos.filter((ev) =>
-    ev.nome.toLowerCase().includes(busca.toLowerCase()) ||
-    ev.local.toLowerCase().includes(busca.toLowerCase())
-  )
+  const eventosOrdenados = useMemo(() => {
+    return [...eventos].sort(
+      (a, b) => new Date(a.dataHoraInicio).getTime() - new Date(b.dataHoraInicio).getTime(),
+    )
+  }, [eventos])
+
+  const eventosFiltrados = useMemo(() => {
+    const termo = busca.trim().toLowerCase()
+    if (!termo) return eventosOrdenados
+    return eventosOrdenados.filter(
+      (ev) => ev.nome.toLowerCase().includes(termo) || ev.local.toLowerCase().includes(termo),
+    )
+  }, [eventosOrdenados, busca])
+
+  const headline = eventosOrdenados[0]
+  const restantes = eventosFiltrados.filter((ev) => ev.id !== headline?.id)
 
   return (
-    <div className="cat-bg">
-      <header className="cat-header">
-        <span className="cat-logo">Voke</span>
-        <div className="cat-header-right">
-          <button className="cat-btn-outline" onClick={() => navigate('/login')}>Entrar</button>
-          <button className="cat-btn-primary" onClick={() => navigate('/login')}>Criar conta</button>
+    <div className="cat">
+      <Header eyebrow={<span className="t-time tone-on-ink-soft">Catálogo aberto · sem login</span>} />
+
+      <section className="cat-hero">
+        <div className="cat-hero__inner">
+          <p className="t-eyebrow tone-spot cat-hero__kicker">Em destaque agora</p>
+
+          {carregando && (
+            <p className="t-body tone-on-ink-soft cat-hero__loading">Carregando programação…</p>
+          )}
+
+          {!carregando && headline && (
+            <>
+              <h1 className="t-mega tone-on-ink cat-hero__title">{headline.nome}</h1>
+              <div className="cat-hero__clock">
+                <EventClock
+                  targetDate={headline.dataHoraInicio}
+                  variant="large"
+                  label="Começa em"
+                  trailing={headline.local}
+                />
+              </div>
+              <div className="cat-hero__meta">
+                {headline.loteAtual && (
+                  <span className="t-meta tone-on-ink-soft">
+                    Lote {headline.loteAtual.numero} · {headline.loteAtual.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </span>
+                )}
+                {headline.loteAtual && (
+                  <span className="t-meta tone-on-ink-soft">
+                    {headline.loteAtual.quantidadeTotal - headline.loteAtual.quantidadeVendida} vagas
+                  </span>
+                )}
+                {headline.idadeMinima > 0 && (
+                  <span className="t-meta tone-on-ink-soft">{headline.idadeMinima}+</span>
+                )}
+              </div>
+              <div className="cat-hero__actions">
+                <button type="button" className="btn btn--primary btn--lg" onClick={() => navigate('/login')}>
+                  Entrar para se inscrever
+                </button>
+                <button type="button" className="btn btn--ghost btn--lg cat-hero__ghost" onClick={() => document.getElementById('cat-prox')?.scrollIntoView({ behavior: 'smooth' })}>
+                  Ver agenda completa
+                </button>
+              </div>
+            </>
+          )}
+
+          {!carregando && !headline && !erro && (
+            <p className="t-h2 tone-on-ink-soft cat-hero__empty">
+              Nenhum evento publicado por enquanto. Volte logo.
+            </p>
+          )}
+
+          {erro && (
+            <p className="t-body tone-spot cat-hero__error">{erro}</p>
+          )}
         </div>
-      </header>
+      </section>
 
-      <div className="cat-banner">
-        <p>
-          Você está navegando como visitante. <strong>Faça login</strong> para se inscrever em eventos e participar de grupos.
-          <button className="cat-banner-btn" onClick={() => navigate('/login')}>Entrar agora</button>
-        </p>
-      </div>
-
-      <main className="cat-main">
-        <div className="cat-topo">
-          <div>
-            <h1 className="cat-titulo">Eventos em destaque</h1>
-            <p className="cat-sub">Descubra o que está acontecendo</p>
+      <main className="cat-main container--wide" id="cat-prox">
+        <div className="cat-sectionhead">
+          <div className="cat-sectionhead__title">
+            <p className="t-eyebrow tone-hush">Programação</p>
+            <h2 className="t-display">Próximos eventos</h2>
           </div>
-          <span className="cat-total">{eventosFiltrados.length} evento{eventosFiltrados.length !== 1 ? 's' : ''}</span>
+          <div className="cat-sectionhead__count">
+            <span className="t-time tone-hush">
+              {eventosFiltrados.length.toString().padStart(2, '0')} EVENTOS
+            </span>
+          </div>
         </div>
 
-        <input
-          className="cat-busca"
-          placeholder="Buscar por nome ou local..."
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-        />
+        <div className="cat-search">
+          <label className="sr-only" htmlFor="cat-busca">Buscar evento por nome ou local</label>
+          <input
+            id="cat-busca"
+            className="cat-search__input"
+            placeholder="Buscar por nome ou local"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+          />
+        </div>
 
-        {erro && <div className="cat-erro">{erro}</div>}
-        {carregando && <p className="cat-info">Carregando eventos...</p>}
+        {carregando && (
+          <p className="t-body tone-hush cat-info">Carregando próximos eventos…</p>
+        )}
+
         {!carregando && eventosFiltrados.length === 0 && (
-          <p className="cat-info">Nenhum evento encontrado.</p>
+          <div className="cat-empty">
+            <p className="t-h2">Nada por aqui</p>
+            <p className="t-body tone-hush">Ajuste a busca ou volte mais tarde.</p>
+          </div>
         )}
 
         <div className="cat-lista">
-          {eventosFiltrados.map((ev) => (
-            <div key={ev.id} className="cat-card">
-              <div className="cat-card-topo">
-                <div>
-                  <h2 className="cat-card-nome">{ev.nome}</h2>
-                  <p className="cat-card-local">📍 {ev.local}</p>
-                </div>
-                {ev.idadeMinima > 0 && (
-                  <span className="cat-badge-idade">{ev.idadeMinima}+</span>
-                )}
-              </div>
-
-              {ev.descricao && (
-                <p className="cat-card-desc">{ev.descricao}</p>
-              )}
-
-              <div className="cat-card-info">
-                <span className="cat-data">
-                  🗓️ {new Date(ev.dataHoraInicio).toLocaleDateString('pt-BR', {
-                    day: '2-digit', month: 'short', year: 'numeric',
-                  })}
-                  {' às '}
-                  {new Date(ev.dataHoraInicio).toLocaleTimeString('pt-BR', {
-                    hour: '2-digit', minute: '2-digit',
-                  })}
-                </span>
-                {ev.loteAtual && (
-                  <span className="cat-preco">R$ {ev.loteAtual.preco.toFixed(2)}</span>
-                )}
-              </div>
-
-              {ev.loteAtual && (
-                <p className="cat-vagas">
-                  {ev.loteAtual.quantidadeTotal - ev.loteAtual.quantidadeVendida} vagas disponíveis
-                </p>
-              )}
-
-              <button className="cat-btn-inscricao" onClick={() => navigate('/login')}>
-                Entrar para se inscrever
-              </button>
-            </div>
+          {restantes.map((ev) => (
+            <EventoTira
+              key={ev.id}
+              id={ev.id}
+              nome={ev.nome}
+              local={ev.local}
+              dataHoraInicio={ev.dataHoraInicio}
+              preco={ev.loteAtual?.preco ?? null}
+              loteNumero={ev.loteAtual?.numero ?? null}
+              vagasDisponiveis={
+                ev.loteAtual ? ev.loteAtual.quantidadeTotal - ev.loteAtual.quantidadeVendida : null
+              }
+              href="/login"
+              ctaLabel="Entrar para ver"
+              status={ev.status}
+            />
           ))}
         </div>
       </main>
+
+      <footer className="cat-footer container--wide">
+        <span className="t-time tone-hush">VOKE · {new Date().getFullYear()}</span>
+      </footer>
     </div>
   )
 }

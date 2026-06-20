@@ -3,9 +3,9 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   padding: 1.5rem;
-  background: #fff;
+  background: var(--paper);
   border-radius: 16px;
-  border: 1.5px solid #e5e7eb;
+  border: 1.5px solid var(--ink-12);
   margin-bottom: 1rem;
 }
 .pontos-resumo-item {
@@ -16,26 +16,26 @@
 .pontos-resumo-label {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--hush);
   letter-spacing: 0.05em;
 }
 .pontos-resumo-valor {
   font-size: 2rem;
-  color: #111827;
+  color: var(--ink-strong);
   font-weight: 700;
 }
 .pontos-resumo-valor.secundario {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #4b5563;
+  color: var(--ink-soft);
 }
 
 .pontos-info {
-  background: #f9fafb;
+  background: var(--vellum);
   padding: 0.75rem 1rem;
-  border-left: 3px solid #7c6af7;
+  border-left: 3px solid var(--spotlight);
   border-radius: 6px;
-  color: #4b5563;
+  color: var(--ink-soft);
   margin-bottom: 1.25rem;
   font-size: 0.9rem;
 }
@@ -43,7 +43,7 @@
 .pontos-tabs {
   display: flex;
   gap: 0.5rem;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid var(--ink-12);
   margin-bottom: 1.25rem;
 }
 .pontos-tab {
@@ -53,16 +53,16 @@
   font-weight: 700;
   font-size: 0.85rem;
   letter-spacing: 0.04em;
-  color: #6b7280;
+  color: var(--hush);
   cursor: pointer;
   border-bottom: 3px solid transparent;
   margin-bottom: -2px;
   transition: all 0.15s ease;
 }
-.pontos-tab:hover { color: #111827; }
+.pontos-tab:hover { color: var(--ink-strong); }
 .pontos-tab.ativo {
-  color: #111827;
-  border-bottom-color: #111827;
+  color: var(--ink-strong);
+  border-bottom-color: var(--ink-strong);
 }
 
 .pontos-lista {
@@ -76,13 +76,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.2rem;
-  background: #fff;
-  border: 1.5px solid #e5e7eb;
+  background: var(--paper);
+  border: 1.5px solid var(--ink-12);
   border-radius: 12px;
   border-left-width: 4px;
 }
-.pontos-transacao.entrada { border-left-color: #16a34a; }
-.pontos-transacao.saida   { border-left-color: #dc2626; }
+.pontos-transacao.entrada { border-left-color: var(--moss); }
+.pontos-transacao.saida   { border-left-color: var(--ember); }
 
 .pontos-transacao-info {
   display: flex;
@@ -91,23 +91,23 @@
 }
 .pontos-transacao-tipo {
   font-weight: 700;
-  color: #111827;
+  color: var(--ink-strong);
   font-size: 0.95rem;
 }
 .pontos-transacao-desc {
-  color: #4b5563;
+  color: var(--ink-soft);
   font-size: 0.85rem;
 }
 .pontos-transacao-data {
-  color: #9ca3af;
+  color: var(--hush);
   font-size: 0.75rem;
 }
 .pontos-transacao-valor {
   font-weight: 700;
   font-size: 1.05rem;
 }
-.pontos-transacao.entrada .pontos-transacao-valor { color: #16a34a; }
-.pontos-transacao.saida   .pontos-transacao-valor { color: #dc2626; }
+.pontos-transacao.entrada .pontos-transacao-valor { color: var(--moss); }
+.pontos-transacao.saida   .pontos-transacao-valor { color: var(--ember); }
 
 @media (max-width: 720px) {
   .pontos-resumo { grid-template-columns: 1fr; }

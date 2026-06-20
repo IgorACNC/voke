@@ -1,0 +1,221 @@
+/* =========================================================================
+   VOKE — Reset estendido + estilos base de elementos
+   Quality floor: focus-visible, reduced motion, contraste WCAG AA.
+   ========================================================================= */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  background: var(--vellum);
+  color: var(--ink-strong);
+  font-family: var(--font-body);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-lh);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Links */
+a {
+  color: var(--ink-strong);
+  text-decoration: none;
+  text-decoration-color: var(--ink-24);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--motion-quick) var(--ease-out);
+}
+a:hover { text-decoration: underline; text-decoration-color: var(--spotlight); }
+
+/* Tipo herdado */
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Botões: zero estilo padrão, deixar pages declararem variant */
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+button:disabled { cursor: not-allowed; }
+
+/* Inputs base */
+input, select, textarea {
+  background: var(--paper);
+  border: 1px solid var(--ink-12);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  transition: border-color var(--motion-quick) var(--ease-out),
+              box-shadow var(--motion-quick) var(--ease-out);
+}
+input::placeholder, textarea::placeholder { color: var(--hush); }
+input:hover, select:hover, textarea:hover { border-color: var(--ink-24); }
+input:focus, select:focus, textarea:focus { outline: none; }
+
+/* Focus ring acessível — visível somente para keyboard */
+:focus-visible {
+  outline: 2px solid var(--spotlight);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Pula focus ring em foco normal de input para não dobrar com o ring custom */
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--spotlight);
+  outline-offset: -1px;
+  border-color: var(--spotlight);
+}
+
+/* Headings sem margem default — telas declaram seu próprio espaçamento */
+h1, h2, h3, h4, h5, h6, p, ul, ol, figure { margin: 0; }
+
+/* Listas sem bullet por padrão */
+ul, ol { padding: 0; list-style: none; }
+
+img { display: block; max-width: 100%; height: auto; }
+
+/* Seleção de texto */
+::selection { background: var(--spotlight); color: var(--ink-strong); }
+
+/* Scrollbar discreto (Webkit) */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: var(--ink-12);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-24); }
+
+/* ---- Reduced motion: respeitar preferência do sistema ------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Helpers de layout reutilizáveis ----------------------------------- */
+.surface-vellum { background: var(--vellum); color: var(--ink-strong); }
+.surface-paper  { background: var(--paper);  color: var(--ink-strong); }
+.surface-ink    { background: var(--ink);    color: var(--on-ink-strong); }
+
+.divider {
+  height: 1px;
+  background: var(--ink-12);
+  border: 0;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--maxw-content);
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+}
+.container--wide { max-width: var(--maxw-wide); }
+.container--text { max-width: var(--maxw-text); }
+
+/* Sr-only — texto visível só para leitor de tela */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Botões: variantes — agnósticas de página -------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  height: 40px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background var(--motion-quick) var(--ease-out),
+              transform var(--motion-quick) var(--ease-out),
+              box-shadow var(--motion-quick) var(--ease-out);
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.5; transform: none; }
+
+.btn--primary {
+  background: var(--spotlight);
+  color: var(--ink-strong);
+}
+.btn--primary:hover:not(:disabled) {
+  background: #FFD479;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--ink-strong);
+  border: 1px solid var(--ink-24);
+}
+.btn--ghost:hover:not(:disabled) { border-color: var(--ink-strong); }
+
+.btn--ink {
+  background: var(--ink);
+  color: var(--on-ink-strong);
+}
+.btn--ink:hover:not(:disabled) { background: #1A1925; }
+
+.btn--ember {
+  background: transparent;
+  color: var(--ember);
+  border: 1px solid var(--ember);
+}
+.btn--ember:hover:not(:disabled) {
+  background: var(--ember);
+  color: var(--on-ink-strong);
+}
+
+.btn--lg { height: 48px; padding: 0 var(--space-5); font-size: 0.9375rem; }
+.btn--sm { height: 32px; padding: 0 var(--space-3); font-size: 0.8125rem; }
+
+/* ---- Card padrão — agnóstico de página -------------------------------- */
+.card {
+  background: var(--paper);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  border: 1px solid var(--ink-08);
+}
+
+/* ---- Badge ----------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  height: 22px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-time);
+  font-weight: 500;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--ink-08);
+  color: var(--ink-strong);
+}
+.badge--spotlight { background: var(--spotlight); color: var(--ink-strong); }
+.badge--ember     { background: rgba(224, 65, 62, 0.12); color: var(--ember); }
+.badge--moss      { background: rgba(79, 107, 74, 0.14); color: var(--moss); }
+.badge--ink       { background: var(--ink); color: var(--on-ink-strong); }

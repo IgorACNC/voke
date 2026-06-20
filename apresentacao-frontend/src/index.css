@@ -1,13 +1,3 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-button { font-family: inherit; }
-input  { font-family: inherit; }
+/* Reservado para overrides específicos da app.
+   Reset e estilos base estão em styles/tokens.css, styles/typography.css,
+   styles/elements.css — importados em main.tsx nessa ordem. */

@@ -2,47 +2,47 @@
 .parceiro-atividade {
   font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em;
   padding: 0.3rem 0.7rem; border-radius: 20px;
-  background: #ede9fe; color: #6d28d9;
+  background: rgba(255, 200, 87, 0.18); color: var(--ink-strong);
 }
-.parceiro-atividade.removida { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
+.parceiro-atividade.removida { background: var(--ink-08); color: var(--hush); text-decoration: line-through; }
 
 .parceiro-check-group { display: flex; flex-direction: column; gap: 0.6rem; }
 .parceiro-check-group label {
   display: flex; align-items: center; gap: 0.6rem;
-  font-size: 0.9rem; color: #374151; cursor: pointer;
+  font-size: 0.9rem; color: var(--ink-strong); cursor: pointer;
 }
 .parceiro-check-group input[type="checkbox"] {
-  width: 18px; height: 18px; accent-color: #9333ea;
+  width: 18px; height: 18px; accent-color: var(--spotlight);
 }
 
 .parceiro-stats { display: flex; gap: 1.5rem; margin: 1rem 0; }
 .parceiro-stat {
   display: flex; flex-direction: column; align-items: center;
-  padding: 0.75rem 1.2rem; background: #f5f3ff; border-radius: 12px;
+  padding: 0.75rem 1.2rem; background: rgba(255, 200, 87, 0.10); border-radius: 12px;
   min-width: 120px;
 }
-.parceiro-stat-valor { font-size: 1.5rem; font-weight: 800; color: #6d28d9; }
-.parceiro-stat-label { font-size: 0.72rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.2rem; }
+.parceiro-stat-valor { font-size: 1.5rem; font-weight: 800; color: var(--ink-strong); }
+.parceiro-stat-label { font-size: 0.72rem; font-weight: 600; color: var(--hush); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.2rem; }
 
 .parceiro-aviso {
-  background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
-  padding: 0.75rem 1rem; font-size: 0.85rem; color: #92400e; margin-bottom: 1rem;
+  background: rgba(255, 200, 87, 0.10); border: 1px solid rgba(255, 200, 87, 0.55); border-radius: 10px;
+  padding: 0.75rem 1rem; font-size: 0.85rem; color: var(--ember); margin-bottom: 1rem;
 }
 
 .parceiro-breve {
-  background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;
-  padding: 0.75rem 1rem; font-size: 0.85rem; color: #166534; margin: 0.75rem 0;
+  background: rgba(79, 107, 74, 0.10); border: 1px solid rgba(79, 107, 74, 0.35); border-radius: 10px;
+  padding: 0.75rem 1rem; font-size: 0.85rem; color: var(--moss); margin: 0.75rem 0;
   text-align: center;
 }
 
 .parceiro-item {
   display: flex; justify-content: space-between; align-items: flex-start;
-  padding: 1rem; border: 1px solid #f3f4f6; border-radius: 12px;
+  padding: 1rem; border: 1px solid var(--ink-08); border-radius: 12px;
   gap: 1rem;
 }
 .parceiro-item-info { flex: 1; }
-.parceiro-item-info strong { display: block; color: #1f1b4b; font-size: 0.95rem; }
-.parceiro-item-info span { display: block; color: #6b7280; font-size: 0.78rem; margin-top: 0.15rem; }
+.parceiro-item-info strong { display: block; color: var(--ink-strong); font-size: 0.95rem; }
+.parceiro-item-info span { display: block; color: var(--hush); font-size: 0.78rem; margin-top: 0.15rem; }
 
 .parceiro-editar-ativ { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .parceiro-editar-ativ button {
@@ -51,6 +51,6 @@
 }
 
 .cupom-item {
-  padding: 1rem; border: 1px solid #e5e7eb; border-radius: 12px;
-  margin-bottom: 0.75rem; background: #fafafa;
+  padding: 1rem; border: 1px solid var(--ink-12); border-radius: 12px;
+  margin-bottom: 0.75rem; background: var(--paper);
 }
