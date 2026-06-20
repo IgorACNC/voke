@@ -22,6 +22,7 @@ export interface Evento {
   organizadorId: string
   loteAtual: LoteEvento | null
   categoriaIds: string[]
+  totalIngressosVendidos: number
 }
 
 export interface CriarEventoPayload {

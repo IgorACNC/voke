@@ -91,6 +91,7 @@
   border-radius: 20px; background: #dcfce7; color: #166534;
 }
 .eev-lote-badge--bloq { background: #f3f4f6; color: #6b7280; }
+.eev-lote-badge--esgotado { background: #fef3c7; color: #92400e; }
 .eev-lote-detalhe { display: flex; gap: 1.5rem; font-size: 0.85rem; color: #374151; }
 .eev-lote-aviso { font-size: 0.8rem; color: #9ca3af; margin: 0.3rem 0 0; }
 .eev-lote-info-aviso { font-size: 0.82rem; color: #9ca3af; margin: 0; }
@@ -109,6 +110,7 @@
 }
 .eev-form-lote-titulo { font-size: 0.95rem; font-weight: 700; color: #302b63; margin: 0; }
 .eev-form-lote-acoes { display: flex; gap: 0.6rem; }
+.eev-vagas-restantes { font-size: 0.78rem; color: #6b7280; margin-top: -0.3rem; }
 
 /* Grupo */
 .eev-grupo-desc { font-size: 0.9rem; color: #6b7280; margin: 0; }

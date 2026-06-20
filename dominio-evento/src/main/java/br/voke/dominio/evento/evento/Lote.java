@@ -39,6 +39,9 @@ public class Lote {
             throw new IllegalStateException("Lote esgotado");
         }
         quantidadeVendida++;
+        if (!possuiVagas()) {
+            this.ativo = false;
+        }
     }
 
     public void cancelarVenda() {

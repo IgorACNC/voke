@@ -65,13 +65,16 @@ public class EventoJpa {
     @Column(name = "visualizacoes", nullable = false, columnDefinition = "INT NOT NULL DEFAULT 0")
     private int visualizacoes;
 
+    @Column(name = "total_ingressos_vendidos", nullable = false, columnDefinition = "INT NOT NULL DEFAULT 0")
+    private int totalIngressosVendidos;
+
     protected EventoJpa() {
     }
 
     public EventoJpa(UUID id, String nome, String descricao, String local, LocalDateTime dataHoraInicio,
                      LocalDateTime dataHoraFim, int capacidadeMaxima, UUID organizadorId,
                      int idadeMinima, StatusEvento status, LoteJpa loteAtual, Set<UUID> categoriaIds,
-                     int visualizacoes) {
+                     int visualizacoes, int totalIngressosVendidos) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
@@ -85,6 +88,7 @@ public class EventoJpa {
         this.loteAtual = loteAtual;
         this.categoriaIds = categoriaIds != null ? new HashSet<>(categoriaIds) : new HashSet<>();
         this.visualizacoes = visualizacoes;
+        this.totalIngressosVendidos = totalIngressosVendidos;
     }
 
     public UUID getId() { return id; }
@@ -100,4 +104,5 @@ public class EventoJpa {
     public LoteJpa getLoteAtual() { return loteAtual; }
     public Set<UUID> getCategoriaIds() { return categoriaIds; }
     public int getVisualizacoes() { return visualizacoes; }
+    public int getTotalIngressosVendidos() { return totalIngressosVendidos; }
 }

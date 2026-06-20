@@ -153,25 +153,29 @@ export default function EditarEvento() {
             <span className="eev-cap-info">Capacidade total: {evento?.capacidadeMaxima} pessoas</span>
           </div>
 
-          {evento?.loteAtual && (
-            <div className={`eev-lote ${evento.loteAtual.ativo ? 'eev-lote--ativo' : 'eev-lote--encerrado'}`}>
+          {evento?.loteAtual && (() => {
+            const lote = evento.loteAtual;
+            const esgotado = lote.quantidadeVendida >= lote.quantidadeTotal;
+            return (
+            <div className={`eev-lote ${lote.ativo ? 'eev-lote--ativo' : 'eev-lote--encerrado'}`}>
               <div className="eev-lote-linha">
-                <span className="eev-lote-nome">{evento.loteAtual.numero}º Lote — {evento.loteAtual.ativo ? 'ATIVO' : 'AGUARDANDO'}</span>
-                <span className={`eev-lote-badge ${evento.loteAtual.ativo ? '' : 'eev-lote-badge--bloq'}`}>
-                  {evento.loteAtual.ativo ? 'EM VENDA' : 'BLOQUEADO'}
+                <span className="eev-lote-nome">{lote.numero}º Lote — {lote.ativo ? 'ATIVO' : esgotado ? 'ESGOTADO' : 'AGUARDANDO'}</span>
+                <span className={`eev-lote-badge ${lote.ativo ? '' : esgotado ? 'eev-lote-badge--esgotado' : 'eev-lote-badge--bloq'}`}>
+                  {lote.ativo ? 'EM VENDA' : esgotado ? 'ESGOTADO' : 'BLOQUEADO'}
                 </span>
               </div>
               <div className="eev-lote-detalhe">
-                <span>Preço: R$ {evento.loteAtual.preco.toFixed(2)}</span>
-                <span>Vendidos: {evento.loteAtual.quantidadeVendida}/{evento.loteAtual.quantidadeTotal}</span>
+                <span>Preço: R$ {lote.preco.toFixed(2)}</span>
+                <span>Vendidos: {lote.quantidadeVendida}/{lote.quantidadeTotal}</span>
               </div>
-              {!evento.loteAtual.ativo && (
+              {!lote.ativo && !esgotado && (
                 <p className="eev-lote-aviso">Será liberado após esgotamento do lote anterior</p>
               )}
             </div>
-          )}
+            );
+          })()}
 
-          {evento?.status === 'ATIVO' && evento?.loteAtual && !evento.loteAtual.ativo && (
+          {evento?.status === 'ATIVO' && evento?.loteAtual && (!evento.loteAtual.ativo || evento.loteAtual.quantidadeVendida >= evento.loteAtual.quantidadeTotal) && evento.totalIngressosVendidos < evento.capacidadeMaxima && (
             <>
               {!mostrarFormLote ? (
                 <button className="eev-btn-lote" onClick={() => setMostrarFormLote(true)}>
@@ -181,8 +185,9 @@ export default function EditarEvento() {
                 <form className="eev-form-lote" onSubmit={handleCriarLote}>
                   <h3 className="eev-form-lote-titulo">Novo Lote</h3>
                   <label className="eev-label">Quantidade de Ingressos</label>
-                  <input className="eev-input" type="number" min="1" max={evento.capacidadeMaxima}
+                  <input className="eev-input" type="number" min="1" max={evento.capacidadeMaxima - evento.totalIngressosVendidos}
                     value={novaQuantidade} onChange={(e) => setNovaQuantidade(e.target.value)} required />
+                  <span className="eev-vagas-restantes">Vagas restantes: {evento.capacidadeMaxima - evento.totalIngressosVendidos}</span>
                   <label className="eev-label">Preço (R$)</label>
                   <input className="eev-input" type="number" min="0" step="0.01"
                     value={novoPreco} onChange={(e) => setNovoPreco(e.target.value)} required />
@@ -199,7 +204,13 @@ export default function EditarEvento() {
             </>
           )}
 
-          {evento?.status === 'ATIVO' && evento?.loteAtual?.ativo && (
+          {evento?.status === 'ATIVO' && evento?.loteAtual && evento.totalIngressosVendidos >= evento.capacidadeMaxima && (
+            <p className="eev-lote-info-aviso">
+              Capacidade máxima do evento atingida. Não é possível criar novos lotes.
+            </p>
+          )}
+
+          {evento?.status === 'ATIVO' && evento?.loteAtual?.ativo && evento.loteAtual.quantidadeVendida < evento.loteAtual.quantidadeTotal && (
             <p className="eev-lote-info-aviso">
               O próximo lote só pode ser criado após o lote atual ser esgotado.
             </p>

@@ -150,7 +150,8 @@ public class EventoController {
                                int capacidadeMaxima, String status, int idadeMinima,
                                String organizadorId,
                                LoteResp loteAtual,
-                               List<String> categoriaIds) {}
+                               List<String> categoriaIds,
+                               int totalIngressosVendidos) {}
 
     private EventoResp toResposta(Evento e) {
         LoteResp lote = null;
@@ -163,7 +164,8 @@ public class EventoController {
         return new EventoResp(e.getId().getValor().toString(), e.getNome(), e.getDescricao(),
                 e.getLocal(), e.getDataHoraInicio(), e.getDataHoraFim(),
                 e.getCapacidadeMaxima(), e.getStatus().name(), e.getIdadeMinima(),
-                e.getOrganizadorId().toString(), lote, categorias);
+                e.getOrganizadorId().toString(), lote, categorias,
+                e.getTotalIngressosVendidos());
     }
 
     record ErroResp(String mensagem) {}

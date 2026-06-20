@@ -25,7 +25,8 @@ public final class EventoJpaMapper {
                 evento.getStatus(),
                 paraJpa(evento.getLoteAtual()),
                 evento.getCategoriaIds(),
-                evento.getVisualizacoes());
+                evento.getVisualizacoes(),
+                evento.getTotalIngressosVendidosAnteriores());
     }
 
     public static Evento paraDominio(EventoJpa jpa) {
@@ -48,6 +49,9 @@ public final class EventoJpaMapper {
         }
         if (jpa.getVisualizacoes() > 0) {
             DominioReflection.definirCampo(evento, "visualizacoes", jpa.getVisualizacoes());
+        }
+        if (jpa.getTotalIngressosVendidos() > 0) {
+            DominioReflection.definirCampo(evento, "totalIngressosVendidos", jpa.getTotalIngressosVendidos());
         }
         return evento;
     }

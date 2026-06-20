@@ -25,6 +25,7 @@ public class Evento extends EntidadeBase<EventoId> {
     private int idadeMinima;
     private Set<UUID> categoriaIds = new HashSet<>();
     private int visualizacoes;
+    private int totalIngressosVendidos;
 
     public Evento(EventoId id, String nome, String descricao, String local,
                   LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
@@ -56,6 +57,7 @@ public class Evento extends EntidadeBase<EventoId> {
         this.status = StatusEvento.ATIVO;
         this.idadeMinima = idadeMinima;
         this.visualizacoes = 0;
+        this.totalIngressosVendidos = 0;
     }
 
     public void incrementarVisualizacoes() {
@@ -72,11 +74,19 @@ public class Evento extends EntidadeBase<EventoId> {
     }
 
     public void criarNovoLote(Lote novoLote) {
-        if (loteAtual != null && loteAtual.isAtivo()) {
+        if (loteAtual != null && loteAtual.isAtivo() && loteAtual.possuiVagas()) {
             throw new LoteAtivoExistenteException();
         }
-        if (novoLote.getQuantidadeTotal() > capacidadeMaxima) {
-            throw new IllegalArgumentException("Quantidade do lote não pode exceder a capacidade máxima do evento");
+        int capacidadeRestante = capacidadeMaxima - getTotalIngressosVendidos();
+        if (novoLote.getQuantidadeTotal() > capacidadeRestante) {
+            throw new IllegalArgumentException(
+                    "Quantidade do lote não pode exceder a capacidade restante do evento (" + capacidadeRestante + " vagas)");
+        }
+        if (loteAtual != null) {
+            totalIngressosVendidos += loteAtual.getQuantidadeVendida();
+            if (loteAtual.isAtivo()) {
+                loteAtual.encerrar();
+            }
         }
         this.loteAtual = novoLote;
     }
@@ -137,6 +147,14 @@ public class Evento extends EntidadeBase<EventoId> {
     public StatusEvento getStatus() { return status; }
     public int getIdadeMinima() { return idadeMinima; }
     public Set<UUID> getCategoriaIds() { return Set.copyOf(categoriaIds); }
+    public int getTotalIngressosVendidos() {
+        int total = totalIngressosVendidos;
+        if (loteAtual != null) {
+            total += loteAtual.getQuantidadeVendida();
+        }
+        return total;
+    }
+    public int getTotalIngressosVendidosAnteriores() { return totalIngressosVendidos; }
 
     public void adicionarCategoria(UUID categoriaId) {
         Objects.requireNonNull(categoriaId, "Categoria é obrigatória");
