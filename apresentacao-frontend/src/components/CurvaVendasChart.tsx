@@ -11,11 +11,17 @@ export default function CurvaVendasChart({ pontos }: Props) {
       Ainda não há vendas para gerar a curva.
     </p>
   }
-  const data = pontos.map(p => ({
-    data: new Date(p.data).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
-    ingressos: Number(p.ingressos),
-    receita: Number(p.receita),
-  }))
+  const data = pontos.map(p => {
+    // p.data vem como "YYYY-MM-DD"; interpretar como data local evita
+    // que o fuso horário UTC arraste o dia para trás na exibição.
+    const [ano, mes, dia] = p.data.split('-').map(Number)
+    const local = new Date(ano, mes - 1, dia)
+    return {
+      data: local.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
+      ingressos: Number(p.ingressos),
+      receita: Number(p.receita),
+    }
+  })
   return (
     <ResponsiveContainer width="100%" height={300}>
       <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>

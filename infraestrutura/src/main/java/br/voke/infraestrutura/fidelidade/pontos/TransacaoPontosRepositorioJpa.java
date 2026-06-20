@@ -1,11 +1,13 @@
 package br.voke.infraestrutura.fidelidade.pontos;
 
+import br.voke.dominio.fidelidade.pontos.TipoTransacaoPontos;
 import br.voke.dominio.fidelidade.pontos.TransacaoPontos;
 import br.voke.dominio.fidelidade.pontos.TransacaoPontosId;
 import br.voke.dominio.fidelidade.pontos.TransacaoPontosRepositorio;
 import br.voke.infraestrutura.compartilhado.DominioReflection;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +31,18 @@ public class TransacaoPontosRepositorioJpa implements TransacaoPontosRepositorio
         return repository.findByParticipanteIdOrderByDataHoraDesc(participanteId).stream()
                 .map(this::paraDominio)
                 .toList();
+    }
+
+    @Override
+    public int somarPontosPorTipoAteData(UUID participanteId, TipoTransacaoPontos tipo, LocalDateTime ate) {
+        Integer total = repository.somarPontosPorTipoAteData(participanteId, tipo, ate);
+        return total != null ? total : 0;
+    }
+
+    @Override
+    public int somarPontosPorTipo(UUID participanteId, TipoTransacaoPontos tipo) {
+        Integer total = repository.somarPontosPorTipo(participanteId, tipo);
+        return total != null ? total : 0;
     }
 
     private TransacaoPontos paraDominio(TransacaoPontosJpa j) {

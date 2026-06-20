@@ -469,6 +469,14 @@ public FinalizarCompraCasoDeUso finalizarCompra(CarrinhoServico carrinhoServico,
     }
 
     @Bean
+    public br.voke.aplicacao.fidelidade.ExpirarPontosVencidosCasoDeUso expirarPontosVencidos(
+            br.voke.dominio.fidelidade.pontos.ContaPontosRepositorio contaRepo,
+            br.voke.dominio.fidelidade.pontos.TransacaoPontosRepositorio txRepo,
+            ContaPontosServico servico) {
+        return new br.voke.aplicacao.fidelidade.ExpirarPontosVencidosCasoDeUso(contaRepo, txRepo, servico);
+    }
+
+    @Bean
     public ConsultarSaldoCarteiraVirtualCasoDeUso consultarSaldoCarteira(CarteiraVirtualServico s) {
         return new ConsultarSaldoCarteiraVirtualCasoDeUso(s);
     }

@@ -14,6 +14,8 @@ import br.voke.dominio.fidelidade.recompensa.CupomResgatadoRepositorio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -171,8 +173,12 @@ public class RecompensaController {
         return ResponseEntity.ok(new SaldoResp(consultarPontos.executar(participanteId)));
     }
 
+    // RN5 - atomicidade: débito de pontos + atualização de estoque da recompensa +
+    // efeito da bonificação (cupom ou crédito em carteira) + registro do voucher
+    // rodam numa única transação. Falha em qualquer etapa faz rollback de tudo.
     @PostMapping("/{id}/resgatar")
     @PreAuthorize("hasRole('PARTICIPANTE')")
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<?> resgatar(@PathVariable UUID id, @RequestParam UUID participanteId) {
         try {
             Recompensa recompensa = recompensaRepositorio.buscarPorId(new RecompensaId(id))
@@ -189,6 +195,7 @@ public class RecompensaController {
             }
             return ResponseEntity.ok(new ResgateResp(codigoCupom));
         } catch (RuntimeException e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
         }
     }
