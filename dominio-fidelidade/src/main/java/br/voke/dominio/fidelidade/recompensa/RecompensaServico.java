@@ -145,10 +145,9 @@ public class RecompensaServico {
                     carteiraServico.creditar(participanteId, recompensa.getValor());
                 }
             }
-            case DESCONTO, BRINDE, BENEFICIO -> {
-                // Sem efeito automático além do log/observer.
-                // DESCONTO: a entrega do código fica para um próximo incremento.
-                // BRINDE/BENEFICIO: tratativa logística externa.
+            case CUPOM, DESCONTO, BRINDE, BENEFICIO -> {
+                // CUPOM: código entregue ao participante para uso nos eventos elegíveis.
+                // DESCONTO/BRINDE/BENEFICIO: legados — sem efeito automático.
             }
         }
     }

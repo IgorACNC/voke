@@ -4,5 +4,6 @@ public enum CategoriaRecompensa {
     DESCONTO,
     BRINDE,
     BENEFICIO,
-    CREDITO_CARTEIRA
+    CREDITO_CARTEIRA,
+    CUPOM
 }

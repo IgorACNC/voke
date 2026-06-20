@@ -289,7 +289,7 @@ export default function Carrinho() {
                   <form onSubmit={handleAplicarCupom}>
                     <div className="carrinho-cupom-row">
                       <input
-                        placeholder="Código do cupom"
+                        placeholder="Ex: VOKE-A3K9PQ27"
                         value={codigoCupom}
                         onChange={(e) => setCodigoCupom(e.target.value.toUpperCase())}
                         disabled={expirado}
@@ -298,6 +298,9 @@ export default function Carrinho() {
                         {aplicandoCupom ? 'Aplicando...' : 'Aplicar'}
                       </button>
                     </div>
+                    <p style={{ fontSize: '0.78rem', color: '#6b7280', marginTop: 6 }}>
+                      O código é gerado quando você resgata um cupom em <strong>Catálogo de Recompensas</strong>.
+                    </p>
                   </form>
                 ) : (
                   <div className="carrinho-cupom-aplicado">

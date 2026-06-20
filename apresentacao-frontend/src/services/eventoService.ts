@@ -21,6 +21,7 @@ export interface Evento {
   idadeMinima: number
   organizadorId: string
   loteAtual: LoteEvento | null
+  categoriaIds: string[]
 }
 
 export interface CriarEventoPayload {

@@ -1,6 +1,6 @@
 import api from './api'
 
-export type CategoriaRecompensa = 'DESCONTO' | 'BRINDE' | 'BENEFICIO' | 'CREDITO_CARTEIRA'
+export type CategoriaRecompensa = 'DESCONTO' | 'BRINDE' | 'BENEFICIO' | 'CREDITO_CARTEIRA' | 'CUPOM'
 
 export interface Recompensa {
   id: string
@@ -75,6 +75,34 @@ export async function listarTodasRecompensas(): Promise<Recompensa[]> {
   return data
 }
 
-export async function resgatarRecompensa(recompensaId: string, participanteId: string): Promise<void> {
-  await api.post(`/recompensas/${recompensaId}/resgatar?participanteId=${participanteId}`)
+export interface ResgateRecompensaResp {
+  codigoCupom: string | null
+}
+
+export async function resgatarRecompensa(
+  recompensaId: string,
+  participanteId: string,
+): Promise<ResgateRecompensaResp> {
+  const { data } = await api.post<ResgateRecompensaResp>(
+    `/recompensas/${recompensaId}/resgatar?participanteId=${participanteId}`,
+  )
+  return data ?? { codigoCupom: null }
+}
+
+export interface MeuCupom {
+  id: string
+  codigoCupom: string
+  recompensaNome: string
+  valor: number | null
+  global: boolean
+  dataResgate: string
+  utilizado: boolean
+  ativo: boolean
+}
+
+export async function listarMeusCupons(participanteId: string): Promise<MeuCupom[]> {
+  const { data } = await api.get<MeuCupom[]>(
+    `/recompensas/participante/${participanteId}/meus-cupons`,
+  )
+  return data
 }

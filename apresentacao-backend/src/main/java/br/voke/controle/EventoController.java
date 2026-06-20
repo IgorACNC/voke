@@ -149,7 +149,8 @@ public class EventoController {
                                LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
                                int capacidadeMaxima, String status, int idadeMinima,
                                String organizadorId,
-                               LoteResp loteAtual) {}
+                               LoteResp loteAtual,
+                               List<String> categoriaIds) {}
 
     private EventoResp toResposta(Evento e) {
         LoteResp lote = null;
@@ -158,10 +159,11 @@ public class EventoController {
             lote = new LoteResp(l.getNumero(), l.getPreco(), l.getQuantidadeTotal(),
                     l.getQuantidadeVendida(), l.isAtivo());
         }
+        List<String> categorias = e.getCategoriaIds().stream().map(UUID::toString).toList();
         return new EventoResp(e.getId().getValor().toString(), e.getNome(), e.getDescricao(),
                 e.getLocal(), e.getDataHoraInicio(), e.getDataHoraFim(),
                 e.getCapacidadeMaxima(), e.getStatus().name(), e.getIdadeMinima(),
-                e.getOrganizadorId().toString(), lote);
+                e.getOrganizadorId().toString(), lote, categorias);
     }
 
     record ErroResp(String mensagem) {}

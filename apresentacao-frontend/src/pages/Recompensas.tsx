@@ -13,10 +13,12 @@ import {
 } from '../services/recompensaService'
 import './Social.css'
 
-const CATEGORIAS: { valor: CategoriaRecompensa; label: string }[] = [
-  { valor: 'DESCONTO', label: 'Desconto' },
-  { valor: 'BENEFICIO', label: 'Benefício' },
-  { valor: 'BRINDE', label: 'Brinde' },
+const CATEGORIAS_ORGANIZADOR: { valor: CategoriaRecompensa; label: string }[] = [
+  { valor: 'CUPOM', label: 'Cupom de desconto' },
+]
+
+const CATEGORIAS_ADMIN: { valor: CategoriaRecompensa; label: string }[] = [
+  { valor: 'CUPOM', label: 'Cupom de desconto (todos os eventos)' },
   { valor: 'CREDITO_CARTEIRA', label: 'Crédito na carteira' },
 ]
 
@@ -34,8 +36,10 @@ export default function Recompensas() {
   const [descricao, setDescricao] = useState('')
   const [custo, setCusto] = useState('')
   const [estoque, setEstoque] = useState('')
-  const [categoria, setCategoria] = useState<CategoriaRecompensa>('DESCONTO')
+  const [categoria, setCategoria] = useState<CategoriaRecompensa>('CUPOM')
   const [valor, setValor] = useState('')
+
+  const categoriasDisponiveis = isAdmin ? CATEGORIAS_ADMIN : CATEGORIAS_ORGANIZADOR
 
   useEffect(() => {
     if (!usuario) return
@@ -71,7 +75,11 @@ export default function Recompensas() {
       setErro('Crédito na carteira precisa de um valor em R$ maior que zero.')
       return
     }
-    const valorFinal = categoria === 'CREDITO_CARTEIRA' || categoria === 'DESCONTO' ? valorNum || null : null
+    if (categoria === 'CUPOM' && valorNum <= 0) {
+      setErro('Cupom precisa de um valor de desconto em R$ maior que zero.')
+      return
+    }
+    const valorFinal = categoria === 'CREDITO_CARTEIRA' || categoria === 'CUPOM' ? valorNum || null : null
     try {
       if (isAdmin) {
         await criarRecompensaGlobal({
@@ -86,7 +94,7 @@ export default function Recompensas() {
       }
       setMensagem('Recompensa criada!')
       setNome(''); setDescricao(''); setCusto(''); setEstoque('')
-      setCategoria('DESCONTO'); setValor('')
+      setCategoria('CUPOM'); setValor('')
       await carregar()
     } catch (e: any) {
       setErro(e?.response?.data?.mensagem ?? 'Erro ao criar recompensa.')
@@ -157,19 +165,19 @@ export default function Recompensas() {
             <label>
               Categoria
               <select value={categoria} onChange={(e) => setCategoria(e.target.value as CategoriaRecompensa)}>
-                {CATEGORIAS.map((c) => (
+                {categoriasDisponiveis.map((c) => (
                   <option key={c.valor} value={c.valor}>{c.label}</option>
                 ))}
               </select>
             </label>
-            {(categoria === 'CREDITO_CARTEIRA' || categoria === 'DESCONTO') && (
+            {(categoria === 'CREDITO_CARTEIRA' || categoria === 'CUPOM') && (
               <label>
                 {categoria === 'CREDITO_CARTEIRA'
                   ? 'Valor a creditar (R$)'
-                  : 'Valor do desconto (R$)'}
+                  : 'Valor do desconto do cupom (R$)'}
                 <input type="number" step="0.01" min="0.01"
                        value={valor} onChange={(e) => setValor(e.target.value)}
-                       required={categoria === 'CREDITO_CARTEIRA'} />
+                       required />
               </label>
             )}
 

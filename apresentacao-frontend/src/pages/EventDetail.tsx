@@ -6,6 +6,7 @@ import { listarMinhasInscricoes, type Inscricao } from '../services/inscricaoSer
 import { buscarPerfil, type PerfilParticipante } from '../services/participanteService'
 import { adicionarAoCarrinho } from '../services/carrinhoService'
 import { registrarVisualizacao } from '../services/dashboardService'
+import { listarCategorias, type Categoria } from '../services/categoriaService'
 import FaqPublico from '../components/FaqPublico'
 import './Social.css'
 
@@ -34,12 +35,14 @@ export default function EventDetail() {
   const [evento, setEvento] = useState<Evento | null>(null)
   const [perfil, setPerfil] = useState<PerfilParticipante | null>(null)
   const [minhas, setMinhas] = useState<Inscricao[]>([])
+  const [categorias, setCategorias] = useState<Categoria[]>([])
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
 
   useEffect(() => {
     if (!eventoId) return
     buscarEvento(eventoId).then(setEvento).catch(() => setErro('Erro ao carregar evento.'))
+    listarCategorias().then(setCategorias).catch(() => {})
     // F17 - RN03/visualizacoes: incrementa contador (silencioso em caso de erro)
     registrarVisualizacao(eventoId).catch(() => {})
     if (usuario?.papel === 'PARTICIPANTE') {
@@ -118,6 +121,15 @@ export default function EventDetail() {
           </p>
           {ev.idadeMinima > 0 && (
             <p><strong>Idade mínima:</strong> {ev.idadeMinima} anos</p>
+          )}
+          {ev.categoriaIds.length > 0 && categorias.length > 0 && (
+            <p>
+              <strong>Categorias:</strong>{' '}
+              {ev.categoriaIds
+                .map((id) => categorias.find((c) => c.id === id)?.nome)
+                .filter(Boolean)
+                .join(', ') || '—'}
+            </p>
           )}
           {ev.loteAtual && (
             <p>

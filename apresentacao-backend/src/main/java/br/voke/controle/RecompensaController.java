@@ -1,14 +1,24 @@
 package br.voke.controle;
 
 import br.voke.aplicacao.fidelidade.*;
+import br.voke.dominio.evento.cupom.Cupom;
+import br.voke.dominio.evento.cupom.CupomRepositorio;
+import br.voke.dominio.evento.cupom.CupomServico;
+import br.voke.dominio.evento.cupom.TipoDesconto;
 import br.voke.dominio.fidelidade.recompensa.CategoriaRecompensa;
 import br.voke.dominio.fidelidade.recompensa.Recompensa;
+import br.voke.dominio.fidelidade.recompensa.RecompensaId;
+import br.voke.dominio.fidelidade.recompensa.RecompensaRepositorio;
+import br.voke.dominio.fidelidade.recompensa.CupomResgatado;
+import br.voke.dominio.fidelidade.recompensa.CupomResgatadoRepositorio;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,6 +35,12 @@ public class RecompensaController {
     private final ListarTodasRecompensasCasoDeUso listarTodas;
     private final ResgatarRecompensaCasoDeUso resgatar;
     private final ConsultarSaldoPontosCasoDeUso consultarPontos;
+    private final RecompensaRepositorio recompensaRepositorio;
+    private final CupomServico cupomServico;
+    private final CupomRepositorio cupomRepositorio;
+    private final CupomResgatadoRepositorio cupomResgatadoRepo;
+    private static final SecureRandom RANDOM = new SecureRandom();
+    private static final String ALFABETO_CUPOM = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
     public RecompensaController(CadastrarRecompensaCasoDeUso cadastrar,
                                  EditarRecompensaCasoDeUso editar,
@@ -34,7 +50,11 @@ public class RecompensaController {
                                  ListarRecompensasAtivasCasoDeUso listarAtivas,
                                  ListarTodasRecompensasCasoDeUso listarTodas,
                                  ResgatarRecompensaCasoDeUso resgatar,
-                                 ConsultarSaldoPontosCasoDeUso consultarPontos) {
+                                 ConsultarSaldoPontosCasoDeUso consultarPontos,
+                                 RecompensaRepositorio recompensaRepositorio,
+                                 CupomServico cupomServico,
+                                 CupomRepositorio cupomRepositorio,
+                                 CupomResgatadoRepositorio cupomResgatadoRepo) {
         this.cadastrar = cadastrar;
         this.editar = editar;
         this.remover = remover;
@@ -44,6 +64,10 @@ public class RecompensaController {
         this.listarTodas = listarTodas;
         this.resgatar = resgatar;
         this.consultarPontos = consultarPontos;
+        this.recompensaRepositorio = recompensaRepositorio;
+        this.cupomServico = cupomServico;
+        this.cupomRepositorio = cupomRepositorio;
+        this.cupomResgatadoRepo = cupomResgatadoRepo;
     }
 
     record CriarReq(String nome, String descricao, int custoEmPontos, int estoqueTotal,
@@ -59,8 +83,13 @@ public class RecompensaController {
             if (req.organizadorId() == null) {
                 return ResponseEntity.badRequest().body(new ErroResp("organizadorId é obrigatório"));
             }
+            CategoriaRecompensa cat = parseCategoria(req.categoria());
+            if (cat != CategoriaRecompensa.CUPOM) {
+                return ResponseEntity.badRequest().body(
+                        new ErroResp("Organizador só pode criar recompensas do tipo CUPOM"));
+            }
             Recompensa r = cadastrar.executar(req.nome(), req.descricao(), req.custoEmPontos(),
-                    req.estoqueTotal(), req.organizadorId(), parseCategoria(req.categoria()), req.valor());
+                    req.estoqueTotal(), req.organizadorId(), cat, req.valor());
             return ResponseEntity.status(HttpStatus.CREATED).body(toResposta(r));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
@@ -71,8 +100,13 @@ public class RecompensaController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> criarGlobal(@RequestBody CriarGlobalReq req) {
         try {
+            CategoriaRecompensa cat = parseCategoria(req.categoria());
+            if (cat != CategoriaRecompensa.CUPOM && cat != CategoriaRecompensa.CREDITO_CARTEIRA) {
+                return ResponseEntity.badRequest().body(
+                        new ErroResp("Admin só pode criar recompensas do tipo CUPOM ou CREDITO_CARTEIRA"));
+            }
             Recompensa r = cadastrar.executar(req.nome(), req.descricao(), req.custoEmPontos(),
-                    req.estoqueTotal(), null, parseCategoria(req.categoria()), req.valor());
+                    req.estoqueTotal(), null, cat, req.valor());
             return ResponseEntity.status(HttpStatus.CREATED).body(toResposta(r));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
@@ -141,18 +175,91 @@ public class RecompensaController {
     @PreAuthorize("hasRole('PARTICIPANTE')")
     public ResponseEntity<?> resgatar(@PathVariable UUID id, @RequestParam UUID participanteId) {
         try {
+            Recompensa recompensa = recompensaRepositorio.buscarPorId(new RecompensaId(id))
+                    .orElseThrow(() -> new IllegalArgumentException("Recompensa não encontrada"));
             resgatar.executar(participanteId, id);
-            return ResponseEntity.ok().build();
+            String codigoCupom = null;
+            if (recompensa.getCategoria() == CategoriaRecompensa.CUPOM) {
+                codigoCupom = gerarCupomParaRecompensa(recompensa);
+                cupomResgatadoRepo.salvar(new CupomResgatado(
+                        UUID.randomUUID(), participanteId, codigoCupom,
+                        recompensa.getId().getValor(), recompensa.getNome(),
+                        recompensa.getValor(), recompensa.getOrganizadorId(),
+                        LocalDateTime.now()));
+            }
+            return ResponseEntity.ok(new ResgateResp(codigoCupom));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
         }
     }
 
+    private String gerarCupomParaRecompensa(Recompensa recompensa) {
+        BigDecimal valor = recompensa.getValor();
+        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Recompensa de CUPOM sem valor de desconto configurado");
+        }
+        String codigo = gerarCodigoUnico();
+        Cupom cupom = cupomServico.criar(codigo, valor, TipoDesconto.FIXO,
+                recompensa.getOrganizadorId(), null, null, 1);
+        return cupom.getCodigo();
+    }
+
+    private String gerarCodigoUnico() {
+        for (int tentativa = 0; tentativa < 10; tentativa++) {
+            String codigo = "VOKE-" + sequenciaAleatoria(8);
+            if (cupomRepositorio.buscarPorCodigo(codigo).isEmpty()) {
+                return codigo;
+            }
+        }
+        throw new IllegalStateException("Não foi possível gerar um código de cupom único");
+    }
+
+    private String sequenciaAleatoria(int tamanho) {
+        StringBuilder sb = new StringBuilder(tamanho);
+        for (int i = 0; i < tamanho; i++) {
+            sb.append(ALFABETO_CUPOM.charAt(RANDOM.nextInt(ALFABETO_CUPOM.length())));
+        }
+        return sb.toString();
+    }
+
+    private record ResgateResp(String codigoCupom) {}
+
+    @GetMapping("/participante/{participanteId}/meus-cupons")
+    @PreAuthorize("hasRole('PARTICIPANTE')")
+    public ResponseEntity<List<MeuCupomResp>> meusCupons(@PathVariable UUID participanteId) {
+        List<MeuCupomResp> resp = cupomResgatadoRepo
+                .buscarPorParticipante(participanteId)
+                .stream()
+                .map(reg -> {
+                    boolean utilizado = cupomRepositorio.buscarPorCodigo(reg.codigoCupom())
+                            .map(c -> c.getQuantidadeUtilizada() > 0)
+                            .orElse(false);
+                    boolean ativo = cupomRepositorio.buscarPorCodigo(reg.codigoCupom())
+                            .map(c -> c.isAtivo())
+                            .orElse(false);
+                    return new MeuCupomResp(
+                            reg.id().toString(),
+                            reg.codigoCupom(),
+                            reg.recompensaNome(),
+                            reg.valor(),
+                            reg.isGlobal(),
+                            reg.dataResgate(),
+                            utilizado,
+                            ativo);
+                })
+                .toList();
+        return ResponseEntity.ok(resp);
+    }
+
+    private record MeuCupomResp(String id, String codigoCupom, String recompensaNome,
+                                 BigDecimal valor, boolean global, LocalDateTime dataResgate,
+                                 boolean utilizado, boolean ativo) {}
+
     private static CategoriaRecompensa parseCategoria(String c) {
-        if (c == null || c.isBlank()) return CategoriaRecompensa.DESCONTO;
+        if (c == null || c.isBlank()) return CategoriaRecompensa.CUPOM;
         try { return CategoriaRecompensa.valueOf(c.toUpperCase()); }
         catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Categoria inválida (DESCONTO, BRINDE, BENEFICIO, CREDITO_CARTEIRA)");
+            throw new IllegalArgumentException("Categoria inválida (CUPOM, CREDITO_CARTEIRA)");
         }
     }
 

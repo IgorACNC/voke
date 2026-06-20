@@ -15,9 +15,7 @@ type Filtro = 'TODOS' | CategoriaRecompensa
 
 const CATEGORIAS: { valor: Filtro; label: string }[] = [
   { valor: 'TODOS', label: 'Todos' },
-  { valor: 'DESCONTO', label: 'Desconto' },
-  { valor: 'BENEFICIO', label: 'Benefício' },
-  { valor: 'BRINDE', label: 'Brinde' },
+  { valor: 'CUPOM', label: 'Cupom' },
   { valor: 'CREDITO_CARTEIRA', label: 'Crédito' },
 ]
 
@@ -26,6 +24,7 @@ const CATEGORIA_LABEL: Record<CategoriaRecompensa, string> = {
   BRINDE: 'BRINDE',
   BENEFICIO: 'BENEFÍCIO',
   CREDITO_CARTEIRA: 'CRÉDITO',
+  CUPOM: 'CUPOM',
 }
 
 export default function CatalogoRecompensas() {
@@ -69,12 +68,16 @@ export default function CatalogoRecompensas() {
     setErro('')
     setMensagem('')
     try {
-      await resgatarRecompensa(r.id, usuario!.id)
+      const resp = await resgatarRecompensa(r.id, usuario!.id)
       let detalhe = ''
       if (r.categoria === 'CREDITO_CARTEIRA' && r.valor) {
         detalhe = ` R$ ${r.valor.toFixed(2)} creditados na sua carteira virtual.`
-      } else if (r.categoria === 'DESCONTO') {
-        detalhe = ' Confira como utilizar nos detalhes da recompensa.'
+      } else if (r.categoria === 'CUPOM' && resp.codigoCupom) {
+        const escopo = r.global ? 'em qualquer evento do sistema' : 'nos eventos deste organizador'
+        const valorTxt = r.valor ? ` de R$ ${r.valor.toFixed(2)}` : ''
+        detalhe = ` Seu código de cupom${valorTxt} é: ${resp.codigoCupom} — digite este código no carrinho para usar ${escopo}.`
+        try { await navigator.clipboard.writeText(resp.codigoCupom) } catch {}
+        alert(`Cupom resgatado!\n\nCódigo: ${resp.codigoCupom}\n\n(já copiado para a área de transferência)\n\nUse este código exato no carrinho para receber o desconto.`)
       } else {
         detalhe = ' Em breve entraremos em contato com instruções.'
       }
