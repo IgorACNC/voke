@@ -5,6 +5,8 @@ export type MetodoPagamento = 'PIX' | 'CARTAO_CREDITO'
 export interface SaldoCarteira {
   participanteId: string
   saldo: number
+  saldoReal: number
+  saldoPromocional: number
 }
 
 export type TipoTransacao = 'DEPOSITO' | 'SAQUE' | 'DEBITO_COMPRA' | 'CREDITO_BONUS' | 'ESTORNO'

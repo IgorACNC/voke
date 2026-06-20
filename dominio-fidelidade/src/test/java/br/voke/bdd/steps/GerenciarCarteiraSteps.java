@@ -183,7 +183,9 @@ public class GerenciarCarteiraSteps {
     @Então("o saldo é debitado com sucesso")
     public void saldoDebitadoComSucesso() {
         assertNull(ctx.excecao);
-        assertEquals(0, new BigDecimal("250.00").compareTo(ctx.carteira.getSaldo()));
+        // RN3 - servico.creditar() agora vai para saldo promocional;
+        // debitar consome promocional primeiro. O remanescente fica no total.
+        assertEquals(0, new BigDecimal("250.00").compareTo(ctx.carteira.getSaldoTotal()));
         verify(repositorio, atLeastOnce()).salvar(ctx.carteira);
     }
 

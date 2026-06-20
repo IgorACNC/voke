@@ -13,6 +13,7 @@ public final class CarteiraVirtualJpaMapper {
                 carteira.getId().getValor(),
                 carteira.getParticipanteId(),
                 carteira.getSaldo(),
+                carteira.getSaldoPromocional(),
                 carteira.getTotalInseridoHoje(),
                 carteira.getContadorSaquesHoje(),
                 carteira.getDataContador());
@@ -21,6 +22,7 @@ public final class CarteiraVirtualJpaMapper {
     public static CarteiraVirtual paraDominio(CarteiraVirtualJpa jpa) {
         CarteiraVirtual carteira = new CarteiraVirtual(new CarteiraVirtualId(jpa.getId()), jpa.getParticipanteId());
         DominioReflection.definirCampo(carteira, "saldo", jpa.getSaldo());
+        DominioReflection.definirCampo(carteira, "saldoPromocional", jpa.getSaldoPromocional());
         DominioReflection.definirCampo(carteira, "totalInseridoHoje", jpa.getTotalInseridoHoje());
         DominioReflection.definirCampo(carteira, "contadorSaquesHoje", jpa.getContadorSaquesHoje());
         DominioReflection.definirCampo(carteira, "dataContador", jpa.getDataContador());

@@ -90,12 +90,22 @@ public class FinalizarCompraCasoDeUso {
         };
         BigDecimal total = carrinho.calcularTotal(taxa);
 
+        // RN6 - pre-auth: garante saldo antes de criar inscrições/ingressos.
+        BigDecimal saldoAtual = carteiraServico.consultarSaldo(participanteId);
+        if (saldoAtual.compareTo(total) < 0) {
+            throw new IllegalStateException("Saldo insuficiente para finalizar a compra");
+        }
+
         Participante participante = participanteRepositorio.buscarPorId(new ParticipanteId(participanteId))
                 .orElseThrow(() -> new IllegalArgumentException("Participante não encontrado"));
 
         BigDecimal subtotal = carrinho.getItens().stream()
                 .map(ItemCarrinho::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // RN4 - debita primeiro para reservar o valor; se algo falhar adiante,
+        // o @Transactional do chamador faz rollback de tudo (débito + inscrições).
+        carteiraServico.debitar(participanteId, total);
 
         List<UUID> inscricoesIds = new ArrayList<>();
 
@@ -138,8 +148,6 @@ public class FinalizarCompraCasoDeUso {
             }
             eventoRepositorio.salvar(evento);
         }
-
-        carteiraServico.debitar(participanteId, total);
 
         carrinhoServico.limpar(participanteId);
 

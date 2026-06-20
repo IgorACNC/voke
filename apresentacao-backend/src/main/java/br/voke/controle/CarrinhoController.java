@@ -11,6 +11,8 @@ import br.voke.dominio.inscricao.carrinho.ItemCarrinho;
 import br.voke.dominio.inscricao.carrinho.MetodoPagamento;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -110,15 +112,17 @@ public class CarrinhoController {
         }
     }
 
+    // RN4 - atomicidade: todo o fluxo (débito + inscrições + venda de lote) roda
+    // numa única transação; qualquer exceção dispara rollback explícito.
     @PostMapping("/finalizar")
+    @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<?> finalizar(@RequestBody FinalizarReq req) {
         try {
             MetodoPagamento metodo = MetodoPagamento.valueOf(req.metodoPagamento().toUpperCase());
             FinalizarCompraCasoDeUso.Resultado resultado = finalizarCompra.executar(req.participanteId(), metodo);
             return ResponseEntity.ok(new FinalizarResp(resultado.total(), resultado.inscricoesIds()));
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
         } catch (RuntimeException e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
         }
     }

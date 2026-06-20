@@ -23,6 +23,8 @@ export default function CarteiraVirtual() {
   const { usuario } = useAuth()
 
   const [saldo, setSaldo] = useState<number | null>(null)
+  const [saldoReal, setSaldoReal] = useState<number>(0)
+  const [saldoPromocional, setSaldoPromocional] = useState<number>(0)
   const [extrato, setExtrato] = useState<Transacao[]>([])
   const [carregando, setCarregando] = useState(false)
   const [mensagem, setMensagem] = useState('')
@@ -48,6 +50,8 @@ export default function CarteiraVirtual() {
         consultarExtrato(usuario!.id),
       ])
       setSaldo(Number(carteira.saldo))
+      setSaldoReal(Number(carteira.saldoReal ?? carteira.saldo ?? 0))
+      setSaldoPromocional(Number(carteira.saldoPromocional ?? 0))
       setExtrato(historico)
     } catch {
       setErro('Nao foi possivel carregar a carteira.')
@@ -125,10 +129,16 @@ export default function CarteiraVirtual() {
         {erro && <p className="social-msg-erro">{erro}</p>}
 
         <div className="carteira-saldo-card">
-          <span className="carteira-saldo-label">Saldo disponivel</span>
+          <span className="carteira-saldo-label">Saldo total disponivel</span>
           <span className="carteira-saldo-valor">
             {saldo !== null ? fmt(saldo) : '—'}
           </span>
+          {saldo !== null && (
+            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.6rem', fontSize: '0.85rem' }}>
+              <span><strong>Real (sacável):</strong> {fmt(saldoReal)}</span>
+              <span><strong>Promocional (apenas compras):</strong> {fmt(saldoPromocional)}</span>
+            </div>
+          )}
           <div className="carteira-saldo-badges">
             <span>Deposito diario: ate {fmt(LIMITE_INSERCAO_DIARIA)}</span>
             <span>Saque diario: ate {fmt(LIMITE_SAQUE_VALOR)}</span>
@@ -187,7 +197,7 @@ export default function CarteiraVirtual() {
                   type="number"
                   min="0.01"
                   step="0.01"
-                  max={saldo ?? undefined}
+                  max={saldoReal || undefined}
                   placeholder="0,00"
                   value={valorSaque}
                   onChange={(e) => setValorSaque(e.target.value)}

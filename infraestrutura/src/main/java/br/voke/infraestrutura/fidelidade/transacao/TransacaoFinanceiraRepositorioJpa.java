@@ -1,9 +1,12 @@
 package br.voke.infraestrutura.fidelidade.transacao;
 
+import br.voke.dominio.fidelidade.transacao.TipoTransacao;
 import br.voke.dominio.fidelidade.transacao.TransacaoFinanceira;
 import br.voke.dominio.fidelidade.transacao.TransacaoFinanceiraRepositorio;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,5 +30,17 @@ public class TransacaoFinanceiraRepositorioJpa implements TransacaoFinanceiraRep
                 .stream()
                 .map(TransacaoFinanceiraJpaMapper::paraDominio)
                 .toList();
+    }
+
+    @Override
+    public BigDecimal somarDepositosDesde(UUID participanteId, LocalDateTime desde) {
+        BigDecimal total = repository.somarPorTipoDesde(participanteId, TipoTransacao.DEPOSITO, desde);
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
+    @Override
+    public int contarSaquesDesde(UUID participanteId, LocalDateTime desde) {
+        return (int) repository.countByParticipanteIdAndTipoAndDataHoraGreaterThanEqual(
+                participanteId, TipoTransacao.SAQUE, desde);
     }
 }

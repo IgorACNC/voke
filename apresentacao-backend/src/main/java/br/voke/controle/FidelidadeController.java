@@ -1,6 +1,7 @@
 package br.voke.controle;
 
 import br.voke.aplicacao.fidelidade.*;
+import br.voke.dominio.fidelidade.carteira.CarteiraVirtualServico;
 import br.voke.dominio.fidelidade.transacao.TipoTransacao;
 import br.voke.dominio.fidelidade.carteira.InsercaoSaldoPadrao;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ public class FidelidadeController {
     private final AdicionarSaldoCasoDeUso adicionarSaldo;
     private final RemoverSaldoCasoDeUso removerSaldo;
     private final ConsultarExtratoCasoDeUso consultarExtrato;
+    private final CarteiraVirtualServico carteiraServico;
     private final br.voke.dominio.fidelidade.pontos.TransacaoPontosRepositorio transacaoPontosRepositorio;
 
     public FidelidadeController(ConsultarSaldoPontosCasoDeUso consultarPontos,
@@ -34,12 +36,14 @@ public class FidelidadeController {
                                  AdicionarSaldoCasoDeUso adicionarSaldo,
                                  RemoverSaldoCasoDeUso removerSaldo,
                                  ConsultarExtratoCasoDeUso consultarExtrato,
+                                 CarteiraVirtualServico carteiraServico,
                                  br.voke.dominio.fidelidade.pontos.TransacaoPontosRepositorio transacaoPontosRepositorio) {
         this.consultarPontos = consultarPontos;
         this.consultarCarteira = consultarCarteira;
         this.adicionarSaldo = adicionarSaldo;
         this.removerSaldo = removerSaldo;
         this.consultarExtrato = consultarExtrato;
+        this.carteiraServico = carteiraServico;
         this.transacaoPontosRepositorio = transacaoPontosRepositorio;
     }
 
@@ -51,7 +55,10 @@ public class FidelidadeController {
     @GetMapping("/carteira/{participanteId}")
     public ResponseEntity<?> consultarCarteira(@PathVariable UUID participanteId) {
         try {
-            return ResponseEntity.ok(new SaldoCarteiraResp(participanteId, consultarCarteira.executar(participanteId)));
+            BigDecimal total = consultarCarteira.executar(participanteId);
+            BigDecimal real = carteiraServico.consultarSaldoReal(participanteId);
+            BigDecimal promocional = carteiraServico.consultarSaldoPromocional(participanteId);
+            return ResponseEntity.ok(new SaldoCarteiraResp(participanteId, total, real, promocional));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErroResp("Nao foi possivel consultar a carteira."));
@@ -108,7 +115,8 @@ public class FidelidadeController {
 
     record SaldoReq(UUID participanteId, BigDecimal valor, String metodoPagamento) {}
     record SaldoPontosResp(UUID participanteId, int saldo) {}
-    record SaldoCarteiraResp(UUID participanteId, BigDecimal saldo) {}
+    record SaldoCarteiraResp(UUID participanteId, BigDecimal saldo,
+                              BigDecimal saldoReal, BigDecimal saldoPromocional) {}
     record TransacaoResp(UUID id, String tipo, BigDecimal valor, String descricao,
                          String dataHora, String direcao) {}
     record TransacaoPontosResp(UUID id, String tipo, int pontos, String descricao,
