@@ -3,6 +3,7 @@ package br.voke.controle;
 import br.voke.aplicacao.inscricao.AdicionarAoCarrinhoCasoDeUso;
 import br.voke.aplicacao.inscricao.AplicarCupomCarrinhoCasoDeUso;
 import br.voke.aplicacao.inscricao.ConsultarCarrinhoCasoDeUso;
+import br.voke.aplicacao.inscricao.DecrementarItemCarrinhoCasoDeUso;
 import br.voke.aplicacao.inscricao.FinalizarCompraCasoDeUso;
 import br.voke.aplicacao.inscricao.RemoverCupomCarrinhoCasoDeUso;
 import br.voke.aplicacao.inscricao.RemoverDoCarrinhoCasoDeUso;
@@ -27,6 +28,7 @@ public class CarrinhoController {
 
     private final AdicionarAoCarrinhoCasoDeUso adicionarItem;
     private final RemoverDoCarrinhoCasoDeUso removerItem;
+    private final DecrementarItemCarrinhoCasoDeUso decrementarItem;
     private final AplicarCupomCarrinhoCasoDeUso aplicarCupom;
     private final RemoverCupomCarrinhoCasoDeUso removerCupom;
     private final FinalizarCompraCasoDeUso finalizarCompra;
@@ -34,12 +36,14 @@ public class CarrinhoController {
 
     public CarrinhoController(AdicionarAoCarrinhoCasoDeUso adicionarItem,
                               RemoverDoCarrinhoCasoDeUso removerItem,
+                              DecrementarItemCarrinhoCasoDeUso decrementarItem,
                               AplicarCupomCarrinhoCasoDeUso aplicarCupom,
                               RemoverCupomCarrinhoCasoDeUso removerCupom,
                               FinalizarCompraCasoDeUso finalizarCompra,
                               ConsultarCarrinhoCasoDeUso consultarCarrinho) {
         this.adicionarItem = adicionarItem;
         this.removerItem = removerItem;
+        this.decrementarItem = decrementarItem;
         this.aplicarCupom = aplicarCupom;
         this.removerCupom = removerCupom;
         this.finalizarCompra = finalizarCompra;
@@ -86,6 +90,16 @@ public class CarrinhoController {
         try {
             removerItem.executar(participanteId, eventoId);
             return ResponseEntity.noContent().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
+        }
+    }
+
+    @PatchMapping("/itens/{participanteId}/{eventoId}/decrementar")
+    public ResponseEntity<?> decrementar(@PathVariable UUID participanteId, @PathVariable UUID eventoId) {
+        try {
+            Carrinho c = decrementarItem.executar(participanteId, eventoId);
+            return ResponseEntity.ok(toResp(c));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ErroResp(e.getMessage()));
         }

@@ -58,6 +58,16 @@ export async function removerDoCarrinho(participanteId: string, eventoId: string
   await api.delete(`/carrinho/itens/${participanteId}/${eventoId}`)
 }
 
+export async function decrementarItemCarrinho(
+  participanteId: string,
+  eventoId: string,
+): Promise<CarrinhoResp> {
+  const { data } = await api.patch<CarrinhoResp>(
+    `/carrinho/itens/${participanteId}/${eventoId}/decrementar`,
+  )
+  return data
+}
+
 export async function aplicarCupomCarrinho(
   participanteId: string,
   codigoCupom: string,

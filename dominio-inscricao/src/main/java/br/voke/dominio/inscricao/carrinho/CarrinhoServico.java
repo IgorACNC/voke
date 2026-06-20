@@ -42,6 +42,14 @@ public class CarrinhoServico {
         return carrinho;
     }
 
+    public Carrinho decrementarItem(UUID participanteId, UUID eventoId) {
+        Carrinho carrinho = repositorio.buscarPorParticipanteId(participanteId)
+                .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
+        carrinho.decrementarItem(eventoId);
+        repositorio.salvar(carrinho);
+        return carrinho;
+    }
+
     public Carrinho removerCupom(UUID participanteId) {
         Carrinho carrinho = repositorio.buscarPorParticipanteId(participanteId)
                 .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));

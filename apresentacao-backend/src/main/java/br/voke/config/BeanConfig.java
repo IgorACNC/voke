@@ -374,6 +374,11 @@ public class BeanConfig {
     }
 
     @Bean
+    public DecrementarItemCarrinhoCasoDeUso decrementarItemCarrinho(CarrinhoServico s) {
+        return new DecrementarItemCarrinhoCasoDeUso(s);
+    }
+
+    @Bean
     public AplicarCupomCarrinhoCasoDeUso aplicarCupomCarrinho(CarrinhoServico s,
             br.voke.dominio.inscricao.carrinho.CupomGateway gw,
             br.voke.dominio.evento.evento.EventoRepositorio eventoRepo) {

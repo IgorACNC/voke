@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import {
   consultarCarrinho,
-  removerDoCarrinho,
+  decrementarItemCarrinho,
   aplicarCupomCarrinho,
   removerCupomCarrinho,
   finalizarCompra,
@@ -98,14 +98,14 @@ export default function Carrinho() {
     }
   }
 
-  async function handleRemover(eventoId: string) {
+  async function handleDecrementar(eventoId: string) {
     setErro('')
     setRemovendo(eventoId)
     try {
-      await removerDoCarrinho(usuario!.id, eventoId)
+      await decrementarItemCarrinho(usuario!.id, eventoId)
       await carregar()
     } catch (e: any) {
-      setErro(e?.response?.data?.mensagem ?? 'Erro ao remover item.')
+      setErro(e?.response?.data?.mensagem ?? 'Erro ao remover unidade do item.')
     } finally {
       setRemovendo(null)
     }
@@ -273,7 +273,8 @@ export default function Carrinho() {
                     <span className="carrinho-item-subtotal">{fmt(item.subtotal)}</span>
                     <button
                       className="carrinho-item-remover"
-                      onClick={() => handleRemover(item.eventoId)}
+                      title={item.quantidade > 1 ? 'Remover 1 unidade' : 'Remover do carrinho'}
+                      onClick={() => handleDecrementar(item.eventoId)}
                       disabled={expirado || removendo === item.eventoId}
                     >
                       {removendo === item.eventoId ? '...' : 'Remover'}

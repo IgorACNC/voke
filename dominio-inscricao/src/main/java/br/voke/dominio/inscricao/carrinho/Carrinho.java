@@ -61,6 +61,24 @@ public class Carrinho extends EntidadeBase<CarrinhoId> {
         itens.removeIf(i -> i.getEventoId().equals(eventoId));
     }
 
+    /**
+     * Remove apenas 1 unidade do item do evento informado.
+     * Se a quantidade do item já estiver em 1, remove a linha por completo.
+     */
+    public void decrementarItem(UUID eventoId) {
+        Objects.requireNonNull(eventoId, "Evento é obrigatório");
+        for (ItemCarrinho existente : itens) {
+            if (existente.getEventoId().equals(eventoId)) {
+                if (existente.getQuantidade() <= 1) {
+                    itens.remove(existente);
+                } else {
+                    existente.atualizarQuantidade(existente.getQuantidade() - 1);
+                }
+                return;
+            }
+        }
+    }
+
     public void removerCupom() {
         this.cupomAplicado = null;
         this.estrategiaDesconto = null;
