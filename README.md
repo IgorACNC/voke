@@ -114,16 +114,12 @@ spring.datasource.password=SUA_SENHA
 A partir da raiz do projeto:
 
 ```bash
-mvn -pl apresentacao-backend -am spring-boot:run
+mvn  install -DskipTests
 ```
-
-Sobe em `http://localhost:8080`. Endpoints REST sob `/api/...`.
-
-Para gerar e rodar o jar:
+E depois para rodar a aplicação:
 
 ```bash
-mvn clean package -DskipTests
-java -jar apresentacao-backend/target/apresentacao-backend-0.0.1-SNAPSHOT.jar
+ mvn spring-boot:run -pl apresentacao-backend
 ```
 
 ### 3. Frontend (React + Vite)
@@ -133,18 +129,13 @@ Em outro terminal:
 ```bash
 cd apresentacao-frontend
 npm install        # apenas na primeira vez
+npm install recharts # apenas na primeira vez
 npm run dev
 ```
 
 Sobe em `http://localhost:5173`. O Vite faz proxy de `/api` para
 `http://localhost:8080`, entao o backend precisa estar rodando.
 
-Para build de producao:
-
-```bash
-npm run build
-npm run preview
-```
 
 ### 4. Acessar a Aplicacao
 
