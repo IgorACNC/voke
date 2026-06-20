@@ -81,7 +81,8 @@ public class GrupoEventoController {
         if (!evento.getOrganizadorId().equals(organizadorId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErroResp("Acesso negado"));
         }
-        GrupoEvento grupo = criarGrupo.executar(req.nome(), req.regras(), req.eventoId(), organizadorId);
+        GrupoEvento grupo = criarGrupo.executar(req.nome(), req.regras(), req.eventoId(),
+                evento.getOrganizadorId(), organizadorId);
         return ResponseEntity.status(HttpStatus.CREATED).body(toResposta(grupo));
     }
 

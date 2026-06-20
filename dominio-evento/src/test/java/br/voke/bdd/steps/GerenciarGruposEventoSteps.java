@@ -29,6 +29,7 @@ public class GerenciarGruposEventoSteps {
     private GrupoEventoRepositorio repositorio;
     private GrupoEventoServicoInterface servico;
     private GrupoEvento grupo;
+    private final UUID umOrganizador = UUID.randomUUID();
 
     public GerenciarGruposEventoSteps(ContextoEvento contexto) {
         this.contexto = contexto;
@@ -71,7 +72,7 @@ public class GerenciarGruposEventoSteps {
     @Quando("ele cria um grupo para o evento com nome e regras definidas")
     public void eleCriaGrupo() {
         try {
-            grupo = servico.criar("Grupo VIP", "Sem spam", UUID.randomUUID(), UUID.randomUUID());
+            grupo = servico.criar("Grupo VIP", "Sem spam", UUID.randomUUID(), umOrganizador, umOrganizador);
         } catch (Exception e) {
             contexto.excecao = e;
         }
@@ -94,13 +95,13 @@ public class GerenciarGruposEventoSteps {
         repositorio = criarRepo();
         servico = criarServicoDecorado();
         contexto.excecao = null;
-        grupo = servico.criar("Grupo Test", "Regras", UUID.randomUUID(), UUID.randomUUID());
+        grupo = servico.criar("Grupo Test", "Regras", UUID.randomUUID(), umOrganizador, umOrganizador);
     }
 
     @E("o evento possui um grupo ativo")
     public void oEventoPossuiGrupoAtivo() {
         if (grupo == null) {
-            grupo = servico.criar("Grupo Test", "Regras", UUID.randomUUID(), UUID.randomUUID());
+            grupo = servico.criar("Grupo Test", "Regras", UUID.randomUUID(), umOrganizador, umOrganizador);
         }
     }
 
@@ -142,7 +143,7 @@ public class GerenciarGruposEventoSteps {
         repositorio = criarRepo();
         servico = criarServicoDecorado();
         contexto.excecao = null;
-        grupo = servico.criar("Grupo Adulto", "18+", UUID.randomUUID(), UUID.randomUUID());
+        grupo = servico.criar("Grupo Adulto", "18+", UUID.randomUUID(), umOrganizador, umOrganizador);
     }
 
     @Quando("ele tenta acessar o grupo")
@@ -160,7 +161,7 @@ public class GerenciarGruposEventoSteps {
         repositorio = criarRepo();
         servico = criarServicoDecorado();
         contexto.excecao = null;
-        grupo = servico.criar("Grupo Editar", "Regras originais", UUID.randomUUID(), UUID.randomUUID());
+        grupo = servico.criar("Grupo Editar", "Regras originais", UUID.randomUUID(), umOrganizador, umOrganizador);
     }
 
     @Quando("ele edita as regras do grupo")
@@ -185,7 +186,7 @@ public class GerenciarGruposEventoSteps {
         repositorio = criarRepo();
         servico = criarServicoDecorado();
         contexto.excecao = null;
-        grupo = servico.criar("Grupo Encerrado", "Regras", UUID.randomUUID(), UUID.randomUUID());
+        grupo = servico.criar("Grupo Encerrado", "Regras", UUID.randomUUID(), umOrganizador, umOrganizador);
     }
 
     @Quando("o sistema processa o encerramento do evento")
@@ -218,6 +219,27 @@ public class GerenciarGruposEventoSteps {
         assertFalse(repositorio.buscarPorId(grupo.getId()).isPresent());
     }
 
+    @Quando("outro usuário tenta criar um grupo para o evento")
+    public void outroUsuarioTentaCriarGrupo() {
+        if (servico == null) {
+            banco.clear();
+            repositorio = criarRepo();
+            servico = criarServicoDecorado();
+        }
+        try {
+            UUID intruso = UUID.randomUUID();
+            grupo = servico.criar("Grupo Pirata", "Sem regras", UUID.randomUUID(),
+                    umOrganizador, intruso);
+        } catch (Exception e) {
+            contexto.excecao = e;
+        }
+    }
+
+    @Então("o sistema rejeita a criação do grupo")
+    public void sistemaRejeitaCriacaoDoGrupo() {
+        assertNotNull(contexto.excecao);
+    }
+
     private void prepararGrupoSeNecessario() {
         if (servico == null) {
             banco.clear();
@@ -225,7 +247,7 @@ public class GerenciarGruposEventoSteps {
             servico = criarServicoDecorado();
         }
         if (grupo == null) {
-            grupo = servico.criar("Grupo Test", "Regras", UUID.randomUUID(), UUID.randomUUID());
+            grupo = servico.criar("Grupo Test", "Regras", UUID.randomUUID(), umOrganizador, umOrganizador);
         }
     }
 }

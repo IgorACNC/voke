@@ -18,8 +18,9 @@ public abstract class GrupoEventoServicoDecorator implements GrupoEventoServicoI
     }
 
     @Override
-    public GrupoEvento criar(String nome, String regras, UUID eventoId, UUID organizadorId) {
-        return decorado.criar(nome, regras, eventoId, organizadorId);
+    public GrupoEvento criar(String nome, String regras, UUID eventoId, UUID organizadorId,
+                              UUID solicitanteId) {
+        return decorado.criar(nome, regras, eventoId, organizadorId, solicitanteId);
     }
 
     @Override

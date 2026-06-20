@@ -9,7 +9,8 @@ import java.util.UUID;
  */
 public interface GrupoEventoServicoInterface {
 
-    GrupoEvento criar(String nome, String regras, UUID eventoId, UUID organizadorId);
+    GrupoEvento criar(String nome, String regras, UUID eventoId, UUID organizadorId,
+                       UUID solicitanteId);
 
     void adicionarMembro(GrupoEventoId grupoId, UUID participanteId,
                          boolean possuiInscricao, int idadeParticipante);

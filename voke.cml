@@ -196,6 +196,63 @@ BoundedContext Pessoa implements Pessoa {
 
     }
 
+    Aggregate Administrador {
+
+        Entity Administrador {
+
+            aggregateRoot
+
+            -AdministradorId id
+
+            -NomeCompleto nome
+
+            -Email email
+
+            -Senha senha
+
+        }
+
+        ValueObject AdministradorId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate MensagemPrivada {
+
+        Entity MensagemPrivada {
+
+            aggregateRoot
+
+            -MensagemPrivadaId id
+
+            -ParticipanteId remetenteId
+
+            -ParticipanteId destinatarioId
+
+            String conteudo
+
+            Date enviadaEm
+
+        }
+
+        ValueObject MensagemPrivadaId {
+
+            String valor
+
+        }
+
+        Service ChatPrivadoServico {
+
+            MensagemPrivada enviar(ParticipanteId remetenteId, ParticipanteId destinatarioId, String conteudo);
+            List historicoComAmigo(ParticipanteId solicitanteId, ParticipanteId amigoId);
+
+        }
+
+    }
+
 }
 
 BoundedContext Evento implements Evento {
@@ -562,6 +619,52 @@ BoundedContext Evento implements Evento {
 
     }
 
+    Aggregate Categoria {
+
+        Entity Categoria {
+
+            aggregateRoot
+
+            -CategoriaId id
+
+            String nome
+
+        }
+
+        ValueObject CategoriaId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate PerguntaFrequente {
+
+        Entity PerguntaFrequente {
+
+            aggregateRoot
+
+            -PerguntaFrequenteId id
+
+            -EventoId eventoId
+
+            String pergunta
+
+            String resposta
+
+            int posicao
+
+        }
+
+        ValueObject PerguntaFrequenteId {
+
+            String valor
+
+        }
+
+    }
+
 }
 
 BoundedContext Inscricao implements Inscricao {
@@ -629,6 +732,36 @@ BoundedContext Inscricao implements Inscricao {
             int quantidade
 
             Double precoUnitario
+
+        }
+
+    }
+
+    Aggregate Convite {
+
+        Entity Convite {
+
+            aggregateRoot
+
+            -ConviteId id
+
+            -ParticipanteId remetenteId
+
+            -ParticipanteId destinatarioId
+
+            -EventoId eventoId
+
+            String status
+
+            Date criadoEm
+
+            Date expiraEm
+
+        }
+
+        ValueObject ConviteId {
+
+            String valor
 
         }
 
@@ -735,6 +868,64 @@ BoundedContext Fidelidade implements Fidelidade {
         }
 
         ValueObject SugestaoId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate ComissaoParceiro {
+
+        Entity ComissaoParceiro {
+
+            aggregateRoot
+
+            -ComissaoParceiroId id
+
+            -ParceiroId parceiroId
+
+            -CupomId cupomId
+
+            -InscricaoId inscricaoId
+
+            Double valor
+
+            String status
+
+            Date dataHora
+
+        }
+
+        ValueObject ComissaoParceiroId {
+
+            String valor
+
+        }
+
+    }
+
+    Aggregate TransacaoFinanceira {
+
+        Entity TransacaoFinanceira {
+
+            aggregateRoot
+
+            -TransacaoFinanceiraId id
+
+            -ParticipanteId participanteId
+
+            String tipo
+
+            Double valor
+
+            String descricao
+
+            Date dataHora
+
+        }
+
+        ValueObject TransacaoFinanceiraId {
 
             String valor
 

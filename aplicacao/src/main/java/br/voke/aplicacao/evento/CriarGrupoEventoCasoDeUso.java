@@ -25,7 +25,8 @@ public class CriarGrupoEventoCasoDeUso {
         );
     }
 
-    public GrupoEvento executar(String nome, String regras, UUID eventoId, UUID organizadorId) {
-        return servico.criar(nome, regras, eventoId, organizadorId);
+    public GrupoEvento executar(String nome, String regras, UUID eventoId, UUID organizadorId,
+                                UUID solicitanteId) {
+        return servico.criar(nome, regras, eventoId, organizadorId, solicitanteId);
     }
 }

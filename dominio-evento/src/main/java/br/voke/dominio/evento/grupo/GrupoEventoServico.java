@@ -19,7 +19,8 @@ public class GrupoEventoServico implements GrupoEventoServicoInterface {
     }
 
     @Override
-    public GrupoEvento criar(String nome, String regras, UUID eventoId, UUID organizadorId) {
+    public GrupoEvento criar(String nome, String regras, UUID eventoId, UUID organizadorId,
+                              UUID solicitanteId) {
         GrupoEvento grupo = new GrupoEvento(GrupoEventoId.novo(), nome, regras, eventoId, organizadorId);
         repositorio.salvar(grupo);
         return grupo;
