@@ -1,5 +1,8 @@
 package br.voke.aplicacao.evento;
 
+import br.voke.dominio.evento.categoria.Categoria;
+import br.voke.dominio.evento.categoria.CategoriaId;
+import br.voke.dominio.evento.categoria.CategoriaRepositorio;
 import br.voke.dominio.evento.evento.Evento;
 import br.voke.dominio.evento.evento.EventoId;
 import br.voke.dominio.evento.evento.EventoRepositorio;
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,17 +27,21 @@ class CriarEventoCasoDeUsoTest {
 
     private InMemoryEventoRepositorio repositorio;
     private CriarEventoCasoDeUso casoDeUso;
+    private UUID categoriaValidaId;
 
     @BeforeEach
     void setUp() {
         repositorio = new InMemoryEventoRepositorio();
-        casoDeUso = new CriarEventoCasoDeUso(new EventoServico(repositorio));
+        categoriaValidaId = UUID.randomUUID();
+        CategoriaRepositorio categoriaRepositorio = new StubCategoriaRepositorio(categoriaValidaId);
+        casoDeUso = new CriarEventoCasoDeUso(new EventoServico(repositorio), categoriaRepositorio);
     }
 
     @Test
     void criaEventoComLoteInicialPassandoPeloServicoDeDominio() {
         Evento evento = casoDeUso.executar("Recife Tech", "Conferencia", "Sala 1",
-                amanha(9), amanha(12), 100, UUID.randomUUID(), BigDecimal.valueOf(80), 50, 16);
+                amanha(9), amanha(12), 100, UUID.randomUUID(), BigDecimal.valueOf(80), 50, 16,
+                Set.of(categoriaValidaId));
 
         assertEquals("Recife Tech", evento.getNome());
         assertEquals(50, evento.getLoteAtual().getQuantidadeTotal());
@@ -45,7 +53,8 @@ class CriarEventoCasoDeUsoTest {
         repositorio.nomeDuplicado = true;
 
         assertThrows(NomeDuplicadoException.class, () -> casoDeUso.executar("Recife Tech", "Conferencia", "Sala 1",
-                amanha(9), amanha(12), 100, UUID.randomUUID(), BigDecimal.valueOf(80), 50, 16));
+                amanha(9), amanha(12), 100, UUID.randomUUID(), BigDecimal.valueOf(80), 50, 16,
+                Set.of(categoriaValidaId)));
     }
 
     @Test
@@ -55,7 +64,8 @@ class CriarEventoCasoDeUsoTest {
                 new br.voke.dominio.evento.evento.Lote(1, BigDecimal.TEN, 10), 16));
 
         assertThrows(ColisaoDeEspacoException.class, () -> casoDeUso.executar("Recife Tech", "Conferencia", "Sala 1",
-                amanha(9), amanha(12), 100, UUID.randomUUID(), BigDecimal.valueOf(80), 50, 16));
+                amanha(9), amanha(12), 100, UUID.randomUUID(), BigDecimal.valueOf(80), 50, 16,
+                Set.of(categoriaValidaId)));
     }
 
     private LocalDateTime amanha(int hora) {
@@ -88,6 +98,32 @@ class CriarEventoCasoDeUsoTest {
         }
 
         @Override
+        public List<Evento> buscarPorCategorias(Set<UUID> categoriaIds) {
+            return List.of();
+        }
+
+        @Override
+        public List<Evento> buscarPorOrganizador(UUID organizadorId) {
+            return eventos.stream()
+                    .filter(e -> e.getOrganizadorId().equals(organizadorId))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
+        @Override
+        public List<Evento> listarAtivos() {
+            return eventos.stream()
+                    .filter(br.voke.dominio.evento.evento.Evento::estaAtivo)
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
+        @Override
+        public List<Evento> buscarExpirados(LocalDateTime referencia) {
+            return eventos.stream()
+                    .filter(e -> e.estaAtivo() && e.getDataHoraFim().isBefore(referencia))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+
+        @Override
         public void remover(EventoId id) {
             eventos.removeIf(evento -> evento.getId().equals(id));
         }
@@ -96,5 +132,23 @@ class CriarEventoCasoDeUsoTest {
         public boolean existePorNome(String nome) {
             return nomeDuplicado;
         }
+    }
+
+    private static final class StubCategoriaRepositorio implements CategoriaRepositorio {
+        private final UUID idValido;
+
+        StubCategoriaRepositorio(UUID idValido) { this.idValido = idValido; }
+
+        @Override public void salvar(Categoria categoria) {}
+        @Override public Optional<Categoria> buscarPorId(CategoriaId id) {
+            return id.getValor().equals(idValido)
+                    ? Optional.of(new Categoria(id, "Tecnologia"))
+                    : Optional.empty();
+        }
+        @Override public Optional<Categoria> buscarPorNome(String nome) { return Optional.empty(); }
+        @Override public List<Categoria> listarTodas() { return List.of(); }
+        @Override public void remover(CategoriaId id) {}
+        @Override public boolean existePorNome(String nome) { return false; }
+        @Override public boolean existePorNomeExcetoId(String nome, CategoriaId id) { return false; }
     }
 }

@@ -4,6 +4,7 @@ import br.voke.dominio.fidelidade.carteira.CarteiraVirtual;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualId;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualRepositorio;
 import br.voke.dominio.fidelidade.carteira.CarteiraVirtualServico;
+import br.voke.dominio.fidelidade.transacao.TransacaoFinanceiraRepositorio;
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Então;
@@ -28,7 +29,8 @@ import static org.mockito.Mockito.verify;
 public class GerenciarCarteiraSteps {
     private final ContextoFidelidade ctx;
     private final CarteiraVirtualRepositorio repositorio = criarRepositorioEmMemoria();
-    private final CarteiraVirtualServico servico = new CarteiraVirtualServico(repositorio);
+    private final TransacaoFinanceiraRepositorio transacaoRepositorio = mock(TransacaoFinanceiraRepositorio.class);
+    private final CarteiraVirtualServico servico = new CarteiraVirtualServico(repositorio, transacaoRepositorio);
     private UUID participanteId;
 
     public GerenciarCarteiraSteps(ContextoFidelidade ctx) {
@@ -181,7 +183,9 @@ public class GerenciarCarteiraSteps {
     @Então("o saldo é debitado com sucesso")
     public void saldoDebitadoComSucesso() {
         assertNull(ctx.excecao);
-        assertEquals(0, new BigDecimal("250.00").compareTo(ctx.carteira.getSaldo()));
+        // RN3 - servico.creditar() agora vai para saldo promocional;
+        // debitar consome promocional primeiro. O remanescente fica no total.
+        assertEquals(0, new BigDecimal("250.00").compareTo(ctx.carteira.getSaldoTotal()));
         verify(repositorio, atLeastOnce()).salvar(ctx.carteira);
     }
 

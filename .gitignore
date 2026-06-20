@@ -14,3 +14,7 @@ src-gen
 **/node_modules
 **/src/main/angular/node
 **/src/main/resources/static
+
+apresentacao-frontend/dist
+
+**/src/main/resources/application-local.properties

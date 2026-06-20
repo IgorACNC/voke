@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -30,6 +31,7 @@ public class GerenciarCuponsSteps {
     private CupomRepositorio repositorio;
     private CupomServico servico;
     private Cupom cupom;
+    private BigDecimal descontoAplicado;
 
     public GerenciarCuponsSteps(ContextoEvento contexto) {
         this.contexto = contexto;
@@ -41,6 +43,7 @@ public class GerenciarCuponsSteps {
         repositorio = criarRepo();
         servico = new CupomServico(repositorio);
         cupom = null;
+        descontoAplicado = null;
         contexto.excecao = null;
     }
 
@@ -116,8 +119,8 @@ public class GerenciarCuponsSteps {
     @Quando("ele aplica o cupom")
     public void eleAplicaOCupom() {
         try {
-            cupom.utilizar("123.456.789-00");
-            repositorio.salvar(cupom);
+            descontoAplicado = servico.validarEUtilizar(cupom.getCodigo(), "123.456.789-00");
+            cupom = repositorio.buscarPorId(cupom.getId()).orElseThrow();
         } catch (Exception e) {
             contexto.excecao = e;
         }
@@ -126,6 +129,8 @@ public class GerenciarCuponsSteps {
     @Então("o desconto é aplicado com sucesso")
     public void oDescontoEAplicado() {
         assertNull(contexto.excecao);
+        assertEquals(0, new BigDecimal("10.00").compareTo(descontoAplicado));
+        assertEquals(1, cupom.getQuantidadeUtilizada());
         verify(repositorio, atLeastOnce()).salvar(cupom);
     }
 

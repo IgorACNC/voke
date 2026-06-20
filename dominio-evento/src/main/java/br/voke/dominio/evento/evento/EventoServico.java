@@ -6,6 +6,7 @@ import br.voke.dominio.evento.excecao.NomeDuplicadoException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 public class EventoServico {
@@ -20,6 +21,14 @@ public class EventoServico {
     public Evento criar(String nome, String descricao, String local,
                         LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
                         int capacidadeMaxima, UUID organizadorId, Lote loteInicial, int idadeMinima) {
+        return criar(nome, descricao, local, dataHoraInicio, dataHoraFim,
+                capacidadeMaxima, organizadorId, loteInicial, idadeMinima, Set.of());
+    }
+
+    public Evento criar(String nome, String descricao, String local,
+                        LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
+                        int capacidadeMaxima, UUID organizadorId, Lote loteInicial, int idadeMinima,
+                        Set<UUID> categoriaIds) {
         if (repositorio.existePorNome(nome)) {
             throw new NomeDuplicadoException("Já existe um evento com este nome");
         }
@@ -29,6 +38,9 @@ public class EventoServico {
         }
         Evento evento = new Evento(EventoId.novo(), nome, descricao, local,
                 dataHoraInicio, dataHoraFim, capacidadeMaxima, organizadorId, loteInicial, idadeMinima);
+        if (categoriaIds != null && !categoriaIds.isEmpty()) {
+            evento.definirCategorias(categoriaIds);
+        }
         repositorio.salvar(evento);
         return evento;
     }
@@ -60,5 +72,14 @@ public class EventoServico {
                 .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado"));
         evento.cancelar();
         repositorio.salvar(evento);
+    }
+
+    public int encerrarExpirados(LocalDateTime referencia) {
+        List<Evento> expirados = repositorio.buscarExpirados(referencia);
+        expirados.forEach(e -> {
+            e.encerrar();
+            repositorio.salvar(e);
+        });
+        return expirados.size();
     }
 }

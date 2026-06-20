@@ -42,10 +42,26 @@ public class CarrinhoServico {
         return carrinho;
     }
 
+    public Carrinho decrementarItem(UUID participanteId, UUID eventoId) {
+        Carrinho carrinho = repositorio.buscarPorParticipanteId(participanteId)
+                .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
+        carrinho.decrementarItem(eventoId);
+        repositorio.salvar(carrinho);
+        return carrinho;
+    }
+
+    public Carrinho removerCupom(UUID participanteId) {
+        Carrinho carrinho = repositorio.buscarPorParticipanteId(participanteId)
+                .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
+        carrinho.removerCupom();
+        repositorio.salvar(carrinho);
+        return carrinho;
+    }
+
     public Carrinho aplicarCupom(UUID participanteId, String codigoCupom, BigDecimal desconto) {
         Carrinho carrinho = repositorio.buscarPorParticipanteId(participanteId)
                 .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
-        carrinho.aplicarCupom(codigoCupom, desconto);
+        carrinho.aplicarCupom(codigoCupom, new DescontoFixo(desconto));
         repositorio.salvar(carrinho);
         return carrinho;
     }
@@ -61,7 +77,14 @@ public class CarrinhoServico {
     public BigDecimal calcularTotal(UUID participanteId, MetodoPagamento metodo) {
         Carrinho carrinho = repositorio.buscarPorParticipanteId(participanteId)
                 .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
-        return carrinho.calcularTotal(metodo);
+        return carrinho.calcularTotal(resolverTaxa(metodo));
+    }
+
+    private EstrategiaTaxa resolverTaxa(MetodoPagamento metodo) {
+        return switch (metodo) {
+            case CARTAO_CREDITO -> new TaxaCartaoCredito();
+            case PIX -> new SemTaxa();
+        };
     }
 
     public void limpar(UUID participanteId) {

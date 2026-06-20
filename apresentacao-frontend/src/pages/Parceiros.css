@@ -1,0 +1,56 @@
+.parceiro-atividades { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.5rem 0; }
+.parceiro-atividade {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em;
+  padding: 0.3rem 0.7rem; border-radius: 20px;
+  background: #ede9fe; color: #6d28d9;
+}
+.parceiro-atividade.removida { background: #f3f4f6; color: #9ca3af; text-decoration: line-through; }
+
+.parceiro-check-group { display: flex; flex-direction: column; gap: 0.6rem; }
+.parceiro-check-group label {
+  display: flex; align-items: center; gap: 0.6rem;
+  font-size: 0.9rem; color: #374151; cursor: pointer;
+}
+.parceiro-check-group input[type="checkbox"] {
+  width: 18px; height: 18px; accent-color: #9333ea;
+}
+
+.parceiro-stats { display: flex; gap: 1.5rem; margin: 1rem 0; }
+.parceiro-stat {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0.75rem 1.2rem; background: #f5f3ff; border-radius: 12px;
+  min-width: 120px;
+}
+.parceiro-stat-valor { font-size: 1.5rem; font-weight: 800; color: #6d28d9; }
+.parceiro-stat-label { font-size: 0.72rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.2rem; }
+
+.parceiro-aviso {
+  background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
+  padding: 0.75rem 1rem; font-size: 0.85rem; color: #92400e; margin-bottom: 1rem;
+}
+
+.parceiro-breve {
+  background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;
+  padding: 0.75rem 1rem; font-size: 0.85rem; color: #166534; margin: 0.75rem 0;
+  text-align: center;
+}
+
+.parceiro-item {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 1rem; border: 1px solid #f3f4f6; border-radius: 12px;
+  gap: 1rem;
+}
+.parceiro-item-info { flex: 1; }
+.parceiro-item-info strong { display: block; color: #1f1b4b; font-size: 0.95rem; }
+.parceiro-item-info span { display: block; color: #6b7280; font-size: 0.78rem; margin-top: 0.15rem; }
+
+.parceiro-editar-ativ { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.parceiro-editar-ativ button {
+  font-size: 0.72rem !important; padding: 0.25rem 0.55rem !important;
+  border-radius: 14px !important;
+}
+
+.cupom-item {
+  padding: 1rem; border: 1px solid #e5e7eb; border-radius: 12px;
+  margin-bottom: 0.75rem; background: #fafafa;
+}

@@ -28,4 +28,8 @@ public class CarteiraVirtualRepositorioJpa implements CarteiraVirtualRepositorio
     public Optional<CarteiraVirtual> buscarPorParticipanteId(UUID participanteId) {
         return repository.findByParticipanteId(participanteId).map(CarteiraVirtualJpaMapper::paraDominio);
     }
+
+    public void resetarLimitesDiarios() {
+        repository.resetarLimitesDiarios();
+    }
 }

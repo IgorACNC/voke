@@ -5,6 +5,7 @@ import br.voke.dominio.fidelidade.pontos.ContaPontos;
 import br.voke.dominio.fidelidade.pontos.ContaPontosId;
 import br.voke.dominio.fidelidade.pontos.ContaPontosRepositorio;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,5 +28,10 @@ public class ContaPontosRepositorioJpa implements ContaPontosRepositorio {
 
     public Optional<ContaPontos> buscarPorParticipanteId(UUID participanteId) {
         return repository.findByParticipanteId(participanteId).map(ContaPontosJpaMapper::paraDominio);
+    }
+
+    @Override
+    public List<ContaPontos> listarTodas() {
+        return repository.findAll().stream().map(ContaPontosJpaMapper::paraDominio).toList();
     }
 }

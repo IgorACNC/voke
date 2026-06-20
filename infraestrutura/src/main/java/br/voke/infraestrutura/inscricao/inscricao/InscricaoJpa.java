@@ -1,5 +1,6 @@
 package br.voke.infraestrutura.inscricao.inscricao;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,25 +17,46 @@ import java.util.UUID;
 public class InscricaoJpa {
 
     @Id
+    @Column(nullable = false)
     private UUID id;
+
+    @Column(nullable = false)
     private UUID participanteId;
+
+    @Column(nullable = false)
     private UUID eventoId;
+
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal valorPago;
+
+    @Column(nullable = false)
     private LocalDateTime dataInscricao;
+
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
     private StatusInscricao status;
+
+    @Column(name = "pontos_creditados", nullable = false,
+            columnDefinition = "BIT NOT NULL DEFAULT 0")
+    private boolean pontosCreditados;
+
+    @Column(name = "codigo_validador", length = 8)
+    private String codigoValidador;
 
     protected InscricaoJpa() {
     }
 
     public InscricaoJpa(UUID id, UUID participanteId, UUID eventoId, BigDecimal valorPago,
-                        LocalDateTime dataInscricao, StatusInscricao status) {
+                        LocalDateTime dataInscricao, StatusInscricao status, boolean pontosCreditados,
+                        String codigoValidador) {
         this.id = id;
         this.participanteId = participanteId;
         this.eventoId = eventoId;
         this.valorPago = valorPago;
         this.dataInscricao = dataInscricao;
         this.status = status;
+        this.pontosCreditados = pontosCreditados;
+        this.codigoValidador = codigoValidador;
     }
 
     public UUID getId() { return id; }
@@ -43,4 +65,6 @@ public class InscricaoJpa {
     public BigDecimal getValorPago() { return valorPago; }
     public LocalDateTime getDataInscricao() { return dataInscricao; }
     public StatusInscricao getStatus() { return status; }
+    public boolean isPontosCreditados() { return pontosCreditados; }
+    public String getCodigoValidador() { return codigoValidador; }
 }

@@ -1,5 +1,6 @@
 package br.voke.aplicacao.fidelidade;
 
+import br.voke.dominio.fidelidade.recompensa.CategoriaRecompensa;
 import br.voke.dominio.fidelidade.recompensa.Recompensa;
 import br.voke.dominio.fidelidade.recompensa.RecompensaServico;
 
@@ -18,5 +19,16 @@ public class CadastrarRecompensaCasoDeUso {
     public Recompensa executar(String nome, String descricao, int custoEmPontos,
                                int estoqueTotal, UUID organizadorId) {
         return servico.cadastrar(nome, descricao, custoEmPontos, estoqueTotal, organizadorId);
+    }
+
+    public Recompensa executar(String nome, String descricao, int custoEmPontos,
+                               int estoqueTotal, UUID organizadorId, CategoriaRecompensa categoria) {
+        return servico.cadastrar(nome, descricao, custoEmPontos, estoqueTotal, organizadorId, categoria);
+    }
+
+    public Recompensa executar(String nome, String descricao, int custoEmPontos,
+                               int estoqueTotal, UUID organizadorId, CategoriaRecompensa categoria,
+                               java.math.BigDecimal valor) {
+        return servico.cadastrar(nome, descricao, custoEmPontos, estoqueTotal, organizadorId, categoria, valor);
     }
 }

@@ -1,5 +1,6 @@
 package br.voke.aplicacao.inscricao;
 
+import br.voke.aplicacao.evento.AtualizadorEstatisticaListener;
 import br.voke.dominio.inscricao.inscricao.Inscricao;
 import br.voke.dominio.inscricao.inscricao.InscricaoServico;
 
@@ -11,10 +12,14 @@ import java.util.UUID;
 public class RealizarInscricaoCasoDeUso {
 
     private final InscricaoServico servico;
+    private final AtualizadorEstatisticaListener atualizadorEstatistica;
 
-    public RealizarInscricaoCasoDeUso(InscricaoServico servico) {
+    public RealizarInscricaoCasoDeUso(InscricaoServico servico,
+                                      AtualizadorEstatisticaListener atualizadorEstatistica) {
         Objects.requireNonNull(servico);
+        Objects.requireNonNull(atualizadorEstatistica);
         this.servico = servico;
+        this.atualizadorEstatistica = atualizadorEstatistica;
     }
 
     public Inscricao executar(UUID participanteId, UUID eventoId, BigDecimal valorIngresso,
@@ -22,8 +27,10 @@ public class RealizarInscricaoCasoDeUso {
                               boolean eventoAtivo, boolean possuiVagas,
                               LocalDateTime eventoInicio, LocalDateTime eventoFim,
                               int limitePorCpf) {
-        return servico.realizar(participanteId, eventoId, valorIngresso,
+        Inscricao inscricao = servico.realizar(participanteId, eventoId, valorIngresso,
                 idadeParticipante, idadeMinimaEvento, eventoAtivo, possuiVagas,
                 eventoInicio, eventoFim, limitePorCpf);
+        atualizadorEstatistica.aoConfirmarInscricao(eventoId, inscricao.getValorPago());
+        return inscricao;
     }
 }

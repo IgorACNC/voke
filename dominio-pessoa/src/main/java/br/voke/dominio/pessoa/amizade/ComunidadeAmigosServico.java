@@ -1,29 +1,21 @@
 package br.voke.dominio.pessoa.amizade;
 
 import br.voke.dominio.compartilhado.NomeCompleto;
-import br.voke.dominio.pessoa.excecao.VinculoDeAmizadeNecessarioException;
 import br.voke.dominio.pessoa.participante.ParticipanteId;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public class ComunidadeAmigosServico {
+public class ComunidadeAmigosServico implements ComunidadeAmigosOperacoes {
 
     private final ComunidadeAmigosRepositorio repositorio;
-    private final AmizadeServico amizadeServico;
 
-    public ComunidadeAmigosServico(ComunidadeAmigosRepositorio repositorio,
-                                    AmizadeServico amizadeServico) {
-        Objects.requireNonNull(repositorio, "Repositório é obrigatório");
-        Objects.requireNonNull(amizadeServico, "Serviço de amizade é obrigatório");
+    public ComunidadeAmigosServico(ComunidadeAmigosRepositorio repositorio) {
+        Objects.requireNonNull(repositorio, "Repositorio e obrigatorio");
         this.repositorio = repositorio;
-        this.amizadeServico = amizadeServico;
     }
 
     public ComunidadeAmigos criar(NomeCompleto nome, ParticipanteId criadorId) {
-        if (!amizadeServico.possuiAmizadeAtiva(criadorId)) {
-            throw new VinculoDeAmizadeNecessarioException();
-        }
         ComunidadeAmigos comunidade = new ComunidadeAmigos(
                 ComunidadeAmigosId.novo(), nome, criadorId
         );
@@ -33,14 +25,14 @@ public class ComunidadeAmigosServico {
 
     public void adicionarMembro(ComunidadeAmigosId comunidadeId, ParticipanteId membroId) {
         ComunidadeAmigos comunidade = repositorio.buscarPorId(comunidadeId)
-                .orElseThrow(() -> new IllegalArgumentException("Comunidade não encontrada"));
+                .orElseThrow(() -> new IllegalArgumentException("Comunidade nao encontrada"));
         comunidade.adicionarMembro(membroId);
         repositorio.salvar(comunidade);
     }
 
     public void compartilharEvento(ComunidadeAmigosId comunidadeId, UUID eventoId) {
         ComunidadeAmigos comunidade = repositorio.buscarPorId(comunidadeId)
-                .orElseThrow(() -> new IllegalArgumentException("Comunidade não encontrada"));
+                .orElseThrow(() -> new IllegalArgumentException("Comunidade nao encontrada"));
         comunidade.compartilharEvento(eventoId);
         repositorio.salvar(comunidade);
     }

@@ -3,12 +3,18 @@ package br.voke.dominio.evento.evento;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public interface EventoRepositorio {
     void salvar(Evento evento);
     Optional<Evento> buscarPorId(EventoId id);
     Optional<Evento> buscarPorNome(String nome);
     List<Evento> buscarPorLocalEPeriodo(String local, LocalDateTime inicio, LocalDateTime fim);
+    List<Evento> buscarPorCategorias(Set<UUID> categoriaIds);
+    List<Evento> buscarPorOrganizador(UUID organizadorId);
+    List<Evento> listarAtivos();
+    List<Evento> buscarExpirados(LocalDateTime referencia);
     void remover(EventoId id);
     boolean existePorNome(String nome);
 }

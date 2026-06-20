@@ -23,7 +23,9 @@ public final class EventoJpaMapper {
                 evento.getOrganizadorId(),
                 evento.getIdadeMinima(),
                 evento.getStatus(),
-                paraJpa(evento.getLoteAtual()));
+                paraJpa(evento.getLoteAtual()),
+                evento.getCategoriaIds(),
+                evento.getVisualizacoes());
     }
 
     public static Evento paraDominio(EventoJpa jpa) {
@@ -40,6 +42,12 @@ public final class EventoJpaMapper {
                 jpa.getIdadeMinima());
         if (jpa.getStatus() != StatusEvento.ATIVO) {
             DominioReflection.definirCampo(evento, "status", jpa.getStatus());
+        }
+        if (jpa.getCategoriaIds() != null && !jpa.getCategoriaIds().isEmpty()) {
+            evento.definirCategorias(jpa.getCategoriaIds());
+        }
+        if (jpa.getVisualizacoes() > 0) {
+            DominioReflection.definirCampo(evento, "visualizacoes", jpa.getVisualizacoes());
         }
         return evento;
     }

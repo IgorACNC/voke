@@ -16,7 +16,7 @@ public class GerarSugestoesSemanaisCasoDeUso {
         this.servico = servico;
     }
 
-    public List<Sugestao> executar(UUID participanteId, List<UUID> eventosSugeridos) {
-        return servico.gerarSugestoesSemanais(participanteId, eventosSugeridos);
+    public List<Sugestao> executar(UUID participanteId) {
+        return servico.gerarSugestoesSemanais(participanteId);
     }
 }

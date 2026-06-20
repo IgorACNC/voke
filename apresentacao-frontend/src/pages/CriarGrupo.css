@@ -1,0 +1,69 @@
+.cg-bg { min-height: 100vh; background: #f8f9fb; }
+
+.cg-header {
+  background: linear-gradient(135deg, #302b63, #9333ea);
+  padding: 1rem 2rem; display: flex; align-items: center;
+  justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.cg-logo { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: -0.5px; cursor: pointer; }
+.cg-header-right { display: flex; align-items: center; gap: 1rem; }
+.cg-papel {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+  background: rgba(255,255,255,0.2); color: #fff;
+  padding: 0.25rem 0.6rem; border-radius: 20px; text-transform: uppercase;
+}
+.cg-nome { font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 500; }
+.cg-sair {
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; padding: 0.4rem 0.9rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer;
+}
+.cg-sair:hover { background: rgba(255,255,255,0.25); }
+
+.cg-main { padding: 2rem; max-width: 560px; margin: 0 auto; }
+
+.cg-voltar {
+  background: none; border: none; color: #6b7280; cursor: pointer;
+  font-size: 0.9rem; padding: 0; margin-bottom: 1.25rem; display: block;
+}
+.cg-voltar:hover { color: #302b63; }
+
+.cg-form {
+  background: #fff; border-radius: 16px; padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  display: flex; flex-direction: column; gap: 0.9rem;
+}
+.cg-titulo { font-size: 1.4rem; font-weight: 700; color: #302b63; margin: 0; }
+
+.cg-erro {
+  background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;
+  padding: 0.7rem 1rem; border-radius: 10px; font-size: 0.9rem;
+}
+
+.cg-label { font-size: 0.85rem; font-weight: 600; color: #374151; }
+.cg-input {
+  width: 100%; padding: 0.7rem 0.9rem; font-size: 0.95rem;
+  border: 1.5px solid #e5e7eb; border-radius: 10px; outline: none;
+  box-sizing: border-box; transition: border-color 0.2s;
+}
+.cg-input:focus { border-color: #9333ea; }
+.cg-textarea {
+  width: 100%; padding: 0.7rem 0.9rem; font-size: 0.95rem;
+  border: 1.5px solid #e5e7eb; border-radius: 10px; outline: none;
+  box-sizing: border-box; resize: vertical; font-family: inherit; transition: border-color 0.2s;
+}
+.cg-textarea:focus { border-color: #9333ea; }
+
+.cg-info-aviso {
+  font-size: 0.82rem; color: #6b7280;
+  background: #faf9ff; padding: 0.6rem 0.9rem;
+  border-radius: 8px; border: 1px solid #ede9fe; margin: 0;
+}
+
+.cg-btn-primario {
+  background: linear-gradient(135deg, #302b63, #9333ea);
+  color: #fff; border: none; padding: 0.75rem 1.5rem;
+  border-radius: 10px; font-size: 1rem; font-weight: 700;
+  cursor: pointer; margin-top: 0.3rem; transition: opacity 0.2s;
+}
+.cg-btn-primario:hover:not(:disabled) { opacity: 0.88; }
+.cg-btn-primario:disabled { opacity: 0.5; cursor: not-allowed; }

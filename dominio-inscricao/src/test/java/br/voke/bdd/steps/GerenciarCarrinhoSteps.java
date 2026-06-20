@@ -5,8 +5,11 @@ import br.voke.dominio.inscricao.carrinho.CarrinhoId;
 import br.voke.dominio.inscricao.carrinho.CarrinhoRepositorio;
 import br.voke.dominio.inscricao.carrinho.CarrinhoServico;
 import br.voke.dominio.inscricao.carrinho.CupomConsulta;
+import br.voke.dominio.inscricao.carrinho.DescontoFixo;
 import br.voke.dominio.inscricao.carrinho.ItemCarrinho;
 import br.voke.dominio.inscricao.carrinho.MetodoPagamento;
+import br.voke.dominio.inscricao.carrinho.SemTaxa;
+import br.voke.dominio.inscricao.carrinho.TaxaCartaoCredito;
 import io.cucumber.java.Before;
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
@@ -133,7 +136,7 @@ public class GerenciarCarrinhoSteps {
 
     @Quando("ele escolhe PIX como forma de pagamento e finaliza a compra")
     public void eleEscolhePix() {
-        valorFinal = carrinho.calcularTotal(MetodoPagamento.PIX);
+        valorFinal = carrinho.calcularTotal(new SemTaxa());
     }
 
     @Então("o valor cobrado é exatamente o valor dos ingressos sem acréscimos")
@@ -143,7 +146,7 @@ public class GerenciarCarrinhoSteps {
 
     @Quando("ele escolhe cartão de crédito como forma de pagamento")
     public void eleEscolheCartao() {
-        valorFinal = carrinho.calcularTotal(MetodoPagamento.CARTAO_CREDITO);
+        valorFinal = carrinho.calcularTotal(new TaxaCartaoCredito());
     }
 
     @Então("o sistema aplica a taxa correspondente ao valor total")
@@ -173,7 +176,7 @@ public class GerenciarCarrinhoSteps {
     @Então("o desconto do cupom é refletido no valor total")
     public void oDescontoERefletido() {
         assertNull(contexto.excecao);
-        BigDecimal total = carrinho.calcularTotal(MetodoPagamento.PIX);
+        BigDecimal total = carrinho.calcularTotal(new SemTaxa());
         assertEquals(0, new BigDecimal("90.00").compareTo(total));
         verify(repositorio, atLeastOnce()).salvar(carrinho);
     }
@@ -183,7 +186,7 @@ public class GerenciarCarrinhoSteps {
         carrinho = new Carrinho(CarrinhoId.novo(), participanteId);
         contexto.excecao = null;
         carrinho.adicionarItem(new ItemCarrinho(UUID.randomUUID(), "Show", 1, new BigDecimal("100.00")));
-        carrinho.aplicarCupom("PROMO10", new BigDecimal("10.00"));
+        carrinho.aplicarCupom("PROMO10", new DescontoFixo(new BigDecimal("10.00")));
         repositorio.salvar(carrinho);
     }
 
@@ -217,7 +220,7 @@ public class GerenciarCarrinhoSteps {
     public void eleRemoveItem() {
         UUID eventoId = carrinho.getItens().get(0).getEventoId();
         carrinho = servico.removerItem(participanteId, eventoId);
-        valorFinal = carrinho.calcularTotal(MetodoPagamento.PIX);
+        valorFinal = carrinho.calcularTotal(new SemTaxa());
     }
 
     @Então("o item é removido e o valor total é recalculado")

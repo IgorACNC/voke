@@ -1,6 +1,7 @@
 package br.voke.infraestrutura.fidelidade.sugestao;
 
 import org.springframework.stereotype.Repository;
+import br.voke.dominio.fidelidade.sugestao.StatusSugestao;
 import br.voke.dominio.fidelidade.sugestao.Sugestao;
 import br.voke.dominio.fidelidade.sugestao.SugestaoId;
 import br.voke.dominio.fidelidade.sugestao.SugestaoRepositorio;
@@ -37,5 +38,12 @@ public class SugestaoRepositorioJpa implements SugestaoRepositorio {
 
     public int contarSugestoesSemanalPorParticipante(UUID participanteId) {
         return repository.countByParticipanteIdAndCriadaEmAfter(participanteId, LocalDateTime.now().minusDays(7));
+    }
+
+    public List<Sugestao> buscarPendentesCriadasAntesDe(int dias) {
+        LocalDateTime limite = LocalDateTime.now().minusDays(dias);
+        return repository.findByStatusAndCriadaEmBefore(StatusSugestao.PENDENTE, limite).stream()
+                .map(SugestaoJpaMapper::paraDominio)
+                .toList();
     }
 }

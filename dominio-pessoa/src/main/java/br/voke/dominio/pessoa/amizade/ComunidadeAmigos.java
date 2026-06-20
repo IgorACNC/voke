@@ -33,6 +33,9 @@ public class ComunidadeAmigos extends EntidadeBase<ComunidadeAmigosId> {
     }
 
     public void removerMembro(ParticipanteId participanteId) {
+        if (criadorId.equals(participanteId)) {
+            throw new IllegalArgumentException("Criador nao pode sair da propria comunidade");
+        }
         membros.remove(participanteId);
     }
 

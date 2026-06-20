@@ -31,6 +31,11 @@ public class ComunidadeAmigosRepositorioJpa implements ComunidadeAmigosRepositor
                 .map(ComunidadeAmigosJpaMapper::paraDominio).toList();
     }
 
+    public List<ComunidadeAmigos> buscarPorMembro(ParticipanteId membroId) {
+        return repository.findByMembrosContaining(membroId.getValor()).stream()
+                .map(ComunidadeAmigosJpaMapper::paraDominio).toList();
+    }
+
     public void remover(ComunidadeAmigosId id) {
         repository.deleteById(id.getValor());
     }

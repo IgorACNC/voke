@@ -1,5 +1,6 @@
 package br.voke.dominio.inscricao.carrinho;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -8,4 +9,5 @@ public interface CarrinhoRepositorio {
     Optional<Carrinho> buscarPorId(CarrinhoId id);
     Optional<Carrinho> buscarPorParticipanteId(UUID participanteId);
     void remover(CarrinhoId id);
+    void removerExpirados(LocalDateTime limite);
 }

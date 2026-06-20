@@ -1,6 +1,7 @@
 package br.voke.dominio.inscricao.inscricao;
 
 import br.voke.dominio.inscricao.excecao.ConflitoDeAgendaException;
+import br.voke.dominio.inscricao.excecao.EventoJaIniciadoException;
 import br.voke.dominio.inscricao.excecao.IdadeMinimaEventoException;
 import br.voke.dominio.inscricao.excecao.LimiteIngressosCpfException;
 import br.voke.dominio.inscricao.excecao.VagasEsgotadasException;
@@ -26,6 +27,9 @@ public class InscricaoServico {
                               int limitePorCpf) {
         if (idadeParticipante < idadeMinimaEvento) {
             throw new IdadeMinimaEventoException();
+        }
+        if (eventoInicio != null && LocalDateTime.now().isAfter(eventoInicio)) {
+            throw new EventoJaIniciadoException();
         }
         if (!eventoAtivo || !possuiVagas) {
             throw new VagasEsgotadasException();

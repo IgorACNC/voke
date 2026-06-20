@@ -6,7 +6,9 @@ import br.voke.dominio.evento.excecao.EventoCanceladoException;
 import br.voke.dominio.evento.excecao.LoteAtivoExistenteException;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 public class Evento extends EntidadeBase<EventoId> {
@@ -21,6 +23,8 @@ public class Evento extends EntidadeBase<EventoId> {
     private Lote loteAtual;
     private StatusEvento status;
     private int idadeMinima;
+    private Set<UUID> categoriaIds = new HashSet<>();
+    private int visualizacoes;
 
     public Evento(EventoId id, String nome, String descricao, String local,
                   LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim,
@@ -51,7 +55,16 @@ public class Evento extends EntidadeBase<EventoId> {
         this.loteAtual = loteInicial;
         this.status = StatusEvento.ATIVO;
         this.idadeMinima = idadeMinima;
+        this.visualizacoes = 0;
     }
+
+    public void incrementarVisualizacoes() {
+        this.visualizacoes += 1;
+    }
+
+    public int getVisualizacoes() { return visualizacoes; }
+
+    public boolean estaEncerrado() { return status == StatusEvento.ENCERRADO; }
 
     public boolean colideComHorario(String outroLocal, LocalDateTime outroInicio, LocalDateTime outroFim) {
         if (!this.local.equalsIgnoreCase(outroLocal)) return false;
@@ -123,4 +136,19 @@ public class Evento extends EntidadeBase<EventoId> {
     public Lote getLoteAtual() { return loteAtual; }
     public StatusEvento getStatus() { return status; }
     public int getIdadeMinima() { return idadeMinima; }
+    public Set<UUID> getCategoriaIds() { return Set.copyOf(categoriaIds); }
+
+    public void adicionarCategoria(UUID categoriaId) {
+        Objects.requireNonNull(categoriaId, "Categoria é obrigatória");
+        this.categoriaIds.add(categoriaId);
+    }
+
+    public void removerCategoria(UUID categoriaId) {
+        this.categoriaIds.remove(categoriaId);
+    }
+
+    public void definirCategorias(Set<UUID> novasCategorias) {
+        Objects.requireNonNull(novasCategorias, "Categorias são obrigatórias");
+        this.categoriaIds = new HashSet<>(novasCategorias);
+    }
 }

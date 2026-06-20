@@ -1,0 +1,136 @@
+.chat-canal {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  max-height: 420px;
+}
+
+.chat-canal-mensagens {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-height: 120px;
+  max-height: 320px;
+  background: rgba(245, 243, 255, 0.5);
+}
+
+.chat-canal-mensagens::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-canal-mensagens::-webkit-scrollbar-thumb {
+  background: #c4b5fd;
+  border-radius: 4px;
+}
+
+.chat-canal-bolha {
+  max-width: 78%;
+  padding: 0.55rem 0.9rem;
+  border-radius: 14px;
+  font-size: 0.92rem;
+  position: relative;
+  word-wrap: break-word;
+  background: #e9e5f5;
+  color: #1e1b4b;
+  align-self: flex-start;
+}
+
+.chat-canal-bolha.minha {
+  background: linear-gradient(135deg, #6b21a8, #7c3aed);
+  color: #fff;
+  align-self: flex-end;
+}
+
+.chat-canal-bolha-nome {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6b21a8;
+  margin-bottom: 0.2rem;
+}
+
+.chat-canal-bolha.minha .chat-canal-bolha-nome {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.chat-canal-bolha p {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.chat-canal-bolha span.chat-canal-hora {
+  display: block;
+  font-size: 0.65rem;
+  margin-top: 0.2rem;
+  opacity: 0.65;
+  text-align: right;
+}
+
+.chat-canal-vazio {
+  text-align: center;
+  color: #9ca3af;
+  font-style: italic;
+  padding: 2rem 0;
+  font-size: 0.9rem;
+}
+
+.chat-canal-form {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border-top: 1px solid #ede9fe;
+  background: #faf8ff;
+}
+
+.chat-canal-form input {
+  flex: 1;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #d4d0e8;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chat-canal-form input:focus {
+  border-color: #7c3aed;
+}
+
+.chat-canal-form input:disabled {
+  background: #f1f0f9;
+  cursor: not-allowed;
+}
+
+.chat-canal-form button {
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #6b21a8, #7c3aed);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+
+.chat-canal-form button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(107, 33, 168, 0.3);
+}
+
+.chat-canal-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat-canal-erro {
+  padding: 0.5rem 1rem;
+  color: #b91c1c;
+  font-size: 0.85rem;
+  background: #fef2f2;
+  text-align: center;
+}

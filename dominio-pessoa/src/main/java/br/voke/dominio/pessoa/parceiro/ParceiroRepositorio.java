@@ -10,6 +10,7 @@ public interface ParceiroRepositorio {
     void salvar(Parceiro parceiro);
     Optional<Parceiro> buscarPorId(ParceiroId id);
     List<Parceiro> buscarPorOrganizador(OrganizadorId organizadorId);
+    List<Parceiro> buscarPorParticipante(ParticipanteId participanteId);
     Optional<Parceiro> buscarPorParticipanteEOrganizador(ParticipanteId participanteId, OrganizadorId organizadorId);
     void remover(ParceiroId id);
 }

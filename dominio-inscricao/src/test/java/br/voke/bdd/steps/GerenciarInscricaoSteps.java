@@ -274,7 +274,7 @@ public class GerenciarInscricaoSteps {
 
     @E("o cancelamento ocorre fora do prazo de devolução")
     public void cancelamentoForaDoPrazo() {
-        dataEventoCancelamento = LocalDateTime.now().plusDays(1);
+        dataEventoCancelamento = LocalDateTime.now().minusDays(1); // evento já passou → 0% de devolução
     }
 
     @E("nenhum valor é devolvido ao participante")

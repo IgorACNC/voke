@@ -15,33 +15,50 @@ public class Cupom extends EntidadeBase<CupomId> {
 
     private String codigo;
     private BigDecimal desconto;
+    private TipoDesconto tipoDesconto;
     private final UUID organizadorId;
     private final UUID eventoId; // null = cupom global
+    private final UUID parceiroId; // null = cupom sem parceiro
     private int quantidadeMaxima;
+    private boolean ativo;
     private final Set<String> cpfsUtilizados;
 
     public Cupom(CupomId id, String codigo, BigDecimal desconto, UUID organizadorId,
                  UUID eventoId, int quantidadeMaxima) {
+        this(id, codigo, desconto, TipoDesconto.FIXO, organizadorId, eventoId, null, quantidadeMaxima);
+    }
+
+    public Cupom(CupomId id, String codigo, BigDecimal desconto, TipoDesconto tipoDesconto,
+                 UUID organizadorId, UUID eventoId, UUID parceiroId, int quantidadeMaxima) {
         super(id);
         Objects.requireNonNull(codigo, "Código é obrigatório");
         Objects.requireNonNull(desconto, "Desconto é obrigatório");
-        Objects.requireNonNull(organizadorId, "Organizador é obrigatório");
+        Objects.requireNonNull(tipoDesconto, "Tipo de desconto é obrigatório");
         if (desconto.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Desconto deve ser maior que zero");
+        }
+        if (tipoDesconto == TipoDesconto.PERCENTUAL && desconto.compareTo(new BigDecimal("100")) > 0) {
+            throw new IllegalArgumentException("Desconto percentual não pode ultrapassar 100%");
         }
         if (quantidadeMaxima <= 0) {
             throw new IllegalArgumentException("Quantidade máxima deve ser maior que zero");
         }
         this.codigo = codigo;
         this.desconto = desconto;
+        this.tipoDesconto = tipoDesconto;
         this.organizadorId = organizadorId;
         this.eventoId = eventoId;
+        this.parceiroId = parceiroId;
         this.quantidadeMaxima = quantidadeMaxima;
+        this.ativo = true;
         this.cpfsUtilizados = new HashSet<>();
     }
 
     public void utilizar(String cpf) {
         Objects.requireNonNull(cpf, "CPF é obrigatório");
+        if (!ativo) {
+            throw new IllegalStateException("Cupom inativo");
+        }
         if (cpfsUtilizados.contains(cpf)) {
             throw new CupomJaUtilizadoException();
         }
@@ -51,8 +68,24 @@ public class Cupom extends EntidadeBase<CupomId> {
         cpfsUtilizados.add(cpf);
     }
 
+    public void ativar() { this.ativo = true; }
+    public void desativar() { this.ativo = false; }
+
+    public void liberarUso(String cpf) {
+        if (cpf != null) cpfsUtilizados.remove(cpf);
+    }
+
+    public boolean aplicavelAoEvento(UUID eventoIdCarrinho, UUID organizadorIdEvento) {
+        // Cupom global de admin: vale para qualquer evento
+        if (this.organizadorId == null) return true;
+        // Cupom de organizador vinculado a evento específico: precisa bater o evento
+        if (this.eventoId != null) return this.eventoId.equals(eventoIdCarrinho);
+        // Cupom de organizador para todos os seus eventos: precisa bater o organizador do evento
+        return this.organizadorId.equals(organizadorIdEvento);
+    }
+
     public boolean isGlobal() {
-        return eventoId == null;
+        return organizadorId == null && eventoId == null;
     }
 
     public boolean estaDisponivel() {
@@ -74,11 +107,23 @@ public class Cupom extends EntidadeBase<CupomId> {
         this.quantidadeMaxima = novaQuantidade;
     }
 
+    public BigDecimal calcularDesconto(BigDecimal subtotal) {
+        if (tipoDesconto == TipoDesconto.PERCENTUAL) {
+            return subtotal.multiply(desconto)
+                    .divide(new BigDecimal("100"), 2, java.math.RoundingMode.HALF_UP);
+        }
+        return desconto;
+    }
+
     public String getCodigo() { return codigo; }
     public BigDecimal getDesconto() { return desconto; }
+    public TipoDesconto getTipoDesconto() { return tipoDesconto; }
     public UUID getOrganizadorId() { return organizadorId; }
     public UUID getEventoId() { return eventoId; }
+    public UUID getParceiroId() { return parceiroId; }
+    public boolean isVinculadoAParceiro() { return parceiroId != null; }
     public int getQuantidadeMaxima() { return quantidadeMaxima; }
     public int getQuantidadeUtilizada() { return cpfsUtilizados.size(); }
+    public boolean isAtivo() { return ativo; }
     public Set<String> getCpfsUtilizados() { return Collections.unmodifiableSet(cpfsUtilizados); }
 }

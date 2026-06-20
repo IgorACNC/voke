@@ -7,15 +7,23 @@ import java.util.UUID;
 public class CupomServico {
 
     private final CupomRepositorio repositorio;
+    private final UtilizacaoCupomTemplate utilizacaoCupom;
 
     public CupomServico(CupomRepositorio repositorio) {
         Objects.requireNonNull(repositorio, "Repositório é obrigatório");
         this.repositorio = repositorio;
+        this.utilizacaoCupom = new UtilizacaoCupomPadrao(repositorio);
     }
 
     public Cupom criar(String codigo, BigDecimal desconto, UUID organizadorId,
                        UUID eventoId, int quantidadeMaxima) {
-        Cupom cupom = new Cupom(CupomId.novo(), codigo, desconto, organizadorId, eventoId, quantidadeMaxima);
+        return criar(codigo, desconto, TipoDesconto.FIXO, organizadorId, eventoId, null, quantidadeMaxima);
+    }
+
+    public Cupom criar(String codigo, BigDecimal desconto, TipoDesconto tipoDesconto,
+                       UUID organizadorId, UUID eventoId, UUID parceiroId, int quantidadeMaxima) {
+        Cupom cupom = new Cupom(CupomId.novo(), codigo, desconto, tipoDesconto,
+                organizadorId, eventoId, parceiroId, quantidadeMaxima);
         repositorio.salvar(cupom);
         return cupom;
     }
@@ -29,11 +37,14 @@ public class CupomServico {
     }
 
     public BigDecimal validarEUtilizar(String codigo, String cpf) {
-        Cupom cupom = repositorio.buscarPorCodigo(codigo)
-                .orElseThrow(() -> new IllegalArgumentException("Cupom inválido ou expirado"));
-        cupom.utilizar(cpf);
+        return utilizacaoCupom.validarEUtilizar(codigo, cpf);
+    }
+
+    public void alternarAtivo(CupomId id, boolean ativo) {
+        Cupom cupom = repositorio.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cupom não encontrado"));
+        if (ativo) cupom.ativar(); else cupom.desativar();
         repositorio.salvar(cupom);
-        return cupom.getDesconto();
     }
 
     public void remover(CupomId id) {

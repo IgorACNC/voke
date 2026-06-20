@@ -9,6 +9,7 @@ public interface InscricaoRepositorio {
     void salvar(Inscricao inscricao);
     Optional<Inscricao> buscarPorId(InscricaoId id);
     List<Inscricao> buscarPorParticipanteId(UUID participanteId);
+    List<Inscricao> buscarPorEventoId(UUID eventoId);
     void remover(InscricaoId id);
     int contarPorParticipanteEEvento(UUID participanteId, UUID eventoId);
     boolean existeConflitoDeHorario(UUID participanteId, LocalDateTime inicio, LocalDateTime fim);

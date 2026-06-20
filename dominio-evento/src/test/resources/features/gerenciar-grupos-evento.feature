@@ -45,3 +45,10 @@ Funcionalidade: Gerenciar Grupos de Evento
     E o grupo do evento existe
     Quando ele exclui o grupo
     Então o grupo é removido e os participantes perdem o acesso
+
+  Cenário: Usuário não-organizador tenta criar o grupo oficial
+    Dado que o organizador está autenticado
+    E o evento está ativo
+    Quando outro usuário tenta criar um grupo para o evento
+    Então o sistema rejeita a criação do grupo
+    E exibe a mensagem "Apenas o organizador do evento pode criar o grupo oficial"

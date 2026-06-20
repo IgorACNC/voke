@@ -26,6 +26,15 @@ public class GerenciarRecompensasSteps {
             @Override public List<Recompensa> buscarPorOrganizadorId(UUID organizadorId) {
                 return banco.values().stream().filter(r -> r.getOrganizadorId().equals(organizadorId)).toList();
             }
+            @Override public List<Recompensa> buscarAtivas() {
+                return banco.values().stream().filter(Recompensa::isAtiva).toList();
+            }
+            @Override public List<Recompensa> buscarGlobais() {
+                return banco.values().stream().filter(Recompensa::isGlobal).toList();
+            }
+            @Override public List<Recompensa> buscarTodas() {
+                return new java.util.ArrayList<>(banco.values());
+            }
             @Override public void remover(RecompensaId id) { banco.remove(id); }
         };
     }

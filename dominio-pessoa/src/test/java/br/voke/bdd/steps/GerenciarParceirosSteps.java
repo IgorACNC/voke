@@ -33,6 +33,9 @@ public class GerenciarParceirosSteps {
             @Override public List<Parceiro> buscarPorOrganizador(OrganizadorId organizadorId) {
                 return banco.values().stream().filter(p -> p.getOrganizadorId().equals(organizadorId)).toList();
             }
+            @Override public List<Parceiro> buscarPorParticipante(ParticipanteId participanteId) {
+                return banco.values().stream().filter(p -> p.getParticipanteId().equals(participanteId)).toList();
+            }
             @Override public Optional<Parceiro> buscarPorParticipanteEOrganizador(ParticipanteId pid, OrganizadorId oid) {
                 return banco.values().stream()
                         .filter(p -> p.getParticipanteId().equals(pid) && p.getOrganizadorId().equals(oid))

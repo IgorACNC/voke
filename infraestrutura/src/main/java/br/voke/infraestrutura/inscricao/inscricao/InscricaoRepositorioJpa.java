@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import br.voke.dominio.inscricao.inscricao.Inscricao;
 import br.voke.dominio.inscricao.inscricao.InscricaoId;
 import br.voke.dominio.inscricao.inscricao.InscricaoRepositorio;
+import br.voke.dominio.inscricao.inscricao.StatusInscricao;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +32,10 @@ public class InscricaoRepositorioJpa implements InscricaoRepositorio {
         return repository.findByParticipanteId(participanteId).stream().map(InscricaoJpaMapper::paraDominio).toList();
     }
 
+    public List<Inscricao> buscarPorEventoId(UUID eventoId) {
+        return repository.findByEventoId(eventoId).stream().map(InscricaoJpaMapper::paraDominio).toList();
+    }
+
     public void remover(InscricaoId id) {
         repository.deleteById(id.getValor());
     }
@@ -40,6 +45,6 @@ public class InscricaoRepositorioJpa implements InscricaoRepositorio {
     }
 
     public boolean existeConflitoDeHorario(UUID participanteId, LocalDateTime inicio, LocalDateTime fim) {
-        return false;
+        return repository.countConflitoDeHorario(participanteId, inicio, fim, StatusInscricao.CANCELADA) > 0;
     }
 }
