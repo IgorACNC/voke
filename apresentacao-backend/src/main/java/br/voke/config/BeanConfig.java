@@ -69,6 +69,7 @@ import br.voke.dominio.fidelidade.comissao.ComissaoParceiroServico;
 import br.voke.aplicacao.fidelidade.ConsultarComissoesCasoDeUso;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -199,8 +200,14 @@ public class BeanConfig {
     }
 
     @Bean
-    public GrupoEventoServicoInterface grupoEventoServico(GrupoEventoRepositorio r) {
-        GrupoEventoServico base = new GrupoEventoServico(r);
+    public GrupoEventoServico grupoEventoServicoNucleo(GrupoEventoRepositorio r) {
+        return new GrupoEventoServico(r);
+    }
+
+    @Bean
+    @Primary
+    public GrupoEventoServicoInterface grupoEventoServico(GrupoEventoServico base,
+                                                           GrupoEventoRepositorio r) {
         return new RestricaoEtariaGrupoDecorator(
                 new VerificacaoInscritoGrupoDecorator(
                         new PrivilegioOrganizadorGrupoDecorator(base, r)
@@ -271,17 +278,24 @@ public class BeanConfig {
     }
 
     @Bean
+    public br.voke.dominio.evento.evento.CancelamentoInscricoesEvento cancelamentoInscricoesEvento(
+            InscricaoRepositorio ir, CarteiraVirtualServico cs) {
+        return new br.voke.aplicacao.evento.CancelamentoInscricoesEventoAdapter(ir, cs);
+    }
+
+    @Bean
     public CancelarEventoCasoDeUso cancelarEvento(EventoServico s,
-                                                  InscricaoRepositorio ir,
-                                                  CarteiraVirtualServico cs,
-                                                  AtualizadorEstatisticaListener l) {
-        return new CancelarEventoCasoDeUso(s, ir, cs, l);
+                                                  br.voke.dominio.evento.evento.CancelamentoInscricoesEvento cancelamento,
+                                                  AtualizadorEstatisticaListener l,
+                                                  GrupoEventoServico grupoServico) {
+        return new CancelarEventoCasoDeUso(s, cancelamento, l, grupoServico);
     }
 
     @Bean
     public EncerrarEventosExpiradosCasoDeUso encerrarEventosExpirados(
-            EventoServico s, EventoRepositorio er, AtualizadorEstatisticaListener l) {
-        return new EncerrarEventosExpiradosCasoDeUso(s, er, l);
+            EventoServico s, EventoRepositorio er, AtualizadorEstatisticaListener l,
+            GrupoEventoServico grupoServico) {
+        return new EncerrarEventosExpiradosCasoDeUso(s, er, l, grupoServico);
     }
 
     @Bean

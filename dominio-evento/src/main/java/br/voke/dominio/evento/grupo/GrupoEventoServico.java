@@ -48,4 +48,16 @@ public class GrupoEventoServico implements GrupoEventoServicoInterface {
                 .orElseThrow(() -> new IllegalArgumentException("Grupo não encontrado"));
         repositorio.remover(grupoId);
     }
+
+    /**
+     * RN3 - gatilho de sistema chamado pelo scheduler de eventos expirados ou pelo
+     * fluxo de cancelamento do evento. Não passa pela cadeia de decorators porque
+     * é uma ação automática (sem solicitante humano). Idempotente: se o grupo não
+     * existir, retorna em silêncio.
+     */
+    public void removerPorEvento(UUID eventoId) {
+        Objects.requireNonNull(eventoId, "EventoId é obrigatório");
+        repositorio.buscarPorEventoId(eventoId)
+                .ifPresent(g -> repositorio.remover(g.getId()));
+    }
 }
